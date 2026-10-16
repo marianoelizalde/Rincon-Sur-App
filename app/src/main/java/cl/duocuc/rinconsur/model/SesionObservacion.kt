@@ -1,7 +1,7 @@
 package cl.duocuc.rinconsur.model
 
 data class  SesionObservacion(
-    val id:Int,
+    val id:Int = 0,
     val idAcceso: Int,
     val fecha: String,
     val horaInicio: String,
@@ -10,5 +10,7 @@ data class  SesionObservacion(
     val estado: EstadoSesion = EstadoSesion.PROGRAMADA,
     val idValidador: Int? = null,
     val motivoRechazo: String? = null
+
 )
+
 
