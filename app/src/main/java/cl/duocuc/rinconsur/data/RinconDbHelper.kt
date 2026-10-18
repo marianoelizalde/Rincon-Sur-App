@@ -118,6 +118,12 @@ class RinconDbHelper(context: Context) :
                     "$REG_OTRA_TIENDA INTEGER NOT NULL DEFAULT 0, " +
                     "$REG_DESTINO INTEGER REFERENCES $TABLA_ACCESOS($ACC_ID), " +
                     "$REG_ANULADO INTEGER NOT NULL DEFAULT 0)"
+
+        // SELECT base con INNER JOIN: une cada colaborador con SU perfil.
+        private const val SQL_SELECT_COLABORADORES =
+            "SELECT c.*, p.$PER_NOMBRE AS $PER_NOMBRE " +
+                    "FROM $TABLA_COLABORADORES c " +
+                    "INNER JOIN $TABLA_PERFILES p ON c.$COL_PERFIL = p.$PER_ID"
     }
 
     // Se ejecuta CADA VEZ que se abre la conexion: SQLite trae las claves foraneas APAGADAS.
@@ -268,4 +274,24 @@ class RinconDbHelper(context: Context) :
         put(REG_DESTINO, r.idAccesoDestino)
         put(REG_ANULADO, if (r.anulado) 1 else 0)
     }
+
+    // CREATE -> INSERT. Devuelve el id generado (o -1 si falla).
+    fun insertarColaborador(colaborador: Colaborador): Long =
+        writableDatabase.insert(TABLA_COLABORADORES, null, valoresDe(colaborador, conId = false))
+
+    // READ -> todos los colaboradores con su perfil, ordenados por nombre
+    fun listarColaboradores(): List<Colaborador> =
+        consultar("$SQL_SELECT_COLABORADORES ORDER BY c.$COL_NOMBRE", null, ::leerColaborador)
+
+    // READ con filtro: el correo viaja en el "?" (nunca concatenado) para evitar inyeccion SQL.
+    fun buscarColaboradorPorCorreo(correo: String): Colaborador? =
+        consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_CORREO = ?", arrayOf(correo), ::leerColaborador)
+            .firstOrNull()
+
+    fun buscarColaboradorPorId(id: Int): Colaborador? =
+        consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_ID = ?", arrayOf(id.toString()), ::leerColaborador)
+            .firstOrNull()
+
+    fun listarAccesos(): List<Acceso> =
+        consultar("SELECT * FROM $TABLA_ACCESOS ORDER BY $ACC_CODIGO", null, ::leerAcceso)
 }
