@@ -294,4 +294,49 @@ class RinconDbHelper(context: Context) :
 
     fun listarAccesos(): List<Acceso> =
         consultar("SELECT * FROM $TABLA_ACCESOS ORDER BY $ACC_CODIGO", null, ::leerAcceso)
+
+    fun insertarSesion(sesion: SesionObservacion): Long =
+        writableDatabase.insert(TABLA_SESIONES, null, valoresDe(sesion, conId = false))
+
+    fun listarSesiones(): List<SesionObservacion> =
+        consultar(
+            "SELECT * FROM $TABLA_SESIONES ORDER BY $SES_FECHA DESC, $SES_INICIO DESC",
+            null, ::leerSesion
+        )
+
+    fun buscarSesion(id: Int): SesionObservacion? =
+        consultar("SELECT * FROM $TABLA_SESIONES WHERE $SES_ID = ?", arrayOf(id.toString()), ::leerSesion)
+            .firstOrNull()
+
+    // UPDATE: cambia SOLO la fila cuyo id_sesion coincide.
+    fun actualizarSesion(sesion: SesionObservacion): Int =
+        writableDatabase.update(
+            TABLA_SESIONES, valoresDe(sesion, conId = false), "$SES_ID = ?", arrayOf(sesion.id.toString())
+        )
+
+    // Hay solapamiento si otra sesion del mismo acceso y dia se cruza con el horario pedido (RN-09).
+    fun haySolapamiento(idAcceso: Int, fecha: String, inicio: String, fin: String): Boolean =
+        readableDatabase.rawQuery(
+            "SELECT 1 FROM $TABLA_SESIONES WHERE $SES_ACCESO = ? AND $SES_FECHA = ? " +
+                    "AND $SES_ESTADO <> ? AND $SES_INICIO < ? AND $SES_FIN > ? LIMIT 1",
+            arrayOf(idAcceso.toString(), fecha, EstadoSesion.CANCELADA.name, fin, inicio)
+        ).use { it.moveToFirst() }
+
+    fun insertarRegistro(registro: RegistroObservacion): Long =
+        writableDatabase.insert(TABLA_REGISTROS, null, valoresDe(registro, conId = false))
+
+    // Registros de UNA sesion (filtro con "?")
+    fun listarRegistros(idSesion: Int): List<RegistroObservacion> =
+        consultar(
+            "SELECT * FROM $TABLA_REGISTROS WHERE $REG_SESION = ? ORDER BY $REG_ID",
+            arrayOf(idSesion.toString()), ::leerRegistro
+        )
+
+    // Los registros no se borran: se marcan como anulados (RN-11). UPDATE de una columna.
+    fun anularRegistro(id: Int): Int =
+        writableDatabase.update(
+            TABLA_REGISTROS,
+            ContentValues().apply { put(REG_ANULADO, 1) },
+            "$REG_ID = ?", arrayOf(id.toString())
+        )
 }
