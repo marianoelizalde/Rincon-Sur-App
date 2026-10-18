@@ -6,7 +6,7 @@ data class CrearUsuarioUiState(
     val clave : String="",
     val confirmar: String="",
     val perfil: PerfilUsuario = PerfilUsuario.OBSERVADOR,
-    val aceptarTerminos: Boolean=false,
+    val aceptaTerminos: Boolean=false,
     val claveVisible: Boolean=false,
     val errorNombre: String? = null,
     val errorCorreo: String?=null,

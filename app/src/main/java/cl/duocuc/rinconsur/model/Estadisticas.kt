@@ -1,7 +1,7 @@
 package cl.duocuc.rinconsur.model
 
 object Estadisticas{
-    const val MINIMO_REGISTROS_VALIDOS = 20
+    const val MINIMO_REGISTROS_VALIDOS = 30
 
 
     fun registrosValidos(registros: List<RegistroObservacion>): List<RegistroObservacion> =
