@@ -29,10 +29,7 @@ object DatosEjemplo {
         SesionObservacion(1, 4, "2026-09-15", "10:00", "10:45", 7, EstadoSesion.VALIDADA, 3),
         SesionObservacion(2, 1, "2026-09-15", "15:00", "15:45", 7, EstadoSesion.VALIDADA, 3),
         SesionObservacion(3, 4, "2026-09-12", "11:00", "11:45", 7, EstadoSesion.VALIDADA, 3),
-        SesionObservacion(
-            4, 2, "2026-09-12", "17:00", "17:30", 7,
-            EstadoSesion.RECHAZADA, 3, "Muestra insuficiente"
-        ),
+        SesionObservacion(4, 2, "2026-09-12", "17:00", "17:30", 7, EstadoSesion.RECHAZADA, 3, "Muestra insuficiente"),
         SesionObservacion(5, 3, "2026-09-22", "13:00", "13:45", 7, EstadoSesion.FINALIZADA),
         SesionObservacion(6, 4, "2026-10-08", "15:00", "15:45", 7, EstadoSesion.PROGRAMADA)
     )

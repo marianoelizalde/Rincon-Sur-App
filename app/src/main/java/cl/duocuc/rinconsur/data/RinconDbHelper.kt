@@ -35,6 +35,8 @@ class RinconDbHelper(context: Context) :
         private const val PER_ID = "id_perfil"
         private const val PER_NOMBRE = "nombre_perfil"
 
+
+
         // Tabla colaboradores (los usuarios de la app)
         private const val TABLA_COLABORADORES = "colaboradores"
         private const val COL_ID = "id_colaborador"
