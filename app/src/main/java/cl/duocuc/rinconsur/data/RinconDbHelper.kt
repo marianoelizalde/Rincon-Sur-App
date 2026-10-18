@@ -1,8 +1,19 @@
 package cl.duocuc.rinconsur.data
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import cl.duocuc.rinconsur.model.Acceso
+import cl.duocuc.rinconsur.model.Clasificacion
+import cl.duocuc.rinconsur.model.Colaborador
+import cl.duocuc.rinconsur.model.EstadoSesion
+import cl.duocuc.rinconsur.model.PerfilUsuario
+import cl.duocuc.rinconsur.model.RangoEtario
+import cl.duocuc.rinconsur.model.RegistroObservacion
+import cl.duocuc.rinconsur.model.SesionObservacion
+import cl.duocuc.rinconsur.model.TipoCompania
 
 // Base de datos SQLite (rinconsur.db) con CINCO tablas relacionadas:
 //
@@ -122,6 +133,7 @@ class RinconDbHelper(context: Context) :
         db.execSQL(SQL_CREAR_ACCESOS)
         db.execSQL(SQL_CREAR_SESIONES)
         db.execSQL(SQL_CREAR_REGISTROS)
+        precargar(db)
     }
 
     // Si sube VERSION_BD: version simple, borra y recrea (se pierden los datos). Orden inverso.
@@ -132,5 +144,128 @@ class RinconDbHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS $TABLA_COLABORADORES")
         db.execSQL("DROP TABLE IF EXISTS $TABLA_PERFILES")
         onCreate(db)
+    }
+
+    // Ejecuta un SELECT y recorre el Cursor fila por fila. El SQL cambia, la lectura es la misma.
+    private fun <T> consultar(sql: String, args: Array<String>?, leer: (Cursor) -> T): List<T> {
+        val lista = mutableListOf<T>()
+        readableDatabase.rawQuery(sql, args).use { cursor ->
+            while (cursor.moveToNext()) lista.add(leer(cursor))
+        }
+        return lista
+    }
+
+    private fun Cursor.texto(columna: String): String = getString(getColumnIndexOrThrow(columna))
+
+    private fun Cursor.textoONulo(columna: String): String? {
+        val i = getColumnIndexOrThrow(columna)
+        return if (isNull(i)) null else getString(i)
+    }
+
+    private fun Cursor.entero(columna: String): Int = getInt(getColumnIndexOrThrow(columna))
+
+    private fun Cursor.enteroONulo(columna: String): Int? {
+        val i = getColumnIndexOrThrow(columna)
+        return if (isNull(i)) null else getInt(i)
+    }
+
+    // Convierte la fila actual del Cursor en un objeto. nombre_perfil llega gracias al JOIN.
+    private fun leerColaborador(c: Cursor) = Colaborador(
+        id = c.entero(COL_ID),
+        nombre = c.texto(COL_NOMBRE),
+        correo = c.texto(COL_CORREO),
+        clave = c.texto(COL_CLAVE),
+        perfil = PerfilUsuario.entries.first { it.etiqueta == c.texto(PER_NOMBRE) }
+    )
+
+    private fun leerAcceso(c: Cursor) = Acceso(
+        id = c.entero(ACC_ID),
+        codigo = c.texto(ACC_CODIGO),
+        nombre = c.texto(ACC_NOMBRE),
+        observacion = c.textoONulo(ACC_OBS)
+    )
+
+    private fun leerSesion(c: Cursor) = SesionObservacion(
+        id = c.entero(SES_ID),
+        idAcceso = c.entero(SES_ACCESO),
+        fecha = c.texto(SES_FECHA),
+        horaInicio = c.texto(SES_INICIO),
+        horaFin = c.texto(SES_FIN),
+        idObservador = c.entero(SES_OBSERVADOR),
+        estado = EstadoSesion.valueOf(c.texto(SES_ESTADO)),
+        idValidador = c.enteroONulo(SES_VALIDADOR),
+        motivoRechazo = c.textoONulo(SES_MOTIVO)
+    )
+
+    private fun leerRegistro(c: Cursor) = RegistroObservacion(
+        id = c.entero(REG_ID),
+        idSesion = c.entero(REG_SESION),
+        hora = c.texto(REG_HORA),
+        clasificacion = Clasificacion.valueOf(c.texto(REG_CLASIFICACION)),
+        rangoEtario = c.textoONulo(REG_RANGO)?.let { RangoEtario.valueOf(it) },
+        tipoCompania = c.textoONulo(REG_COMPANIA)?.let { TipoCompania.valueOf(it) },
+        compraOtraTienda = c.entero(REG_OTRA_TIENDA) == 1,
+        idAccesoDestino = c.enteroONulo(REG_DESTINO),
+        anulado = c.entero(REG_ANULADO) == 1
+    )
+
+    // Datos de ejemplo (escritos en el codigo, en DatosEjemplo). Todo en una transaccion.
+    private fun precargar(db: SQLiteDatabase) {
+        db.beginTransaction()
+        try {
+            PerfilUsuario.entries.forEachIndexed { indice, perfil ->
+                db.insert(TABLA_PERFILES, null, ContentValues().apply {
+                    put(PER_ID, indice + 1)
+                    put(PER_NOMBRE, perfil.etiqueta)
+                })
+            }
+            DatosEjemplo.colaboradores.forEach { db.insert(TABLA_COLABORADORES, null, valoresDe(it, conId = true)) }
+            DatosEjemplo.accesos.forEach { db.insert(TABLA_ACCESOS, null, valoresDe(it)) }
+            DatosEjemplo.sesiones.forEach { db.insert(TABLA_SESIONES, null, valoresDe(it, conId = true)) }
+            DatosEjemplo.registros().forEach { db.insert(TABLA_REGISTROS, null, valoresDe(it, conId = true)) }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    // ContentValues = mapa columna -> valor (para INSERT y UPDATE)
+    private fun valoresDe(c: Colaborador, conId: Boolean) = ContentValues().apply {
+        if (conId) put(COL_ID, c.id)
+        put(COL_NOMBRE, c.nombre)
+        put(COL_CORREO, c.correo)
+        put(COL_CLAVE, c.clave)
+        put(COL_PERFIL, c.perfil.ordinal + 1)
+    }
+
+    private fun valoresDe(a: Acceso) = ContentValues().apply {
+        put(ACC_ID, a.id)
+        put(ACC_CODIGO, a.codigo)
+        put(ACC_NOMBRE, a.nombre)
+        put(ACC_OBS, a.observacion)
+    }
+
+    private fun valoresDe(s: SesionObservacion, conId: Boolean) = ContentValues().apply {
+        if (conId) put(SES_ID, s.id)
+        put(SES_ACCESO, s.idAcceso)
+        put(SES_FECHA, s.fecha)
+        put(SES_INICIO, s.horaInicio)
+        put(SES_FIN, s.horaFin)
+        put(SES_OBSERVADOR, s.idObservador)
+        put(SES_ESTADO, s.estado.name)
+        put(SES_VALIDADOR, s.idValidador)
+        put(SES_MOTIVO, s.motivoRechazo)
+    }
+
+    private fun valoresDe(r: RegistroObservacion, conId: Boolean) = ContentValues().apply {
+        if (conId) put(REG_ID, r.id)
+        put(REG_SESION, r.idSesion)
+        put(REG_HORA, r.hora)
+        put(REG_CLASIFICACION, r.clasificacion.name)
+        put(REG_RANGO, r.rangoEtario?.name)
+        put(REG_COMPANIA, r.tipoCompania?.name)
+        put(REG_OTRA_TIENDA, if (r.compraOtraTienda) 1 else 0)
+        put(REG_DESTINO, r.idAccesoDestino)
+        put(REG_ANULADO, if (r.anulado) 1 else 0)
     }
 }
