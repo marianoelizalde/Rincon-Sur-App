@@ -1,3 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RinconSur</string>
+
+    <!-- =============================================================
+         strings.xml: TODOS los textos de la app.
+         Se leen en las pantallas con stringResource(R.string.nombre).
+         Los que llevan %1$s / %1$d reciben un dato: stringResource(R.string.saludo, nombre).
+         ============================================================= -->
+
+    <string name="app_name">Rincon Sur</string>
+
+    <!-- Titulos de pantallas -->
+    <string name="titulo_sesiones">Sesiones de observacion</string>
+    <string name="titulo_perfil">Mi perfil</string>
+    <string name="titulo_crear_usuario">Crear usuario</string>
+    <string name="titulo_programar">Programar sesion</string>
+    <string name="titulo_detalle_sesion">Detalle de la sesion</string>
+    <string name="titulo_registro">Registrar persona - %1$s</string>
+
+    <!-- Menu lateral menu y dialogo de cierre de sesion -->
+    <string name="saludo">Hola, %1$s</string>
+    <string name="menu_sesiones">Sesiones</string>
+    <string name="menu_mi_perfil">Mi perfil</string>
+    <string name="menu_cerrar_sesion">Cerrar sesion</string>
+    <string name="dialogo_titulo">Cerrar sesion?</string>
+    <string name="dialogo_mensaje">Tendras que ingresar de nuevo con tu correo y contrasena.</string>
+    <string name="dialogo_cancelar">Cancelar</string>
+
+    <!-- Inicio de sesion -->
+    <string name="login_subtitulo">Segmentacion del flujo de clientes por acceso</string>
+    <string name="login_titulo">Iniciar sesion</string>
+    <string name="login_sin_cuenta">No tienes cuenta?</string>
+
+    <!-- Crear usuario -->
+    <string name="crear_intro">Completa tus datos para crear tu cuenta.</string>
+    <string name="seccion_datos_cuenta">Datos de la cuenta</string>
+    <string name="seccion_rol">Rol en la app</string>
+    <string name="etiqueta_perfil">Perfil</string>
+    <string name="opcion_terminos">Acepto que mis datos se usen solo para operar la app</string>
+
+    <!-- Campos -->
+    <string name="campo_nombre">Nombre completo</string>
+    <string name="campo_correo">Correo electronico</string>
+    <string name="campo_contrasena">Contrasena</string>
+    <string name="campo_repetir_contrasena">Repetir contrasena</string>
+    <string name="campo_fecha">Fecha</string>
+    <string name="campo_hora_inicio">Hora de inicio</string>
+    <string name="campo_hora_fin">Hora de termino</string>
+    <string name="campo_motivo">Motivo</string>
+    <string name="ayuda_contrasena">Minimo 8 caracteres, con letras y numeros</string>
+    <string name="ayuda_fecha">Formato AAAA-MM-DD</string>
+    <string name="ayuda_hora_inicio">Formato HH:MM, desde las 10:00</string>
+    <string name="ayuda_hora_fin">Entre 30 y 60 minutos despues, hasta las 21:00</string>
+
+    <!-- Botones -->
+    <string name="btn_ingresar">Ingresar</string>
+    <string name="btn_crear_usuario">Crear usuario</string>
+    <string name="btn_crear_cuenta">Crear cuenta</string>
+    <string name="btn_limpiar">Limpiar</string>
+    <string name="btn_cancelar">Cancelar</string>
+    <string name="btn_programar">Programar</string>
+    <string name="btn_programar_sesion">Programar sesion</string>
+    <string name="btn_iniciar_sesion">Iniciar sesion de observacion</string>
+    <string name="btn_cancelar_sesion">Cancelar sesion</string>
+    <string name="btn_registrar_personas">Registrar personas</string>
+    <string name="btn_finalizar_sesion">Finalizar sesion</string>
+    <string name="btn_validar_sesion">Validar sesion</string>
+    <string name="btn_rechazar_sesion">Rechazar sesion</string>
+    <string name="btn_rechazar">Rechazar</string>
+    <string name="btn_registrar_persona">Registrar persona</string>
+    <string name="btn_deshacer_ultimo">Deshacer ultimo registro</string>
+    <string name="btn_camara">Camara</string>
+    <string name="btn_galeria">Galeria</string>
+
+    <!-- Lista y detalle de sesiones -->
+    <string name="sesiones_vacio_supervisor">Aun no hay sesiones. Toca el boton Programar para crear la primera.</string>
+    <string name="sesiones_vacio_observador">No tienes sesiones asignadas. Pide al supervisor que programe una para ti.</string>
+    <string name="sesion_acceso">%1$s - %2$s</string>
+    <string name="sesion_horario">%1$s  %2$s a %3$s</string>
+    <string name="sesion_observador">Observador: %1$s</string>
+    <string name="sesion_validador">Validador: %1$s</string>
+    <string name="sesion_motivo">Motivo: %1$s</string>
+    <string name="sesion_muestra">Muestra: %1$d de %2$d minimos</string>
+    <string name="sesion_porcentaje">Porcentaje de transito: %1$s%%</string>
+    <string name="sesion_porcentaje_sin_datos">Porcentaje de transito: sin datos</string>
+    <string name="sesion_ultimos_registros">Ultimos registros</string>
+    <string name="sesion_esperando_validacion">Esperando la validacion de un supervisor.</string>
+    <string name="sesion_cerrada">Esta sesion ya esta cerrada.</string>
+    <string name="registro_fila">%1$s  %2$s  %3$s  %4$s</string>
+
+    <!-- Programar sesion -->
+    <string name="seccion_donde_quien">Donde y quien?</string>
+    <string name="seccion_cuando">Cuando?</string>
+    <string name="etiqueta_acceso">Acceso</string>
+    <string name="etiqueta_observador">Observador</string>
+
+    <!-- Registrar persona -->
+    <string name="registro_personas">personas registradas</string>
+    <string name="registro_resumen">Transito %1$d  Visita %2$d</string>
+    <string name="registro_no_en_curso">Esta sesion no esta en curso. Vuelve al detalle para iniciarla.</string>
+    <string name="etiqueta_clasificacion">Clasificacion</string>
+    <string name="etiqueta_rango">Rango de edad</string>
+    <string name="etiqueta_compania">Compania</string>
+    <string name="etiqueta_destino">Acceso de destino (opcional)</string>
+    <string name="opcion_compra_otra_tienda">Compro en otra tienda</string>
+
+    <!-- Perfil -->
+    <string name="seccion_apariencia">Apariencia</string>
+    <string name="etiqueta_tema">Tema de la app</string>
+    <string name="msg_sin_permiso_camara">Sin permiso de camara. Puedes elegir una foto de la galeria.</string>
+    <string name="msg_imagen_no_leida">No se pudo leer la imagen</string>
+
+    <!-- Descripciones para lectores de pantalla (contentDescription) -->
+    <string name="cd_menu">Abrir menu</string>
+    <string name="cd_volver">Volver</string>
+    <string name="cd_error">Error</string>
+    <string name="cd_mostrar_contrasena">Mostrar contrasena</string>
+    <string name="cd_ocultar_contrasena">Ocultar contrasena</string>
+    <string name="cd_anular_registro">Anular registro</string>
+    <string name="cd_foto_perfil">Foto de perfil</string>
+    <string name="cd_sin_foto">Sin foto</string>
+
 </resources>
