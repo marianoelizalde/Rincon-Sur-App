@@ -22,6 +22,7 @@
     <string name="menu_sesiones">Sesiones</string>
     <string name="menu_mi_perfil">Mi perfil</string>
     <string name="menu_cerrar_sesion">Cerrar sesion</string>
+    <string name="menu_crear_usuario">Crear usuario</string>
     <string name="dialogo_titulo">Cerrar sesion?</string>
     <string name="dialogo_mensaje">Tendras que ingresar de nuevo con tu correo y contrasena.</string>
     <string name="dialogo_cancelar">Cancelar</string>

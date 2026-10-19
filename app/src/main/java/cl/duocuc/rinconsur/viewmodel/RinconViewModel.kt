@@ -97,11 +97,11 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         return true
     }
 
-    // Crear usuario: devuelve false si el correo ya existe; si no, lo guarda e inicia sesion.
     fun registrarUsuario(colaborador: Colaborador): Boolean {
+        if (usuarioActual.value?.colaborador?.perfil != PerfilUsuario.SUPERVISOR) return false
         if (db.buscarColaboradorPorCorreo(colaborador.correo) != null) return false
-        val id = db.insertarColaborador(colaborador)      // INSERT en SQLite
-        sesion.guardarSesion(id.toInt())                  // queda con sesion iniciada
+        db.insertarColaborador(colaborador)
+        _mensaje.value = "Usuario creado: ${colaborador.nombre}"
         recargar()
         return true
     }

@@ -9,8 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// ViewModel simple: guarda el estado del formulario y valida. No toca la base de datos.
-// Si todo esta bien, onCrear() DEVUELVE el Colaborador (igual que onRegistrar() del profesor).
 class CrearUsuarioViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CrearUsuarioUiState())
     val uiState: StateFlow<CrearUsuarioUiState> = _uiState.asStateFlow()

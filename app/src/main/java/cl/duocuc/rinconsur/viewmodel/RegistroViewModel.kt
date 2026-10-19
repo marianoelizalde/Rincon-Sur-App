@@ -14,9 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// ViewModel simple: guarda lo que se va eligiendo para registrar a una persona y valida.
-// Todo se elige con toques, sin escribir (RNF-01). No toca la base de datos:
-// onRegistrar() DEVUELVE el registro y RinconViewModel lo guarda.
 class RegistroViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(RegistroUiState())
     val uiState: StateFlow<RegistroUiState> = _uiState.asStateFlow()

@@ -31,7 +31,7 @@ import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import kotlinx.coroutines.launch
 
 /** Opciones del menu lateral que llevan a una pantalla. */
-enum class OpcionMenu { SESIONES, PERFIL }
+enum class OpcionMenu { SESIONES, PERFIL, CREAR_USUARIO }
 
 // =====================================================================
 //  MenuLateral.kt  -  MENU LATERAL (panel lateral) + DIALOGO DE CONFIRMACION
@@ -46,6 +46,8 @@ fun MenuLateral(
     opcionActual: OpcionMenu,
     alIrASesiones: () -> Unit,
     alIrAPerfil: () -> Unit,
+    esSupervisor: Boolean,
+    alIrACrearUsuario: () -> Unit,
     alCerrarSesion: () -> Unit,
     contenido: @Composable (abrirMenu: () -> Unit) -> Unit
 ) {
@@ -102,6 +104,18 @@ fun MenuLateral(
                         if (opcionActual != OpcionMenu.PERFIL) alIrAPerfil()
                     }
                 )
+                // Solo el Supervisor ve esta opcion (el Observador solo inicia sesion).
+                if (esSupervisor) {
+                    ItemMenu(
+                        texto = stringResource(R.string.menu_crear_usuario),
+                        icono = R.drawable.ic_persona_agregar,
+                        seleccionado = opcionActual == OpcionMenu.CREAR_USUARIO,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (opcionActual != OpcionMenu.CREAR_USUARIO) alIrACrearUsuario()
+                        }
+                    )
+                }
                 ItemMenu(
                     texto = stringResource(R.string.menu_cerrar_sesion),
                     icono = R.drawable.ic_salir,
@@ -149,6 +163,8 @@ private fun MenuLateralPreview() {
             opcionActual = OpcionMenu.SESIONES,
             alIrASesiones = {},
             alIrAPerfil = {},
+            esSupervisor = true,
+            alIrACrearUsuario = {},
             alCerrarSesion = {}
         ) { abrirMenu ->
             Column(Modifier.padding(16.dp)) {
