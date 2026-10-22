@@ -1,7 +1,10 @@
 package cl.duocuc.rinconsur.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import cl.duocuc.rinconsur.data.ConvertidorImagen
 import cl.duocuc.rinconsur.data.ModoTema
 import cl.duocuc.rinconsur.data.RinconDbHelper
 import cl.duocuc.rinconsur.data.SesionPreferencias
@@ -17,7 +20,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-
+// =====================================================================
+//  RinconViewModel.kt  -  EL UNICO VIEWMODEL QUE TOCA LA BASE DE DATOS
+//  Igual que UsuariosViewModel del profesor: es un AndroidViewModel (necesita
+//  el Context para SQLite y SharedPreferences), se crea UNA sola vez en
+//  AppNavegacion y las pantallas reciben sus datos y funciones como parametros.
+//    - db     : SQLite (colaboradores, accesos, sesiones, registros)
+//    - sesion : SharedPreferences (quien inicio sesion, tema)
+//  La base es la fuente de verdad: recargar() la vuelve a leer despues de cada cambio.
+// =====================================================================
 class RinconViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = RinconDbHelper(application)
@@ -71,7 +82,7 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         _usuarioActual.value = if (id == -1) {
             null
         } else {
-            db.buscarColaboradorPorId(id)?.let { UsuarioActual(it, sesion.leerFoto(it.id)) }
+            db.buscarColaboradorPorId(id)?.let { UsuarioActual(it) }
         }
         _sesiones.value = db.listarSesiones()
         _accesos.value = db.listarAccesos()
@@ -97,10 +108,12 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         return true
     }
 
+    // Crear usuario: SOLO el Supervisor puede. Devuelve false si no es Supervisor o si el correo ya existe.
+    // El Supervisor sigue con SU sesion: la cuenta nueva no inicia sesion.
     fun registrarUsuario(colaborador: Colaborador): Boolean {
         if (usuarioActual.value?.colaborador?.perfil != PerfilUsuario.SUPERVISOR) return false
         if (db.buscarColaboradorPorCorreo(colaborador.correo) != null) return false
-        db.insertarColaborador(colaborador)
+        db.insertarColaborador(colaborador)               // INSERT en SQLite
         _mensaje.value = "Usuario creado: ${colaborador.nombre}"
         recargar()
         return true
@@ -116,8 +129,23 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         _tema.value = modo
     }
 
-    fun onFotoGuardada(idColaborador: Int, ruta: String) {
-        sesion.guardarFoto(idColaborador, ruta)
+    // Camara: entrega directamente un Bitmap.
+    fun cambiarAvatarDesdeCamara(foto: Bitmap) {
+        guardarAvatar(ConvertidorImagen.aBytes(foto))
+    }
+
+    // Galeria: entrega un Uri. Para leerlo hace falta un Context: getApplication() lo entrega
+    // porque este es un AndroidViewModel.
+    fun cambiarAvatarDesdeGaleria(uri: Uri) {
+        val imagen = ConvertidorImagen.desdeUri(getApplication(), uri) ?: return
+        guardarAvatar(ConvertidorImagen.aBytes(imagen))
+    }
+
+    // 1) UPDATE en SQLite  2) recargar() vuelve a leer al usuario para refrescar el Perfil.
+    // Solo funciona con sesion iniciada (?: return = "si no hay usuario, no hagas nada").
+    private fun guardarAvatar(bytes: ByteArray) {
+        val usuario = _usuarioActual.value ?: return
+        db.actualizarAvatar(usuario.colaborador.id, bytes)
         recargar()
     }
 

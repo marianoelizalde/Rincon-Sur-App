@@ -108,8 +108,9 @@
     <!-- Perfil -->
     <string name="seccion_apariencia">Apariencia</string>
     <string name="etiqueta_tema">Tema de la app</string>
-    <string name="msg_sin_permiso_camara">Sin permiso de camara. Puedes elegir una foto de la galeria.</string>
-    <string name="msg_imagen_no_leida">No se pudo leer la imagen</string>
+    <string name="permiso_camara_denegado">Sin permiso de camara. Puedes darlo en Ajustes o elegir una foto de la galeria.</string>
+    <string name="permiso_galeria_denegado">Sin permiso para ver tus fotos. Puedes darlo en Ajustes.</string>
+    <string name="btn_ajustes">Ajustes</string>
 
     <!-- Descripciones para lectores de pantalla (contentDescription) -->
     <string name="cd_menu">Abrir menu</string>
@@ -119,6 +120,5 @@
     <string name="cd_ocultar_contrasena">Ocultar contrasena</string>
     <string name="cd_anular_registro">Anular registro</string>
     <string name="cd_foto_perfil">Foto de perfil</string>
-    <string name="cd_sin_foto">Sin foto</string>
 
 </resources>
