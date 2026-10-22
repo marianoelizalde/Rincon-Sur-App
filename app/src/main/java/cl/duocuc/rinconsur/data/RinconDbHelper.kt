@@ -28,7 +28,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 1
+        private const val VERSION_BD = 3
 
         // Tabla perfiles (1 = Supervisor, 2 = Observador)
         private const val TABLA_PERFILES = "perfiles"
@@ -44,6 +44,7 @@ class RinconDbHelper(context: Context) :
         private const val COL_CORREO = "correo"
         private const val COL_CLAVE = "clave"
         private const val COL_PERFIL = "id_perfil"
+        private const val COL_AVATAR = "avatar"           // foto de perfil (BLOB)
 
         // Tabla accesos (A1 a A4)
         private const val TABLA_ACCESOS = "accesos"
@@ -88,7 +89,8 @@ class RinconDbHelper(context: Context) :
                     "$COL_NOMBRE TEXT NOT NULL, " +
                     "$COL_CORREO TEXT NOT NULL UNIQUE, " +
                     "$COL_CLAVE TEXT NOT NULL, " +
-                    "$COL_PERFIL INTEGER NOT NULL REFERENCES $TABLA_PERFILES($PER_ID))"
+                    "$COL_PERFIL INTEGER NOT NULL REFERENCES $TABLA_PERFILES($PER_ID), " +
+                    "$COL_AVATAR BLOB)"      // BLOB = guarda bytes tal cual (la foto)
 
         private const val SQL_CREAR_ACCESOS =
             "CREATE TABLE $TABLA_ACCESOS (" +
@@ -170,6 +172,11 @@ class RinconDbHelper(context: Context) :
         return if (isNull(i)) null else getString(i)
     }
 
+    private fun Cursor.bytesONulo(columna: String): ByteArray? {
+        val i = getColumnIndexOrThrow(columna)
+        return if (isNull(i)) null else getBlob(i)
+    }
+
     private fun Cursor.entero(columna: String): Int = getInt(getColumnIndexOrThrow(columna))
 
     private fun Cursor.enteroONulo(columna: String): Int? {
@@ -183,7 +190,8 @@ class RinconDbHelper(context: Context) :
         nombre = c.texto(COL_NOMBRE),
         correo = c.texto(COL_CORREO),
         clave = c.texto(COL_CLAVE),
-        perfil = PerfilUsuario.entries.first { it.etiqueta == c.texto(PER_NOMBRE) }
+        perfil = PerfilUsuario.entries.first { it.etiqueta == c.texto(PER_NOMBRE) },
+        avatar = c.bytesONulo(COL_AVATAR)
     )
 
     private fun leerAcceso(c: Cursor) = Acceso(
@@ -294,6 +302,15 @@ class RinconDbHelper(context: Context) :
         consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_ID = ?", arrayOf(id.toString()), ::leerColaborador)
             .firstOrNull()
 
+    // UPDATE de UNA sola columna: ContentValues acepta ByteArray y SQLite lo guarda como BLOB.
+    // valoresDe() NO incluye el avatar: al crear un usuario no hay foto y nunca se pisa por error.
+    fun actualizarAvatar(id: Int, avatar: ByteArray): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_AVATAR, avatar) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
     fun listarAccesos(): List<Acceso> =
         consultar("SELECT * FROM $TABLA_ACCESOS ORDER BY $ACC_CODIGO", null, ::leerAcceso)
 
@@ -316,7 +333,7 @@ class RinconDbHelper(context: Context) :
             TABLA_SESIONES, valoresDe(sesion, conId = false), "$SES_ID = ?", arrayOf(sesion.id.toString())
         )
 
-    // Hay solapamiento si otra sesion del mismo acceso y dia se cruza con el horario pedido (RN-09).
+    // Hay solapamiento si otra sesion del mismo acceso y dia se cruza con el horario pedido
     fun haySolapamiento(idAcceso: Int, fecha: String, inicio: String, fin: String): Boolean =
         readableDatabase.rawQuery(
             "SELECT 1 FROM $TABLA_SESIONES WHERE $SES_ACCESO = ? AND $SES_FECHA = ? " +
@@ -334,7 +351,7 @@ class RinconDbHelper(context: Context) :
             arrayOf(idSesion.toString()), ::leerRegistro
         )
 
-    // Los registros no se borran: se marcan como anulados (RN-11). UPDATE de una columna.
+    // Los registros no se borran: se marcan como anulados UPDATE de una columna.
     fun anularRegistro(id: Int): Int =
         writableDatabase.update(
             TABLA_REGISTROS,

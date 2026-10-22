@@ -1,11 +1,23 @@
 package cl.duocuc.rinconsur.data
 
-
-
 import android.content.Context
 import androidx.core.content.edit
 
-
+// =====================================================================
+//  SesionPreferencias.kt  -  SharedPreferences (el "localStorage" de Android)
+//  Guarda pares CLAVE -> VALOR simples (String, Int, Long, Boolean...).
+//
+//      Web (JavaScript)                    Android (Kotlin)
+//      localStorage.setItem("id", 3)  ->   prefs.edit { putInt("id", 3) }
+//      localStorage.getItem("id")     ->   prefs.getInt("id", -1)
+//      localStorage.removeItem("id")  ->   prefs.edit { remove("id") }
+//
+//  Se guarda en un archivo XML: .../shared_prefs/sesion.xml
+//
+//  SQLite o SharedPreferences:
+//   - Muchos registros con la misma estructura (sesiones, registros) -> SQLite
+//   - Un dato suelto / configuracion (quien inicio sesion, tema) -> SharedPreferences
+// =====================================================================
 class SesionPreferencias(context: Context) {
 
     // Abre (o crea) el archivo "sesion.xml". MODE_PRIVATE = solo esta app puede leerlo.
@@ -39,12 +51,4 @@ class SesionPreferencias(context: Context) {
     }
 
     fun leerTema(): String? = prefs.getString(CLAVE_TEMA, null)
-
-    // ---- Foto de perfil (ruta del archivo) de cada usuario ----
-
-    fun guardarFoto(idUsuario: Int, ruta: String) {
-        prefs.edit { putString("foto_$idUsuario", ruta) }
-    }
-
-    fun leerFoto(idUsuario: Int): String? = prefs.getString("foto_$idUsuario", null)
 }
