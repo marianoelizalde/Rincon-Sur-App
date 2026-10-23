@@ -6,7 +6,7 @@ enum class PerfilUsuario(val etiqueta: String) {
 }
 
 // Usuario de la app (el caso los llama colaboradores). Vive en memoria mientras la app esta abierta.
-// El correo no se repite. La clave se guarda tal cual (version simple, como pide el curso por ahora).
+// El correo no se repite. La clave se guarda tal cual
 data class Colaborador(
     val id: Int = 0,
     val nombre: String,

@@ -11,34 +11,34 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 private val EsquemaClaro = lightColorScheme(
-    primary = Burdeo,
+    primary = Verde,
     onPrimary = Color.White,
-    primaryContainer = BurdeoClaro,
-    onPrimaryContainer = Color(0xFF3F0019),
-    secondary = Terracota,
+    primaryContainer = VerdeClaro,
+    onPrimaryContainer = Color(0xFF0B3D12),
+    secondary = VerdeOliva,
     onSecondary = Color.White,
-    secondaryContainer = TerracotaClaro,
-    onSecondaryContainer = Color(0xFF3A0B00),
+    secondaryContainer = VerdeOlivaClaro,
+    onSecondaryContainer = Color(0xFF1B3A0A),
     background = FondoClaro,
     surface = FondoClaro,
-    surfaceVariant = Color(0xFFF4DDE0)
+    surfaceVariant = Color(0xFFDDEBDD)
 )
 
 private val EsquemaOscuro = darkColorScheme(
-    primary = BurdeoOscuro,
-    onPrimary = Color(0xFF5E1129),
-    onPrimaryContainer = Color(0xFFFFD9E1),
-    primaryContainer = Burdeo,
-    secondary = TerracotaOscuro,
-    onSecondary = Color(0xFF5B1A05),
-    secondaryContainer = Color(0xFF7A3418),
-    onSecondaryContainer = Color(0xFFFFDBCF),
+    primary = VerdeSuave,
+    onPrimary = Color(0xFF0A3818),
+    onPrimaryContainer = Color(0xFFC8E6C9),
+    primaryContainer = Color(0xFF1F5E27),
+    secondary = VerdeOlivaSuave,
+    onSecondary = Color(0xFF1F3A0D),
+    secondaryContainer = Color(0xFF3F6B24),
+    onSecondaryContainer = Color(0xFFDCEDC8),
     background = FondoOscuro,
-    onBackground = Color(0xFFF1DEE0),
+    onBackground = Color(0xFFDFEBDF),
     surface = FondoOscuro,
-    onSurface = Color(0xFFF1DEE0),
-    surfaceVariant = Color(0xFF3A2A2D),
-    onSurfaceVariant = Color(0xFFD7C1C4)
+    onSurface = Color(0xFFDFEBDF),
+    surfaceVariant = Color(0xFF2A3A2C),
+    onSurfaceVariant = Color(0xFFBFD2C0)
 )
 
 // Formas (equivale a border-radius): botones, campos y tarjetas toman estas esquinas.

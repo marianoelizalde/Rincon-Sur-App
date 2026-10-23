@@ -2,17 +2,18 @@ package cl.duocuc.rinconsur.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Paleta burdeo y terracota (orientativa, segun la aclaracion del caso).
-val Burdeo = Color(0xFF7A1F3D)
-val BurdeoClaro = Color(0xFFFFD9E1)
-val Terracota = Color(0xFFC4623F)
-val TerracotaClaro = Color(0xFFFFDBCF)
-val FondoClaro = Color(0xFFFFF8F7)
+// Paleta verde: verde claro de fondo y matices de verde (tema claro).
+val Verde = Color(0xFF2E7D32)             // principal: barras, botones, iconos
+val VerdeClaro = Color(0xFFC8E6C9)        // verde claro: contenedores y chips seleccionados
+val VerdeOliva = Color(0xFF4C7A2A)        // secundario: otro matiz de verde
+val VerdeOlivaClaro = Color(0xFFDCEDC8)   // verde lima muy claro
+val FondoClaro = Color(0xFFF4FBF4)        // fondo: verde casi blanco
 val SuperficieClara = Color(0xFFFFFFFF)
 
-val BurdeoOscuro = Color(0xFFFFB1C4)
-val TerracotaOscuro = Color(0xFFFFB59C)
-val FondoOscuro = Color(0xFF1E1416)
+// Tema oscuro: los mismos verdes, mas suaves para que se lean sobre fondo oscuro.
+val VerdeSuave = Color(0xFFA5D6A7)
+val VerdeOlivaSuave = Color(0xFFC5E1A5)
+val FondoOscuro = Color(0xFF101A12)
 
 // Colores de estado de las sesiones.
 val EstadoProgramada = Color(0xFF6B7280)

@@ -1,47 +1,47 @@
 package cl.duocuc.rinconsur
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cl.duocuc.rinconsur.data.ModoTema
+import cl.duocuc.rinconsur.navigation.AppNavegacion
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
+import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 
 class MainActivity : ComponentActivity() {
+    // Unico ViewModel que toca SQLite y SharedPreferences (sesion y tema)
+    private val rinconViewModel: RinconViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            RinconSurTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+            val modo by rinconViewModel.tema.collectAsStateWithLifecycle()
+            val oscuro = when (modo) {
+                ModoTema.SISTEMA -> isSystemInDarkTheme()
+                ModoTema.CLARO -> false
+                ModoTema.OSCURO -> true
+            }
+
+            // Los iconos de las barras del sistema deben contrastar con el tema elegido.
+            DisposableEffect(oscuro) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { oscuro },
+                    navigationBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { oscuro }
+                )
+                onDispose { }
+            }
+
+            RinconSurTheme(darkTheme = oscuro) {
+                AppNavegacion(rinconViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RinconSurTheme {
-        Greeting("Android")
     }
 }
