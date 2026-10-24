@@ -49,6 +49,7 @@ import cl.duocuc.rinconsur.nativo.Vibracion
 import cl.duocuc.rinconsur.ui.components.BotonPrincipal
 import cl.duocuc.rinconsur.ui.components.BotonSecundario
 import cl.duocuc.rinconsur.ui.components.GrupoChips
+import cl.duocuc.rinconsur.ui.components.GrupoOpcionesIcono
 import cl.duocuc.rinconsur.ui.components.InterruptorConTexto
 import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
@@ -191,12 +192,18 @@ fun RegistroContent(
                     color = MaterialTheme.colorScheme.error
                 )
             } else {
-                GrupoChips(
+                GrupoOpcionesIcono(
                     titulo = stringResource(R.string.etiqueta_clasificacion),
                     opciones = Clasificacion.entries,
                     seleccionada = uiState.clasificacion,
                     onSeleccionar = onClasificacionSeleccionada,
                     textoDe = { it.etiqueta },
+                    iconoDe = {
+                        when (it) {
+                            Clasificacion.TRANSITO -> R.drawable.ic_transito
+                            Clasificacion.VISITA -> R.drawable.ic_visita
+                        }
+                    },
                     error = uiState.errorClasificacion
                 )
 
@@ -210,12 +217,20 @@ fun RegistroContent(
                             textoDe = { it.etiqueta },
                             error = uiState.errorRango
                         )
-                        GrupoChips(
+                        GrupoOpcionesIcono(
                             titulo = stringResource(R.string.etiqueta_compania),
                             opciones = TipoCompania.entries,
                             seleccionada = uiState.compania,
                             onSeleccionar = onCompaniaSeleccionada,
                             textoDe = { it.etiqueta },
+                            iconoDe = {
+                                when (it) {
+                                    TipoCompania.SOLO -> R.drawable.ic_solo
+                                    TipoCompania.PAREJA -> R.drawable.ic_pareja
+                                    TipoCompania.CON_NINOS -> R.drawable.ic_con_ninos
+                                    TipoCompania.GRUPO -> R.drawable.ic_grupo
+                                }
+                            },
                             error = uiState.errorCompania
                         )
                         InterruptorConTexto(
