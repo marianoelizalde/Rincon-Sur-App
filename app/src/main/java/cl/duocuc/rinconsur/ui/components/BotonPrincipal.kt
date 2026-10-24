@@ -36,7 +36,7 @@ fun BotonPrincipal(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     habilitado: Boolean = true,
-    @DrawableRes icono: Int? = null
+    @DrawableRes icono: () -> Unit = null
 ) {
     Button(
         onClick = onClick,

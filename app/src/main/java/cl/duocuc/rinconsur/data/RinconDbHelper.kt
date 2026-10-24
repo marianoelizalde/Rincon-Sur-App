@@ -28,7 +28,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 3
+        private const val VERSION_BD = 4
 
         // Tabla perfiles (1 = Supervisor, 2 = Observador)
         private const val TABLA_PERFILES = "perfiles"
@@ -120,7 +120,6 @@ class RinconDbHelper(context: Context) :
                     "$REG_RANGO TEXT, " +
                     "$REG_COMPANIA TEXT, " +
                     "$REG_OTRA_TIENDA INTEGER NOT NULL DEFAULT 0, " +
-                    "$REG_DESTINO INTEGER REFERENCES $TABLA_ACCESOS($ACC_ID), " +
                     "$REG_ANULADO INTEGER NOT NULL DEFAULT 0)"
 
         // SELECT base con INNER JOIN: une cada colaborador con SU perfil.
@@ -221,7 +220,6 @@ class RinconDbHelper(context: Context) :
         rangoEtario = c.textoONulo(REG_RANGO)?.let { RangoEtario.valueOf(it) },
         tipoCompania = c.textoONulo(REG_COMPANIA)?.let { TipoCompania.valueOf(it) },
         compraOtraTienda = c.entero(REG_OTRA_TIENDA) == 1,
-        idAccesoDestino = c.enteroONulo(REG_DESTINO),
         anulado = c.entero(REG_ANULADO) == 1
     )
 
@@ -281,7 +279,6 @@ class RinconDbHelper(context: Context) :
         put(REG_RANGO, r.rangoEtario?.name)
         put(REG_COMPANIA, r.tipoCompania?.name)
         put(REG_OTRA_TIENDA, if (r.compraOtraTienda) 1 else 0)
-        put(REG_DESTINO, r.idAccesoDestino)
         put(REG_ANULADO, if (r.anulado) 1 else 0)
     }
 

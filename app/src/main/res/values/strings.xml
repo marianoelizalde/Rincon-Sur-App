@@ -72,6 +72,7 @@
     <string name="btn_deshacer_ultimo">Deshacer ultimo registro</string>
     <string name="btn_camara">Camara</string>
     <string name="btn_galeria">Galeria</string>
+    <string name="btn_historial">Historial</string>
 
     <!-- Lista y detalle de sesiones -->
     <string name="sesiones_vacio_supervisor">Aun no hay sesiones. Toca el boton Programar para crear la primera.</string>

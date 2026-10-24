@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -41,6 +42,7 @@ import cl.duocuc.rinconsur.model.Acceso
 import cl.duocuc.rinconsur.model.PerfilUsuario
 import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.UsuarioActual
+import cl.duocuc.rinconsur.ui.components.BotonPrincipal
 import cl.duocuc.rinconsur.ui.components.EtiquetaEstado
 import cl.duocuc.rinconsur.ui.components.MenuLateral
 import cl.duocuc.rinconsur.ui.components.OpcionMenu
@@ -65,7 +67,8 @@ fun SesionesScreen(
     alAbrirSesion: (Int) -> Unit,
     alIrAPerfil: () -> Unit,
     alIrACrearUsuario: () -> Unit,
-    alCerrarSesion: () -> Unit
+    alCerrarSesion: () -> Unit,
+    abrirHistorial:()->Boolean
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(mensaje) {
@@ -78,6 +81,11 @@ fun SesionesScreen(
     val colaborador = usuario?.colaborador
     val esSupervisor = colaborador?.perfil == PerfilUsuario.SUPERVISOR
     val visibles = when {
+        colaborador == null -> emptyList()
+        esSupervisor -> sesiones.subList(0,5)
+        else -> sesiones.filter { it.idObservador == colaborador.id }.subList(0,1)
+    }
+    val visiblesHistorial = when {
         colaborador == null -> emptyList()
         esSupervisor -> sesiones
         else -> sesiones.filter { it.idObservador == colaborador.id }
@@ -93,7 +101,8 @@ fun SesionesScreen(
         alCerrarSesion = alCerrarSesion
     ) { abrirMenu ->
         SesionesContent(
-            sesiones = visibles,
+            sesiones = when{abrirHistorial.invoke()->visiblesHistorial
+                        else -> visibles},
             accesos = accesos,
             nombres = nombres,
             nombreUsuario = colaborador?.nombre.orEmpty(),
@@ -101,7 +110,8 @@ fun SesionesScreen(
             snackbarHostState = snackbarHostState,
             onProgramar = alProgramar,
             onAbrirSesion = alAbrirSesion,
-            onAbrirMenu = abrirMenu
+            onAbrirMenu = abrirMenu,
+            onAbrirHistorial = abrirHistorial
         )
     }
 }
@@ -117,7 +127,8 @@ fun SesionesContent(
     onProgramar: () -> Unit,
     onAbrirSesion: (Int) -> Unit,
     onAbrirMenu: () -> Unit,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    onAbrirHistorial:()->Boolean,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -137,6 +148,7 @@ fun SesionesContent(
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
+
             )
         },
         floatingActionButton = {
@@ -184,6 +196,10 @@ fun SesionesContent(
                         text = stringResource(R.string.saludo, nombreUsuario),
                         style = MaterialTheme.typography.titleMedium
                     )
+                    BotonPrincipal(
+                        texto = stringResource(R.string.btn_historial),
+                        onClick = onAbrirHistorial.
+                        )
                 }
                 items(sesiones, key = { it.id }) { sesion ->
                     TarjetaSesion(
@@ -197,8 +213,6 @@ fun SesionesContent(
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TarjetaSesion(
     sesion: SesionObservacion,
@@ -231,17 +245,20 @@ private fun TarjetaSesion(
     }
 }
 
+
+
+
 @Preview(showBackground = true, showSystemUi = true, name = "Supervisor")
 @Composable
 private fun SesionesSupervisorPreview() {
     RinconSurTheme {
         SesionesContent(
-            sesiones = DatosEjemplo.sesiones,
+            sesiones = DatosEjemplo.sesiones.subList(0,4),
             accesos = DatosEjemplo.accesos,
             nombres = DatosEjemplo.colaboradores.associate { it.id to it.nombre },
             nombreUsuario = "Daniela",
             esSupervisor = true,
-            onProgramar = {}, onAbrirSesion = {}, onAbrirMenu = {}
+            onProgramar = {}, onAbrirSesion = {}, onAbrirMenu = {}, onAbrirHistorial = {}
         )
     }
 }
@@ -256,7 +273,7 @@ private fun SesionesVaciasPreview() {
             nombres = emptyMap(),
             nombreUsuario = "Mariano",
             esSupervisor = false,
-            onProgramar = {}, onAbrirSesion = {}, onAbrirMenu = {}
+            onProgramar = {}, onAbrirSesion = {}, onAbrirMenu = {}, onAbrirHistorial = {}
         )
     }
 }

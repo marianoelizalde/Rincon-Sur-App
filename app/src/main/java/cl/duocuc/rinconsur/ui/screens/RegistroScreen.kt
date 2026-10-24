@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duocuc.rinconsur.R
-import cl.duocuc.rinconsur.data.DatosEjemplo
 import cl.duocuc.rinconsur.model.Acceso
 import cl.duocuc.rinconsur.model.Clasificacion
 import cl.duocuc.rinconsur.model.EstadoSesion
@@ -82,12 +81,10 @@ fun RegistroScreen(
         totalValidos = validos.size,
         totalTransito = validos.count { it.clasificacion == Clasificacion.TRANSITO },
         totalVisita = validos.count { it.clasificacion == Clasificacion.VISITA },
-        destinos = accesos.filter { it.id != sesion?.idAcceso },
         onClasificacionSeleccionada = viewModel::onClasificacionSeleccionada,
         onRangoSeleccionado = viewModel::onRangoSeleccionado,
         onCompaniaSeleccionada = viewModel::onCompaniaSeleccionada,
         onCompraOtraTienda = viewModel::onCompraOtraTienda,
-        onDestinoSeleccionado = viewModel::onDestinoSeleccionado,
         onRegistrar = {
             sesion?.let { actual ->
                 // 1) el formulario valida y devuelve el registro (null si falta algo)
@@ -111,17 +108,15 @@ fun RegistroContent(
     totalValidos: Int,
     totalTransito: Int,
     totalVisita: Int,
-    destinos: List<Acceso>,
     onClasificacionSeleccionada: (Clasificacion) -> Unit,
     onRangoSeleccionado: (RangoEtario) -> Unit,
     onCompaniaSeleccionada: (TipoCompania) -> Unit,
     onCompraOtraTienda: (Boolean) -> Unit,
-    onDestinoSeleccionado: (Int?) -> Unit,
     onRegistrar: () -> Unit,
     onDeshacerUltimo: () -> Unit,
     onVolver: () -> Unit
 ) {
-    val pideDetalle = uiState.clasificacion != null && uiState.clasificacion != Clasificacion.NO_DETERMINADO
+    val pideDetalle = uiState.clasificacion != null
 
     Scaffold(
         topBar = {
@@ -230,16 +225,6 @@ fun RegistroContent(
                     }
                 }
 
-                // El acceso de destino solo se pregunta cuando la persona va de transito.
-                AnimatedVisibility(visible = uiState.clasificacion == Clasificacion.TRANSITO) {
-                    GrupoChips(
-                        titulo = stringResource(R.string.etiqueta_destino),
-                        opciones = destinos,
-                        seleccionada = destinos.firstOrNull { it.id == uiState.idDestino },
-                        onSeleccionar = { onDestinoSeleccionado(it.id) },
-                        textoDe = { it.codigo }
-                    )
-                }
 
                 BotonPrincipal(
                     texto = stringResource(R.string.btn_registrar_persona),
@@ -266,9 +251,8 @@ private fun RegistroEnCursoPreview() {
             codigoAcceso = "A1",
             enCurso = true,
             totalValidos = 12, totalTransito = 7, totalVisita = 5,
-            destinos = DatosEjemplo.accesos.drop(1),
             onClasificacionSeleccionada = {}, onRangoSeleccionado = {}, onCompaniaSeleccionada = {},
-            onCompraOtraTienda = {}, onDestinoSeleccionado = {}, onRegistrar = {},
+            onCompraOtraTienda = {}, onRegistrar = {},
             onDeshacerUltimo = {}, onVolver = {}
         )
     }
@@ -283,9 +267,8 @@ private fun RegistroNoEnCursoPreview() {
             codigoAcceso = "A1",
             enCurso = false,
             totalValidos = 0, totalTransito = 0, totalVisita = 0,
-            destinos = emptyList(),
             onClasificacionSeleccionada = {}, onRangoSeleccionado = {}, onCompaniaSeleccionada = {},
-            onCompraOtraTienda = {}, onDestinoSeleccionado = {}, onRegistrar = {},
+            onCompraOtraTienda = {}, onRegistrar = {},
             onDeshacerUltimo = {}, onVolver = {}
         )
     }

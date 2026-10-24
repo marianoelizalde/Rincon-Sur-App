@@ -12,9 +12,8 @@ object Estadisticas{
 
     fun porcentajeTransito(registro : List<RegistroObservacion>): Double?{
         val validos = registrosValidos(registro)
-        val determinados = validos.count {it.clasificacion != Clasificacion.NO_DETERMINADO }
-        if (determinados == 0 )return  null
+        if (validos.isEmpty())return  null
         val transito = validos.count{it.clasificacion == Clasificacion.TRANSITO }
-        return  transito * 100.0/ determinados
+        return  transito * 100.0/ validos.size
     }
 }

@@ -3,17 +3,16 @@ package cl.duocuc.rinconsur.model
 enum class Clasificacion(val etiqueta : String){
     TRANSITO("Transito"),
     VISITA("Visita"),
-    NO_DETERMINADO("No determinado")
 }
 
 
 
 enum class RangoEtario(val etiqueta: String){
-    MENOR_18("Menor de 18"),
-    DE_18_A_25("18 a 25"),
-    DE_26_A_40("26 a 40"),
-    DE_41_A_60("41 a 60"),
-    DE_61_O_MAS("61 o mas")
+    MENOR_18("Nino"),
+    DE_18_A_25("Joven"),
+    DE_26_A_40("Adulto"),
+    DE_41_A_60("Maduro"),
+    DE_61_O_MAS("Anciano")
 }
 
 

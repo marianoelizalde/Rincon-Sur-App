@@ -34,7 +34,7 @@ object DatosEjemplo {
         SesionObservacion(6, 4, "2026-10-08", "15:00", "15:45", 7, EstadoSesion.PROGRAMADA)
     )
 
-    // Cantidad de personas por sesion: transito, visita y no determinado (Anexo 9).
+    // Cantidad de personas por sesion: transito y visita  (Anexo 9).
     private val cantidades = mapOf(
         1 to Triple(61, 52, 5),
         2 to Triple(38, 63, 3),
@@ -46,18 +46,9 @@ object DatosEjemplo {
     fun registros(): List<RegistroObservacion> {
         val lista = mutableListOf<RegistroObservacion>()
         for (sesion in sesiones) {
-            val (transito, visita, noDeterminado) = cantidades[sesion.id] ?: continue
-            repeat(transito) { i ->
-                // El destino de un transito es otro acceso distinto al de la sesion.
-                val destino = accesos.map { it.id }.filter { it != sesion.idAcceso }[i % 3]
-                lista += nuevo(sesion, Clasificacion.TRANSITO, i, destino)
-            }
-            repeat(visita) { i -> lista += nuevo(sesion, Clasificacion.VISITA, i, null) }
-            repeat(noDeterminado) { lista += RegistroObservacion(
-                idSesion = sesion.id,
-                hora = sesion.horaInicio,
-                clasificacion = Clasificacion.NO_DETERMINADO
-            ) }
+            val (visita) = cantidades[sesion.id] ?: continue
+            repeat(visita) { i -> lista += nuevo(sesion, Clasificacion.VISITA, i) }
+
         }
         // Cada registro necesita un id propio (antes lo asignaba la base de datos).
         return lista.mapIndexed { i, registro -> registro.copy(id = i + 1) }
@@ -66,15 +57,13 @@ object DatosEjemplo {
     private fun nuevo(
         sesion: SesionObservacion,
         clasificacion: Clasificacion,
-        indice: Int,
-        destino: Int?
+        indice: Int
     ) = RegistroObservacion(
         idSesion = sesion.id,
         hora = sesion.horaInicio,
         clasificacion = clasificacion,
         rangoEtario = RangoEtario.entries[indice % RangoEtario.entries.size],
         tipoCompania = TipoCompania.entries[indice % TipoCompania.entries.size],
-        compraOtraTienda = indice % 4 == 0,
-        idAccesoDestino = destino
+        compraOtraTienda = indice % 4 == 0
     )
 }

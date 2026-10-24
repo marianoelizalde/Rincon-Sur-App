@@ -52,7 +52,7 @@ class RegistroViewModel : ViewModel() {
 
         val clasificacion = estado.clasificacion
         // Quien es "no determinado" no lleva detalle (rango ni compania).
-        val pideDetalle = clasificacion != null && clasificacion != Clasificacion.NO_DETERMINADO
+        val pideDetalle = clasificacion != null
 
         val errorClasificacion = if (clasificacion == null) "Elige una clasificacion" else null
         val errorRango = if (pideDetalle && estado.rango == null) "Elige un rango de edad" else null
@@ -75,8 +75,7 @@ class RegistroViewModel : ViewModel() {
             clasificacion = clasificacion,
             rangoEtario = if (pideDetalle) estado.rango else null,
             tipoCompania = if (pideDetalle) estado.compania else null,
-            compraOtraTienda = pideDetalle && estado.compraOtraTienda,
-            idAccesoDestino = if (clasificacion == Clasificacion.TRANSITO) estado.idDestino else null
+            compraOtraTienda = pideDetalle && estado.compraOtraTienda
         )
         _uiState.value = RegistroUiState()
         return registro
