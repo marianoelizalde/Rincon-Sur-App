@@ -9,8 +9,8 @@ enum class Clasificacion(val etiqueta : String){
 
 
 enum class RangoEtario(val etiqueta: String){
-    MENOR_18("Menor de 18"),
-    DE_18_A_25("18 a 25"),
+    MENOR_18("Nino"),
+    DE_18_A_25("Joven"),
     DE_26_A_40("26 a 40"),
     DE_41_A_60("41 a 60"),
     DE_61_O_MAS("61 o mas")
