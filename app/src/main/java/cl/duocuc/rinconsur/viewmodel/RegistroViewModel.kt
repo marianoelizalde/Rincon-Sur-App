@@ -22,9 +22,7 @@ class RegistroViewModel : ViewModel() {
         _uiState.update {
             it.copy(
                 clasificacion = valor,
-                errorClasificacion = null,
-                // El destino solo aplica a quienes transitan (RN-08).
-                idDestino = if (valor == Clasificacion.TRANSITO) it.idDestino else null
+                errorClasificacion = null
             )
         }
     }
@@ -41,9 +39,6 @@ class RegistroViewModel : ViewModel() {
         _uiState.update { it.copy(compraOtraTienda = valor) }
     }
 
-    fun onDestinoSeleccionado(id: Int?) {
-        _uiState.update { it.copy(idDestino = id) }
-    }
 
     // Boton "Guardar": valida. Si falta algo devuelve null; si no, devuelve el registro
     // y deja el formulario limpio para la siguiente persona.
@@ -52,7 +47,7 @@ class RegistroViewModel : ViewModel() {
 
         val clasificacion = estado.clasificacion
         // Quien es "no determinado" no lleva detalle (rango ni compania).
-        val pideDetalle = clasificacion != null && clasificacion != Clasificacion.NO_DETERMINADO
+        val pideDetalle = clasificacion != null
 
         val errorClasificacion = if (clasificacion == null) "Elige una clasificacion" else null
         val errorRango = if (pideDetalle && estado.rango == null) "Elige un rango de edad" else null
@@ -75,8 +70,7 @@ class RegistroViewModel : ViewModel() {
             clasificacion = clasificacion,
             rangoEtario = if (pideDetalle) estado.rango else null,
             tipoCompania = if (pideDetalle) estado.compania else null,
-            compraOtraTienda = pideDetalle && estado.compraOtraTienda,
-            idAccesoDestino = if (clasificacion == Clasificacion.TRANSITO) estado.idDestino else null
+            compraOtraTienda = pideDetalle && estado.compraOtraTienda
         )
         _uiState.value = RegistroUiState()
         return registro

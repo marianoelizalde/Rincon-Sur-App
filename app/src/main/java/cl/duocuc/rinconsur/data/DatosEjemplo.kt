@@ -50,14 +50,9 @@ object DatosEjemplo {
             repeat(transito) { i ->
                 // El destino de un transito es otro acceso distinto al de la sesion.
                 val destino = accesos.map { it.id }.filter { it != sesion.idAcceso }[i % 3]
-                lista += nuevo(sesion, Clasificacion.TRANSITO, i, destino)
+                lista += nuevo(sesion, Clasificacion.TRANSITO, i)
             }
-            repeat(visita) { i -> lista += nuevo(sesion, Clasificacion.VISITA, i, null) }
-            repeat(noDeterminado) { lista += RegistroObservacion(
-                idSesion = sesion.id,
-                hora = sesion.horaInicio,
-                clasificacion = Clasificacion.NO_DETERMINADO
-            ) }
+            repeat(visita) { i -> lista += nuevo(sesion, Clasificacion.VISITA, i) }
         }
         // Cada registro necesita un id propio (antes lo asignaba la base de datos).
         return lista.mapIndexed { i, registro -> registro.copy(id = i + 1) }
@@ -66,8 +61,7 @@ object DatosEjemplo {
     private fun nuevo(
         sesion: SesionObservacion,
         clasificacion: Clasificacion,
-        indice: Int,
-        destino: Int?
+        indice: Int
     ) = RegistroObservacion(
         idSesion = sesion.id,
         hora = sesion.horaInicio,
@@ -75,6 +69,6 @@ object DatosEjemplo {
         rangoEtario = RangoEtario.entries[indice % RangoEtario.entries.size],
         tipoCompania = TipoCompania.entries[indice % TipoCompania.entries.size],
         compraOtraTienda = indice % 4 == 0,
-        idAccesoDestino = destino
+
     )
 }
