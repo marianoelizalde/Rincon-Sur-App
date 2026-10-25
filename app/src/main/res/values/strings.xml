@@ -127,4 +127,9 @@
     <string name="filtro_estado">Estado</string>
     <string name="filtro_limpiar">Limpiar filtros</string>
     <string name="filtro_sin_resultados">No hay sesiones con ese filtro.</string>
+
+    <string name="seccion_editar_perfil">Editar perfil</string>
+    <string name="campo_nombre_perfil">Nombre</string>
+    <string name="btn_guardar_cambios">Guardar cambios</string>
+    <string name="perfil_actualizado">Perfil actualizado</string>
 </resources>

@@ -149,6 +149,18 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         recargar()
     }
 
+    fun actualizarNombre(nombre: String): String? {
+        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+
+        val limpio = nombre.trim()
+        if (limpio.isEmpty()) return "Ingresa tu nombre"
+        if (limpio.length < 3) return "Minimo 3 caracteres"
+        if (limpio.any { !it.isLetter() && it != ' ' }) return "Solo letras y espacios"
+        db.actualizarNombre(usuario.colaborador.id, limpio) // UPDATE en SQLite
+        recargar() // vuelve a leer al usuario
+        return null
+    }
+
     // ---------------- Sesiones de observacion ----------------
 
     // Programar: devuelve false si ya hay otra sesion en ese acceso y horario (RN-09).

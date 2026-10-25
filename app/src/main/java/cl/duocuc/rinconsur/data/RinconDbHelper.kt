@@ -313,6 +313,13 @@ class RinconDbHelper(context: Context) :
             "$COL_ID = ?", arrayOf(id.toString())
         )
 
+    fun actualizarNombre(id: Int, nombre: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_NOMBRE, nombre) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
     fun listarAccesos(): List<Acceso> =
         consultar("SELECT * FROM $TABLA_ACCESOS ORDER BY $ACC_CODIGO", null, ::leerAcceso)
 

@@ -59,6 +59,10 @@ import cl.duocuc.rinconsur.ui.components.TarjetaSeccion
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import cl.duocuc.rinconsur.ui.components.CampoTexto
 
 // =====================================================================
 //  PerfilScreen.kt  -  Perfil: foto (camara o galeria = recursos nativos), tema y cerrar sesion.
@@ -74,7 +78,8 @@ fun PerfilScreen(
     tema: ModoTema,                                // viene de RinconViewModel
     onTemaSeleccionado: (ModoTema) -> Unit,
     onFotoTomada: (Bitmap) -> Unit,                // camara: RinconViewModel.cambiarAvatarDesdeCamara
-    onImagenElegida: (Uri) -> Unit                 // galeria: RinconViewModel.cambiarAvatarDesdeGaleria
+    onImagenElegida: (Uri) -> Unit,                 // galeria: RinconViewModel.cambiarAvatarDesdeGaleria
+    onActualizarNombre: (String) -> String?
 ) {
     // Context = acceso a los servicios de Android (permisos, Ajustes...)
     val contexto = LocalContext.current
@@ -87,6 +92,7 @@ fun PerfilScreen(
     val textoCamaraDenegada = stringResource(R.string.permiso_camara_denegado)
     val textoGaleriaDenegada = stringResource(R.string.permiso_galeria_denegado)
     val textoAjustes = stringResource(R.string.btn_ajustes)
+    val textoPerfilGuardado = stringResource(R.string.perfil_actualizado)
 
     // PASO 4 (rechazo): avisar y ofrecer abrir Ajustes.
     // Si el usuario rechazo 2 veces, Android ya no muestra el dialogo: solo queda Ajustes.
@@ -186,6 +192,13 @@ fun PerfilScreen(
                 if (Permisos.tiene(contexto, Permisos.IMAGENES)) abrirGaleria()
                 else pedirPermisoImagenes.launch(Permisos.IMAGENES)
             },
+            onGuardarNombre = { nombre ->
+                val error = onActualizarNombre(nombre)
+                if (error == null) {
+                    scope.launch { snackbarHostState.showSnackbar(textoPerfilGuardado) }
+                }
+                error
+            },
             onTemaSeleccionado = onTemaSeleccionado,
             onCerrarSesion = alCerrarSesion,
             onAbrirMenu = abrirMenu
@@ -201,11 +214,15 @@ fun PerfilContent(
     tema: ModoTema,
     onTomarFoto: () -> Unit,
     onElegirDeGaleria: () -> Unit,
+    onGuardarNombre: (String) -> String?,
     onTemaSeleccionado: (ModoTema) -> Unit,
     onCerrarSesion: () -> Unit,
     onAbrirMenu: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    var nombreEditado by remember(colaborador?.nombre) {
+        mutableStateOf(colaborador?.nombre.orEmpty()) }
+    var errorNombre by remember { mutableStateOf<String?>(null) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -261,6 +278,22 @@ fun PerfilContent(
                 )
             }
 
+            TarjetaSeccion(titulo = stringResource(R.string.seccion_editar_perfil)) {
+                CampoTexto(
+                    valor = nombreEditado,
+                    onValorCambia = { nombreEditado = it; errorNombre = null },
+
+                    etiqueta = stringResource(R.string.campo_nombre_perfil),
+                    icono = R.drawable.ic_persona,
+                    error = errorNombre
+                )
+                BotonPrincipal(
+                    texto = stringResource(R.string.btn_guardar_cambios),
+                    onClick = { errorNombre = onGuardarNombre(nombreEditado) },
+                    icono = R.drawable.ic_check,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             TarjetaSeccion(titulo = stringResource(R.string.seccion_apariencia)) {
                 GrupoChips(
                     titulo = stringResource(R.string.etiqueta_tema),
@@ -291,7 +324,8 @@ private fun PerfilPreview() {
             colaborador = DatosEjemplo.colaboradores.first(),
             foto = null,
             tema = ModoTema.SISTEMA,
-            onTomarFoto = {}, onElegirDeGaleria = {}, onTemaSeleccionado = {},
+            onTomarFoto = {}, onElegirDeGaleria = {}, onGuardarNombre = { null },
+            onTemaSeleccionado = {},
             onCerrarSesion = {}, onAbrirMenu = {}
         )
     }

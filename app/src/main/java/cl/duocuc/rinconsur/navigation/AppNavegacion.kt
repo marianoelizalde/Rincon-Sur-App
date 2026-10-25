@@ -112,7 +112,8 @@ fun AppNavegacion(rincon: RinconViewModel) {
                 tema = tema,
                 onTemaSeleccionado = rincon::onTemaSeleccionado,
                 onFotoTomada = rincon::cambiarAvatarDesdeCamara,
-                onImagenElegida = rincon::cambiarAvatarDesdeGaleria
+                onImagenElegida = rincon::cambiarAvatarDesdeGaleria,
+                onActualizarNombre = rincon::actualizarNombre
             )
         }
 
