@@ -129,8 +129,7 @@ fun SesionesContent(
     var fechaFiltro by remember { mutableStateOf("") }
     var estadoFiltro by remember { mutableStateOf<EstadoSesion?>(null) }
     val filtradas = sesiones.filter { s ->
-        (estadoFiltro == null || s.estado == estadoFiltro) &&
-                s.fecha.contains(fechaFiltro.trim())
+        (estadoFiltro == null || s.estado == estadoFiltro) && s.fecha.contains(fechaFiltro.trim())
     }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -199,10 +198,7 @@ fun SesionesContent(
                     )
                 }
                 item {
-                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacioChico))
-
-                    {
-
+                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacioChico)) {
                         CampoTexto(
                             valor = fechaFiltro,
                             onValorCambia = { fechaFiltro = it },
@@ -214,17 +210,11 @@ fun SesionesContent(
                             titulo = stringResource(R.string.filtro_estado),
                             opciones = EstadoSesion.entries,
                             seleccionada = estadoFiltro,
-                            onSeleccionar = { estadoFiltro = if (estadoFiltro == it) null
-
-                            else it },
-
+                            onSeleccionar = { estadoFiltro = if (estadoFiltro == it) null else it },
                             textoDe = { it.etiqueta }
                         )
                         if (fechaFiltro.isNotBlank() || estadoFiltro != null) {
-                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null })
-
-                            {
-
+                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null }) {
                                 Text(stringResource(R.string.filtro_limpiar))
                             }
                         }
