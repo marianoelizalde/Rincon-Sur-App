@@ -56,6 +56,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RegistroViewModel
+import cl.duocuc.rinconsur.ui.components.GrupoOpcionesIcono
 
 // =====================================================================
 //  RegistroScreen.kt  -  Registro de una persona: todo se elige con toques.
@@ -212,12 +213,21 @@ fun RegistroContent(
 
                 AnimatedVisibility(visible = pideDetalle) {
                     Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacioMedio)) {
-                        GrupoChips(
+                        GrupoOpcionesIcono(
                             titulo = stringResource(R.string.etiqueta_rango),
                             opciones = RangoEtario.entries,
                             seleccionada = uiState.rango,
                             onSeleccionar = onRangoSeleccionado,
                             textoDe = { it.etiqueta },
+                            iconoDe = {
+                                listOf(
+                                    R.drawable.ic_nino,
+                                    R.drawable.ic_joven,
+                                    R.drawable.ic_adulto,
+                                    R.drawable.ic_maduro,
+                                    R.drawable.ic_anciano
+                                )[it.ordinal]
+                            },
                             error = uiState.errorRango
                         )
                         GrupoOpcionesIcono(
@@ -236,12 +246,18 @@ fun RegistroContent(
                             },
                             error = uiState.errorCompania
                         )
-                        GrupoChips(
+                        GrupoOpcionesIcono(
                             titulo = stringResource(R.string.etiqueta_sexo),
                             opciones = Sexo.entries,
                             seleccionada = uiState.sexo,
                             onSeleccionar = onSexoSeleccionado,
                             textoDe = { it.etiqueta },
+                            iconoDe = {
+                                when (it) {
+                                    Sexo.MASCULINO -> R.drawable.ic_hombre
+                                    Sexo.FEMENINO -> R.drawable.ic_mujer
+                                }
+                            },
                             error = uiState.errorSexo
                         )
                         InterruptorConTexto(
