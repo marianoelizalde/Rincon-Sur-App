@@ -190,6 +190,7 @@ fun SesionesContent(
                         sesion = sesion,
                         acceso = accesos.firstOrNull { it.id == sesion.idAcceso },
                         nombreObservador = nombres[sesion.idObservador],
+                        mostrarObservador = esSupervisor,
                         onAbrir = { onAbrirSesion(sesion.id) }
                     )
                 }
@@ -204,6 +205,7 @@ private fun TarjetaSesion(
     sesion: SesionObservacion,
     acceso: Acceso?,
     nombreObservador: String?,
+    mostrarObservador: Boolean,
     onAbrir: () -> Unit
 ) {
     ElevatedCard(onClick = onAbrir, shape = EstilosTarjeta.forma, modifier = Modifier.fillMaxWidth()) {
@@ -222,11 +224,14 @@ private fun TarjetaSesion(
                 )
                 EtiquetaEstado(sesion.estado)
             }
-            Text(stringResource(R.string.sesion_horario, sesion.fecha, sesion.horaInicio, sesion.horaFin))
-            Text(
-                text = stringResource(R.string.sesion_observador, nombreObservador ?: "-"),
-                style = MaterialTheme.typography.bodySmall
-            )
+            Text(stringResource(R.string.sesion_horario, sesion.fecha, sesion.horaInicio,
+                sesion.horaFin))
+            if (mostrarObservador) {
+                Text(
+                    text = stringResource(R.string.sesion_observador, nombreObservador ?: "-"),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }

@@ -17,11 +17,11 @@ val FondoOscuro = Color(0xFF101A12)
 
 // Colores de estado de las sesiones.
 val EstadoProgramada = Color(0xFF6B7280)
-val EstadoEnCurso = Color(0xFFC4623F)
+val EstadoEnCurso = Color(0xFFB04E2B)
 val EstadoFinalizada = Color(0xFF1D4ED8)
 val EstadoValidada = Color(0xFF15803D)
 val EstadoRechazada = Color(0xFFB3261E)
-val EstadoCancelada = Color(0xFF9CA3AF)
+val EstadoCancelada = Color(0xFF6E6E6E)
 
 // Colores de apoyo para botones y mensajes
 val Blanco = Color(0xFFFFFFFF)
