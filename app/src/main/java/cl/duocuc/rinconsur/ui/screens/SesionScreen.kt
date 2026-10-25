@@ -55,6 +55,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
+
 // =====================================================================
 //  SesionScreen.kt  -  Detalle de una sesion: estadisticas, ciclo de vida
 //  (iniciar, finalizar, validar, rechazar) y ultimos registros.

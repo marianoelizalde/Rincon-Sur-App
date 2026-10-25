@@ -121,5 +121,10 @@
     <string name="cd_ocultar_contrasena">Ocultar contrasena</string>
     <string name="cd_anular_registro">Anular registro</string>
     <string name="cd_foto_perfil">Foto de perfil</string>
+    <string name="filtro_fecha">Buscar por fecha</string>
 
+    <string name="filtro_fecha_ayuda">Escribe el año, el mes o el dia. Ejemplo:2026-09</string>
+    <string name="filtro_estado">Estado</string>
+    <string name="filtro_limpiar">Limpiar filtros</string>
+    <string name="filtro_sin_resultados">No hay sesiones con ese filtro.</string>
 </resources>

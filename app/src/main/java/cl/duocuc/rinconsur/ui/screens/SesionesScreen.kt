@@ -47,6 +47,13 @@ import cl.duocuc.rinconsur.ui.components.OpcionMenu
 import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import cl.duocuc.rinconsur.model.EstadoSesion
+import cl.duocuc.rinconsur.ui.components.CampoTexto
+import cl.duocuc.rinconsur.ui.components.GrupoChips
 
 // =====================================================================
 //  SesionesScreen.kt  -  Lista de sesiones (pantalla de inicio despues del login).
@@ -119,6 +126,12 @@ fun SesionesContent(
     onAbrirMenu: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
+    var fechaFiltro by remember { mutableStateOf("") }
+    var estadoFiltro by remember { mutableStateOf<EstadoSesion?>(null) }
+    val filtradas = sesiones.filter { s ->
+        (estadoFiltro == null || s.estado == estadoFiltro) &&
+                s.fecha.contains(fechaFiltro.trim())
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -185,14 +198,55 @@ fun SesionesContent(
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
-                items(sesiones, key = { it.id }) { sesion ->
-                    TarjetaSesion(
-                        sesion = sesion,
-                        acceso = accesos.firstOrNull { it.id == sesion.idAcceso },
-                        nombreObservador = nombres[sesion.idObservador],
-                        mostrarObservador = esSupervisor,
-                        onAbrir = { onAbrirSesion(sesion.id) }
-                    )
+                item {
+                    Column(verticalArrangement = Arrangement.spacedBy(Dimens.espacioChico))
+
+                    {
+
+                        CampoTexto(
+                            valor = fechaFiltro,
+                            onValorCambia = { fechaFiltro = it },
+                            etiqueta = stringResource(R.string.filtro_fecha),
+                            icono = R.drawable.ic_calendario,
+                            ayuda = stringResource(R.string.filtro_fecha_ayuda)
+                        )
+                        GrupoChips(
+                            titulo = stringResource(R.string.filtro_estado),
+                            opciones = EstadoSesion.entries,
+                            seleccionada = estadoFiltro,
+                            onSeleccionar = { estadoFiltro = if (estadoFiltro == it) null
+
+                            else it },
+
+                            textoDe = { it.etiqueta }
+                        )
+                        if (fechaFiltro.isNotBlank() || estadoFiltro != null) {
+                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null })
+
+                            {
+
+                                Text(stringResource(R.string.filtro_limpiar))
+                            }
+                        }
+                    }
+                }
+                if (filtradas.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.filtro_sin_resultados),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                } else {
+                    items(filtradas, key = { it.id }) { sesion ->
+                        TarjetaSesion(
+                            sesion = sesion,
+                            acceso = accesos.firstOrNull { it.id == sesion.idAcceso },
+                            nombreObservador = nombres[sesion.idObservador],
+                            mostrarObservador = esSupervisor,
+                            onAbrir = { onAbrirSesion(sesion.id) }
+                        )
+                    }
                 }
             }
         }
