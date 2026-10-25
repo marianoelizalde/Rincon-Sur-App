@@ -102,6 +102,7 @@
     <string name="etiqueta_clasificacion">Clasificacion</string>
     <string name="etiqueta_rango">Rango de edad</string>
     <string name="etiqueta_compania">Compania</string>
+    <string name="etiqueta_sexo">Sexo</string>
     <string name="etiqueta_destino">Acceso de destino (opcional)</string>
     <string name="opcion_compra_otra_tienda">Compro en otra tienda</string>
 

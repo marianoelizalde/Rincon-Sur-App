@@ -14,6 +14,7 @@ import cl.duocuc.rinconsur.model.RangoEtario
 import cl.duocuc.rinconsur.model.RegistroObservacion
 import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.TipoCompania
+import cl.duocuc.rinconsur.model.Sexo
 
 // Base de datos SQLite (rinconsur.db) con CINCO tablas relacionadas:
 //
@@ -28,7 +29,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 4
+        private const val VERSION_BD = 5
 
         // Tabla perfiles (1 = Supervisor, 2 = Observador)
         private const val TABLA_PERFILES = "perfiles"
@@ -76,6 +77,8 @@ class RinconDbHelper(context: Context) :
         private const val REG_OTRA_TIENDA = "compra_otra_tienda"
         private const val REG_ANULADO = "anulado"
 
+        private const val REG_SEXO = "sexo"
+
         private const val SQL_CREAR_PERFILES =
             "CREATE TABLE $TABLA_PERFILES (" +
                     "$PER_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -119,7 +122,8 @@ class RinconDbHelper(context: Context) :
                     "$REG_RANGO TEXT, " +
                     "$REG_COMPANIA TEXT, " +
                     "$REG_OTRA_TIENDA INTEGER NOT NULL DEFAULT 0, " +
-                    "$REG_ANULADO INTEGER NOT NULL DEFAULT 0)"
+                    "$REG_ANULADO INTEGER NOT NULL DEFAULT 0, " +
+                    "$REG_SEXO TEXT)"
 
         // SELECT base con INNER JOIN: une cada colaborador con SU perfil.
         private const val SQL_SELECT_COLABORADORES =
@@ -219,7 +223,8 @@ class RinconDbHelper(context: Context) :
         rangoEtario = c.textoONulo(REG_RANGO)?.let { RangoEtario.valueOf(it) },
         tipoCompania = c.textoONulo(REG_COMPANIA)?.let { TipoCompania.valueOf(it) },
         compraOtraTienda = c.entero(REG_OTRA_TIENDA) == 1,
-        anulado = c.entero(REG_ANULADO) == 1
+        anulado = c.entero(REG_ANULADO) == 1,
+        sexo = c.textoONulo(REG_SEXO)?.let { Sexo.valueOf(it) }
     )
 
     // Datos de ejemplo (escritos en el codigo, en DatosEjemplo). Todo en una transaccion.
@@ -279,6 +284,7 @@ class RinconDbHelper(context: Context) :
         put(REG_COMPANIA, r.tipoCompania?.name)
         put(REG_OTRA_TIENDA, if (r.compraOtraTienda) 1 else 0)
         put(REG_ANULADO, if (r.anulado) 1 else 0)
+        put(REG_SEXO, r.sexo?.name)
     }
 
     // CREATE -> INSERT. Devuelve el id generado (o -1 si falla).

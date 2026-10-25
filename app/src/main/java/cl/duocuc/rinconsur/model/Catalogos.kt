@@ -34,4 +34,7 @@ enum class EstadoSesion(val etiqueta: String){
     CANCELADA("Cancelada")
 }
 
-
+enum class Sexo(val etiqueta: String){
+    MASCULINO("Masculino"),
+    FEMENINO("Femenino")
+}

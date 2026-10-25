@@ -5,6 +5,7 @@ import cl.duocuc.rinconsur.model.Clasificacion
 import cl.duocuc.rinconsur.model.RangoEtario
 import cl.duocuc.rinconsur.model.RegistroObservacion
 import cl.duocuc.rinconsur.model.RegistroUiState
+import cl.duocuc.rinconsur.model.Sexo
 import cl.duocuc.rinconsur.model.TipoCompania
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,6 +36,10 @@ class RegistroViewModel : ViewModel() {
         _uiState.update { it.copy(compania = valor, errorCompania = null) }
     }
 
+    fun onSexoSeleccionado(valor: Sexo) {
+        _uiState.update { it.copy(sexo = valor, errorSexo = null) }
+    }
+
     fun onCompraOtraTienda(valor: Boolean) {
         _uiState.update { it.copy(compraOtraTienda = valor) }
     }
@@ -52,16 +57,17 @@ class RegistroViewModel : ViewModel() {
         val errorClasificacion = if (clasificacion == null) "Elige una clasificacion" else null
         val errorRango = if (pideDetalle && estado.rango == null) "Elige un rango de edad" else null
         val errorCompania = if (pideDetalle && estado.compania == null) "Elige con quien viene" else null
-
+        val errorSexo = if (pideDetalle && estado.sexo == null) "Elige el sexo" else null
         _uiState.update {
             it.copy(
                 errorClasificacion = errorClasificacion,
                 errorRango = errorRango,
-                errorCompania = errorCompania
+                errorCompania = errorCompania,
+                errorSexo = errorSexo
             )
         }
-
-        if (clasificacion == null || errorRango != null || errorCompania != null) return null
+        if (clasificacion == null || errorRango != null || errorCompania != null ||
+            errorSexo != null) return null
 
         val hora = SimpleDateFormat("HH:mm", Locale.US).format(Date())
         val registro = RegistroObservacion(
@@ -70,8 +76,10 @@ class RegistroViewModel : ViewModel() {
             clasificacion = clasificacion,
             rangoEtario = if (pideDetalle) estado.rango else null,
             tipoCompania = if (pideDetalle) estado.compania else null,
-            compraOtraTienda = pideDetalle && estado.compraOtraTienda
+            compraOtraTienda = pideDetalle && estado.compraOtraTienda,
+            sexo = if (pideDetalle) estado.sexo else null
         )
+
         _uiState.value = RegistroUiState()
         return registro
     }

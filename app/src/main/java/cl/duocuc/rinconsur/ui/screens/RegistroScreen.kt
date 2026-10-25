@@ -44,6 +44,7 @@ import cl.duocuc.rinconsur.model.RangoEtario
 import cl.duocuc.rinconsur.model.RegistroObservacion
 import cl.duocuc.rinconsur.model.RegistroUiState
 import cl.duocuc.rinconsur.model.SesionObservacion
+import cl.duocuc.rinconsur.model.Sexo
 import cl.duocuc.rinconsur.model.TipoCompania
 import cl.duocuc.rinconsur.nativo.Vibracion
 import cl.duocuc.rinconsur.ui.components.BotonPrincipal
@@ -86,6 +87,7 @@ fun RegistroScreen(
         onClasificacionSeleccionada = viewModel::onClasificacionSeleccionada,
         onRangoSeleccionado = viewModel::onRangoSeleccionado,
         onCompaniaSeleccionada = viewModel::onCompaniaSeleccionada,
+        onSexoSeleccionado = viewModel::onSexoSeleccionado,
         onCompraOtraTienda = viewModel::onCompraOtraTienda,
         onRegistrar = {
             sesion?.let { actual ->
@@ -113,6 +115,7 @@ fun RegistroContent(
     onClasificacionSeleccionada: (Clasificacion) -> Unit,
     onRangoSeleccionado: (RangoEtario) -> Unit,
     onCompaniaSeleccionada: (TipoCompania) -> Unit,
+    onSexoSeleccionado: (Sexo) -> Unit,
     onCompraOtraTienda: (Boolean) -> Unit,
     onRegistrar: () -> Unit,
     onDeshacerUltimo: () -> Unit,
@@ -233,6 +236,14 @@ fun RegistroContent(
                             },
                             error = uiState.errorCompania
                         )
+                        GrupoChips(
+                            titulo = stringResource(R.string.etiqueta_sexo),
+                            opciones = Sexo.entries,
+                            seleccionada = uiState.sexo,
+                            onSeleccionar = onSexoSeleccionado,
+                            textoDe = { it.etiqueta },
+                            error = uiState.errorSexo
+                        )
                         InterruptorConTexto(
                             texto = stringResource(R.string.opcion_compra_otra_tienda),
                             activado = uiState.compraOtraTienda,
@@ -267,7 +278,8 @@ private fun RegistroEnCursoPreview() {
             codigoAcceso = "A1",
             enCurso = true,
             totalValidos = 12, totalTransito = 7, totalVisita = 5,
-            onClasificacionSeleccionada = {}, onRangoSeleccionado = {}, onCompaniaSeleccionada = {},
+            onClasificacionSeleccionada = {}, onRangoSeleccionado = {},
+            onCompaniaSeleccionada = {},onSexoSeleccionado = {},
             onCompraOtraTienda = {}, onRegistrar = {},
             onDeshacerUltimo = {}, onVolver = {}
         )
@@ -283,7 +295,8 @@ private fun RegistroNoEnCursoPreview() {
             codigoAcceso = "A1",
             enCurso = false,
             totalValidos = 0, totalTransito = 0, totalVisita = 0,
-            onClasificacionSeleccionada = {}, onRangoSeleccionado = {}, onCompaniaSeleccionada = {},
+            onClasificacionSeleccionada = {}, onRangoSeleccionado = {},
+            onCompaniaSeleccionada = {}, onSexoSeleccionado = {},
             onCompraOtraTienda = {}, onRegistrar = {},
             onDeshacerUltimo = {}, onVolver = {}
         )

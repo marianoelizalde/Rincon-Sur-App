@@ -8,5 +8,6 @@ data class  RegistroObservacion(
     val rangoEtario: RangoEtario? = null,
     val tipoCompania: TipoCompania?=null,
     val compraOtraTienda: Boolean = false,
-    val anulado: Boolean = false
+    val anulado: Boolean = false,
+    val sexo: Sexo? = null
 )

@@ -9,6 +9,7 @@ import cl.duocuc.rinconsur.model.RangoEtario
 import cl.duocuc.rinconsur.model.RegistroObservacion
 import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.TipoCompania
+import cl.duocuc.rinconsur.model.Sexo
 
 // Datos de ejemplo escritos directamente en el codigo, basados en el Anexo 9 del caso.
 object DatosEjemplo {
@@ -69,6 +70,6 @@ object DatosEjemplo {
         rangoEtario = RangoEtario.entries[indice % RangoEtario.entries.size],
         tipoCompania = TipoCompania.entries[indice % TipoCompania.entries.size],
         compraOtraTienda = indice % 4 == 0,
-
+        sexo = Sexo.entries[indice % Sexo.entries.size]
     )
 }
