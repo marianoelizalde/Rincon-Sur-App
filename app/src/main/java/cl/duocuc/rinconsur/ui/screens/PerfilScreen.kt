@@ -63,6 +63,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import cl.duocuc.rinconsur.ui.components.CampoTexto
+import androidx.compose.animation.AnimatedVisibility
 
 // =====================================================================
 //  PerfilScreen.kt  -  Perfil: foto (camara o galeria = recursos nativos), tema y cerrar sesion.
@@ -223,6 +224,7 @@ fun PerfilContent(
     var nombreEditado by remember(colaborador?.nombre) {
         mutableStateOf(colaborador?.nombre.orEmpty()) }
     var errorNombre by remember { mutableStateOf<String?>(null) }
+    var editando by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -278,21 +280,32 @@ fun PerfilContent(
                 )
             }
 
-            TarjetaSeccion(titulo = stringResource(R.string.seccion_editar_perfil)) {
-                CampoTexto(
-                    valor = nombreEditado,
-                    onValorCambia = { nombreEditado = it; errorNombre = null },
+            BotonSecundario(
+                texto = stringResource(R.string.btn_cambiar_nombre),
+                onClick = { editando = !editando },
 
-                    etiqueta = stringResource(R.string.campo_nombre_perfil),
-                    icono = R.drawable.ic_persona,
-                    error = errorNombre
-                )
-                BotonPrincipal(
-                    texto = stringResource(R.string.btn_guardar_cambios),
-                    onClick = { errorNombre = onGuardarNombre(nombreEditado) },
-                    icono = R.drawable.ic_check,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                icono = R.drawable.ic_editar,
+                modifier = Modifier.fillMaxWidth()
+            )
+            AnimatedVisibility(visible = editando) {
+                TarjetaSeccion(titulo = stringResource(R.string.seccion_editar_perfil)) {
+                    CampoTexto(
+                        valor = nombreEditado,
+                        onValorCambia = { nombreEditado = it; errorNombre = null },
+                        etiqueta = stringResource(R.string.campo_nombre_perfil),
+                        icono = R.drawable.ic_persona,
+                        error = errorNombre
+                    )
+                    BotonPrincipal(
+                        texto = stringResource(R.string.btn_guardar_cambios),
+                        onClick = {
+                            errorNombre = onGuardarNombre(nombreEditado)
+                            if (errorNombre == null) editando = false
+                        },
+                        icono = R.drawable.ic_check,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
             TarjetaSeccion(titulo = stringResource(R.string.seccion_apariencia)) {
                 GrupoChips(

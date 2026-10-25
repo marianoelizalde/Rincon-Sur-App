@@ -148,10 +148,8 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         db.actualizarAvatar(usuario.colaborador.id, bytes)
         recargar()
     }
-
     fun actualizarNombre(nombre: String): String? {
         val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
-
         val limpio = nombre.trim()
         if (limpio.isEmpty()) return "Ingresa tu nombre"
         if (limpio.length < 3) return "Minimo 3 caracteres"
