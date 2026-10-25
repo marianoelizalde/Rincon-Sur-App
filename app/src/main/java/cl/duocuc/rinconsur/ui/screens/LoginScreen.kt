@@ -34,7 +34,7 @@ import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.LoginViewModel
-
+import androidx.compose.material3.TextButton
 // =====================================================================
 //  LoginScreen.kt  -  Pantalla principal: iniciar sesion (las cuentas las crea el Supervisor).
 //  Se separa en DOS funciones (igual que FormularioScreen del profesor):
@@ -47,6 +47,7 @@ import cl.duocuc.rinconsur.viewmodel.LoginViewModel
 fun LoginScreen(
     onIniciarSesion: (String, String) -> Boolean,   // RinconViewModel.iniciarSesion(correo, clave)
     onLoginExitoso: () -> Unit,
+    onRecuperar: () -> Unit,
     viewModel: LoginViewModel = viewModel()          // se crea una vez y sobrevive a la rotacion
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -56,6 +57,7 @@ fun LoginScreen(
         onCorreoCambia = viewModel::onCorreoCambia,
         onClaveCambia = viewModel::onClaveCambia,
         onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
+        onRecuperar = onRecuperar,
         onIngresar = {
             // 1) el ViewModel de formulario revisa que los campos esten bien escritos
             if (viewModel.onIngresar()) {
@@ -76,7 +78,8 @@ fun LoginContent(
     onCorreoCambia: (String) -> Unit,
     onClaveCambia: (String) -> Unit,
     onAlternarVisibilidad: () -> Unit,
-    onIngresar: () -> Unit
+    onIngresar: () -> Unit,
+    onRecuperar: () -> Unit
 ) {
     Scaffold(containerColor = MaterialTheme.colorScheme.background) { padding ->
         Column(
@@ -143,6 +146,12 @@ fun LoginContent(
                 icono = R.drawable.ic_ingresar,
                 modifier = Modifier.fillMaxWidth()
             )
+            TextButton(
+                onClick = onRecuperar,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.login_olvido))
+            }
         }
     }
 }
@@ -154,7 +163,7 @@ private fun LoginVacioPreview() {
         LoginContent(
             uiState = LoginUiState(),
             onCorreoCambia = {}, onClaveCambia = {}, onAlternarVisibilidad = {},
-            onIngresar = {}
+            onIngresar = {}, onRecuperar = {}
         )
     }
 }
@@ -171,7 +180,7 @@ private fun LoginConErroresPreview() {
                 errorGeneral = "Correo o contrasena incorrectos"
             ),
             onCorreoCambia = {}, onClaveCambia = {}, onAlternarVisibilidad = {},
-            onIngresar = {}
+            onIngresar = {}, onRecuperar = {}
         )
     }
 }

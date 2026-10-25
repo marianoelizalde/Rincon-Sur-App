@@ -3,6 +3,8 @@ package cl.duocuc.rinconsur.navigation
 // Todas las pantallas de la app. Las rutas con {id} reciben el numero de la sesion.
 sealed class Ruta(val ruta: String) {
     data object Login : Ruta("login")
+
+    data object Recuperar : Ruta("recuperar")
     data object CrearUsuario : Ruta("crear_usuario")
     data object Sesiones : Ruta("sesiones")
     data object Perfil : Ruta("perfil")

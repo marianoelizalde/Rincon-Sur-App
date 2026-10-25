@@ -148,6 +148,15 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         db.actualizarAvatar(usuario.colaborador.id, bytes)
         recargar()
     }
+    // Recuperar cuenta: si el correo existe y el nombre coincide, cambia la clave.
+    // Devuelve true si se cambio; false si los datos no coinciden con ninguna cuenta.
+    fun recuperarCuenta(correo: String, nombre: String, nuevaClave: String): Boolean {
+        val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?:
+        return false
+        if (!colaborador.nombre.equals(nombre.trim(), ignoreCase = true)) return false
+        db.actualizarClave(colaborador.id, nuevaClave) // UPDATE en SQLite
+        return true
+    }
     fun actualizarNombre(nombre: String): String? {
         val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
         val limpio = nombre.trim()

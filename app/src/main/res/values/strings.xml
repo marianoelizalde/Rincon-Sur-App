@@ -134,4 +134,13 @@
     <string name="perfil_actualizado">Perfil actualizado</string>
 
     <string name="btn_cambiar_nombre">Cambiar nombre</string>
+
+    <string name="titulo_recuperar">Recuperar cuenta</string>
+    <string name="login_olvido">Olvidaste tu contrasena?</string>
+    <string name="recuperar_explicacion">Escribe tu correo y tu nombre completo, como estan en tu cuenta, y elige una contrasena nueva.</string>
+    <string name="campo_contrasena_nueva">Contrasena nueva</string>
+    <string name="btn_cambiar_contrasena">Cambiar contrasena</string>
+    <string name="recuperar_exito">Contrasena actualizada. Ya puedes iniciar sesion.</string>
+    <string name="btn_volver_login">Volver a iniciar sesion</string>
+
 </resources>

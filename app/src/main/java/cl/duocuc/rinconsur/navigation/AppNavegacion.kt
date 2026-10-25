@@ -24,6 +24,7 @@ import cl.duocuc.rinconsur.ui.screens.RegistroScreen
 import cl.duocuc.rinconsur.ui.screens.SesionScreen
 import cl.duocuc.rinconsur.ui.screens.SesionesScreen
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
+import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
 
 // =====================================================================
 //  AppNavegacion.kt  -  El NavController vive aqui: las pantallas solo
@@ -70,7 +71,14 @@ fun AppNavegacion(rincon: RinconViewModel) {
         composable(Ruta.Login.ruta) {
             LoginScreen(
                 onIniciarSesion = rincon::iniciarSesion,
-                onLoginExitoso = { navController.irASesionesLimpiando(Ruta.Login.ruta) }
+                onLoginExitoso = { navController.irASesionesLimpiando(Ruta.Login.ruta) },
+                onRecuperar = { navController.navigate(Ruta.Recuperar.ruta) }
+            )
+        }
+        composable(Ruta.Recuperar.ruta) {
+            RecuperarScreen(
+                onRecuperarCuenta = rincon::recuperarCuenta,
+                onVolver = { navController.popBackStack() }
             )
         }
 

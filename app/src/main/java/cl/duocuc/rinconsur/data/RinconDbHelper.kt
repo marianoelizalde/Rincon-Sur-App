@@ -312,6 +312,12 @@ class RinconDbHelper(context: Context) :
             ContentValues().apply { put(COL_AVATAR, avatar) },
             "$COL_ID = ?", arrayOf(id.toString())
         )
+    fun actualizarClave(id: Int, clave: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_CLAVE, clave) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
     fun actualizarNombre(id: Int, nombre: String): Int =
         writableDatabase.update(
             TABLA_COLABORADORES,
