@@ -10,7 +10,7 @@ Evaluación Parcial 2 · DSY1105 Desarrollo de Aplicaciones Móviles · Duoc UC
 - Lukas LLanten
 
 ## Enlaces
-- Tablero Trello: [PEGAR ENLACE AQUÍ]
+- Tablero Trello: https://trello.com/invite/b/6abaf1397fd81ad6c3746046/ATTIb375efe5fb3da003762c1d10a061a39bE4D5B361/retail-conteo-accesos
 - Repositorio: https://github.com/marianoelizalde/Rincon-Sur-App
 
 ---
