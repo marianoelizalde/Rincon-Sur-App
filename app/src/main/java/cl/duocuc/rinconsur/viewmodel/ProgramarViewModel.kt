@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-// ViewModel simple: guarda el estado del formulario de programar sesion y valida.
-// No toca la base de datos: la lista de accesos y observadores la entrega RinconViewModel,
-// y el choque de horarios tambien lo revisa RinconViewModel al guardar.
+
 class ProgramarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProgramarUiState())
     val uiState: StateFlow<ProgramarUiState> = _uiState.asStateFlow()
@@ -37,8 +35,7 @@ class ProgramarViewModel : ViewModel() {
         }
     }
 
-    // Boton "Programar sesion": valida todo. Si hay errores devuelve null;
-    // si no, devuelve la SesionObservacion lista para guardar.
+
     fun onProgramar(): SesionObservacion? {
         val estado = _uiState.value
 
@@ -72,12 +69,12 @@ class ProgramarViewModel : ViewModel() {
         )
     }
 
-    // La pantalla lo llama cuando RinconViewModel dice que ya hay una sesion en ese horario.
+
     fun onSolapamiento() {
         _uiState.update { it.copy(errorGeneral = "Ya hay una sesion en ese acceso y horario") }
     }
 
-    // ---- Reglas de validacion: devuelven el mensaje de error, o null si el valor es valido ----
+
 
     private fun errorFecha(valor: String): String? {
         if (valor.isBlank()) return "Ingresa la fecha"
@@ -104,7 +101,7 @@ class ProgramarViewModel : ViewModel() {
     private fun minutos(hora: String): Int =
         hora.substring(0, 2).toInt() * 60 + hora.substring(3, 5).toInt()
 
-    // Hora de termino: formato valido, tienda abierta (10:00 a 21:00) y duracion de 30 a 60 minutos (RN-09).
+
     private fun errorFin(inicio: String, fin: String): String? {
         errorHora(fin)?.let { return it }
         if (errorHora(inicio) != null) return null

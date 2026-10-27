@@ -20,16 +20,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosBoton
 import cl.duocuc.rinconsur.ui.styles.estiloAltoBoton
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  BotonPrincipal.kt  -  COMPONENTE REUTILIZABLE
-//  Recibe DATOS (texto, habilitado, icono) y EVENTOS (onClick),
-//  y NO conoce el ViewModel: solo dibuja.
-// =====================================================================
 
-/**
- * Boton de accion principal (relleno, con sombra y icono opcional).
- * @param icono recurso R.drawable.xxx, o null si no lleva icono.
- */
 @Composable
 fun BotonPrincipal(
     texto: String,

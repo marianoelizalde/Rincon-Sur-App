@@ -13,7 +13,7 @@ class CrearUsuarioViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(CrearUsuarioUiState())
     val uiState: StateFlow<CrearUsuarioUiState> = _uiState.asStateFlow()
 
-    // ---- Eventos de la pantalla: cada letra actualiza el estado y valida al escribir ----
+
 
     fun onNombreCambia(valor: String) {
         _uiState.update { it.copy(nombre = valor, errorNombre = if (valor.isEmpty()) null else errorNombre(valor)) }
@@ -45,12 +45,12 @@ class CrearUsuarioViewModel : ViewModel() {
         _uiState.update { it.copy(claveVisible = !it.claveVisible) }
     }
 
-    // Boton "Limpiar": vuelve al estado inicial.
+
     fun onLimpiar() {
         _uiState.value = CrearUsuarioUiState()
     }
 
-    // Boton "Crear cuenta": valida todo. Si hay errores devuelve null; si no, devuelve el Colaborador.
+
     fun onCrear(): Colaborador? {
         val estado = _uiState.value
 
@@ -81,12 +81,12 @@ class CrearUsuarioViewModel : ViewModel() {
         )
     }
 
-    // La pantalla lo llama cuando RinconViewModel dice que ese correo ya existe.
+
     fun onCorreoRepetido() {
         _uiState.update { it.copy(errorCorreo = "Ese correo ya tiene una cuenta") }
     }
 
-    // ---- Reglas de validacion: devuelven el mensaje de error, o null si el valor es valido ----
+
 
     private fun errorNombre(valor: String): String? = when {
         valor.isBlank() -> "Ingresa tu nombre"

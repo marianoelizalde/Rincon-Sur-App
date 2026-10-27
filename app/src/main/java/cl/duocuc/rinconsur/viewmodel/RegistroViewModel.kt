@@ -45,13 +45,12 @@ class RegistroViewModel : ViewModel() {
     }
 
 
-    // Boton "Guardar": valida. Si falta algo devuelve null; si no, devuelve el registro
-    // y deja el formulario limpio para la siguiente persona.
+
     fun onRegistrar(idSesion: Int): RegistroObservacion? {
         val estado = _uiState.value
 
         val clasificacion = estado.clasificacion
-        // Quien es "no determinado" no lleva detalle (rango ni compania).
+
         val pideDetalle = clasificacion != null
 
         val errorClasificacion = if (clasificacion == null) "Elige una clasificacion" else null

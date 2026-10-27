@@ -26,13 +26,7 @@ import cl.duocuc.rinconsur.R
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  ControlesSeleccion.kt  -  Casilla (checkbox) y grupo de opciones (chips).
-//  Truco de usabilidad: toda la fila es presionable (toggleable) y al
-//  control se le pasa onCheckedChange = null.
-// =====================================================================
 
-/** Checkbox + texto (por ejemplo, aceptar terminos). */
 @Composable
 fun CasillaConTexto(
     texto: String,
@@ -56,7 +50,7 @@ fun CasillaConTexto(
     }
 }
 
-/** Texto + Switch (interruptor encendido/apagado). */
+
 @Composable
 fun InterruptorConTexto(
     texto: String,
@@ -77,11 +71,7 @@ fun InterruptorConTexto(
     }
 }
 
-/**
- * Grupo de chips: se elige UNA opcion entre varias. Es generico <T>.
- * @param textoDe funcion que convierte cada opcion en el texto a mostrar.
- * @param error mensaje bajo el grupo si no se eligio nada.
- */
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun <T> GrupoChips(

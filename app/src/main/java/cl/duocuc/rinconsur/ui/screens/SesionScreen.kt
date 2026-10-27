@@ -56,25 +56,21 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
 
-// =====================================================================
-//  SesionScreen.kt  -  Detalle de una sesion: estadisticas, ciclo de vida
-//  (iniciar, finalizar, validar, rechazar) y ultimos registros.
-//  Sin ViewModel propio: todo llega de RinconViewModel por lambdas (AppNavegacion).
-// =====================================================================
+
 @Composable
 fun SesionScreen(
-    usuario: UsuarioActual?,                          // RinconViewModel.usuarioActual
-    sesion: SesionObservacion?,                       // RinconViewModel.sesionAbierta
-    registros: List<RegistroObservacion>,             // RinconViewModel.registros
-    accesos: List<Acceso>,                            // RinconViewModel.accesos
-    nombres: Map<Int, String>,                        // RinconViewModel.nombres
-    mensaje: String?,                                 // RinconViewModel.mensaje
-    onMensajeMostrado: () -> Unit,                    // RinconViewModel.limpiarMensaje
+    usuario: UsuarioActual?,
+    sesion: SesionObservacion?,
+    registros: List<RegistroObservacion>,
+    accesos: List<Acceso>,
+    nombres: Map<Int, String>,
+    mensaje: String?,
+    onMensajeMostrado: () -> Unit,
     onIniciar: () -> Unit,
     onFinalizar: () -> Unit,
     onCancelar: () -> Unit,
-    onValidar: (Int) -> Unit,                         // recibe el id de quien valida
-    onRechazar: (Int, String) -> String?,             // id de quien rechaza + motivo; devuelve error o null
+    onValidar: (Int) -> Unit,
+    onRechazar: (Int, String) -> String?,
     onAnularRegistro: (RegistroObservacion) -> Unit,
     alVolver: () -> Unit,
     alIrARegistro: (Int) -> Unit
@@ -124,7 +120,7 @@ fun SesionContent(
     onFinalizar: () -> Unit,
     onCancelar: () -> Unit,
     onValidar: () -> Unit,
-    onRechazar: (String) -> String?,          // devuelve el error del motivo, o null si se rechazo bien
+    onRechazar: (String) -> String?,
     onAnularRegistro: (RegistroObservacion) -> Unit,
     onVolver: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -374,7 +370,7 @@ private fun FilaRegistro(registro: RegistroObservacion, puedeAnular: Boolean, on
     }
 }
 
-// Dialogo con un campo validado. onConfirmar devuelve el error, o null si todo salio bien.
+
 @Composable
 private fun DialogoRechazo(onCancelar: () -> Unit, onConfirmar: (String) -> String?) {
     var motivo by remember { mutableStateOf("") }

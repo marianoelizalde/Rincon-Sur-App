@@ -6,7 +6,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 
-// Recurso nativo 1: vibracion corta para confirmar un registro sin mirar la pantalla.
+
 object Vibracion {
     fun vibrar(contexto: Context, milisegundos: Long = 40) {
         val vibrador: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

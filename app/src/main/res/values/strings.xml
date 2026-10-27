@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- =============================================================
-         strings.xml: TODOS los textos de la app.
-         Se leen en las pantallas con stringResource(R.string.nombre).
-         Los que llevan %1$s / %1$d reciben un dato: stringResource(R.string.saludo, nombre).
-         ============================================================= -->
 
     <string name="app_name">Rincon Sur</string>
 
-    <!-- Titulos de pantallas -->
+
     <string name="titulo_sesiones">Sesiones de observacion</string>
     <string name="titulo_perfil">Mi perfil</string>
     <string name="titulo_crear_usuario">Crear usuario</string>
@@ -17,7 +12,7 @@
     <string name="titulo_detalle_sesion">Detalle de la sesion</string>
     <string name="titulo_registro">Registrar persona - %1$s</string>
 
-    <!-- Menu lateral menu y dialogo de cierre de sesion -->
+
     <string name="saludo">Hola, %1$s</string>
     <string name="menu_sesiones">Sesiones</string>
     <string name="menu_mi_perfil">Mi perfil</string>
@@ -27,19 +22,19 @@
     <string name="dialogo_mensaje">Tendras que ingresar de nuevo con tu correo y contrasena.</string>
     <string name="dialogo_cancelar">Cancelar</string>
 
-    <!-- Inicio de sesion -->
+
     <string name="login_subtitulo">Segmentacion del flujo de clientes por acceso</string>
     <string name="login_titulo">Iniciar sesion</string>
     <string name="login_sin_cuenta">No tienes cuenta?</string>
 
-    <!-- Crear usuario -->
+
     <string name="crear_intro">Completa tus datos para crear tu cuenta.</string>
     <string name="seccion_datos_cuenta">Datos de la cuenta</string>
     <string name="seccion_rol">Rol en la app</string>
     <string name="etiqueta_perfil">Perfil</string>
     <string name="opcion_terminos">Acepto que mis datos se usen solo para operar la app</string>
 
-    <!-- Campos -->
+
     <string name="campo_nombre">Nombre completo</string>
     <string name="campo_correo">Correo electronico</string>
     <string name="campo_contrasena">Contrasena</string>
@@ -53,7 +48,7 @@
     <string name="ayuda_hora_inicio">Formato HH:MM, desde las 10:00</string>
     <string name="ayuda_hora_fin">Entre 30 y 60 minutos despues, hasta las 21:00</string>
 
-    <!-- Botones -->
+
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_crear_usuario">Crear usuario</string>
     <string name="btn_crear_cuenta">Crear cuenta</string>
@@ -73,7 +68,7 @@
     <string name="btn_camara">Camara</string>
     <string name="btn_galeria">Galeria</string>
 
-    <!-- Lista y detalle de sesiones -->
+
     <string name="sesiones_vacio_supervisor">Aun no hay sesiones. Toca el boton Programar para crear la primera.</string>
     <string name="sesiones_vacio_observador">No tienes sesiones asignadas. Pide al supervisor que programe una para ti.</string>
     <string name="sesion_acceso">%1$s - %2$s</string>
@@ -89,13 +84,13 @@
     <string name="sesion_cerrada">Esta sesion ya esta cerrada.</string>
     <string name="registro_fila">%1$s  %2$s  %3$s  %4$s</string>
 
-    <!-- Programar sesion -->
+
     <string name="seccion_donde_quien">Donde y quien?</string>
     <string name="seccion_cuando">Cuando?</string>
     <string name="etiqueta_acceso">Acceso</string>
     <string name="etiqueta_observador">Observador</string>
 
-    <!-- Registrar persona -->
+
     <string name="registro_personas">personas registradas</string>
     <string name="registro_resumen">Transito %1$d  Visita %2$d</string>
     <string name="registro_no_en_curso">Esta sesion no esta en curso. Vuelve al detalle para iniciarla.</string>
@@ -106,14 +101,14 @@
     <string name="etiqueta_destino">Acceso de destino (opcional)</string>
     <string name="opcion_compra_otra_tienda">Compro en otra tienda</string>
 
-    <!-- Perfil -->
+
     <string name="seccion_apariencia">Apariencia</string>
     <string name="etiqueta_tema">Tema de la app</string>
     <string name="permiso_camara_denegado">Sin permiso de camara. Puedes darlo en Ajustes o elegir una foto de la galeria.</string>
     <string name="permiso_galeria_denegado">Sin permiso para ver tus fotos. Puedes darlo en Ajustes.</string>
     <string name="btn_ajustes">Ajustes</string>
 
-    <!-- Descripciones para lectores de pantalla (contentDescription) -->
+
     <string name="cd_menu">Abrir menu</string>
     <string name="cd_volver">Volver</string>
     <string name="cd_error">Error</string>
@@ -142,5 +137,7 @@
     <string name="btn_cambiar_contrasena">Cambiar contrasena</string>
     <string name="recuperar_exito">Contrasena actualizada. Ya puedes iniciar sesion.</string>
     <string name="btn_volver_login">Volver a iniciar sesion</string>
+
+    <string name="cd_logo">Logo de Rincon Sur</string>
 
 </resources>

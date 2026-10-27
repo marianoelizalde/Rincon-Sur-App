@@ -22,19 +22,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosCampo
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  CampoTexto.kt  -  CAMPO DE TEXTO REUTILIZABLE (el <input> de HTML)
-//  En Compose un campo NO guarda su propio texto:
-//   - "valor" es lo que se muestra (viene del estado del ViewModel).
-//   - "onValorCambia" avisa cada vez que el usuario escribe una letra.
-//  Esto se llama "estado elevado" (state hoisting).
-// =====================================================================
 
-/**
- * @param error mensaje de error bajo el campo; null = sin error.
- * @param ayuda texto de ayuda bajo el campo cuando no hay error.
- * @param tipoTeclado Text, Email, Number... (cambia el teclado del celular).
- */
 @Composable
 fun CampoTexto(
     valor: String,
@@ -59,7 +47,7 @@ fun CampoTexto(
             )
         },
         trailingIcon = {
-            // Icono rojo a la derecha cuando el campo tiene un error.
+
             if (error != null) {
                 Icon(
                     painter = painterResource(R.drawable.ic_error),

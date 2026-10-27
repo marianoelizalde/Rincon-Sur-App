@@ -18,10 +18,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosBoton
 import cl.duocuc.rinconsur.ui.styles.estiloAltoBoton
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  BotonSecundario.kt  -  Accion de menor importancia (Limpiar, Cancelar).
-//  Parte de OutlinedButton (solo borde) y aplica NUESTROS estilos.
-// =====================================================================
+
 @Composable
 fun BotonSecundario(
     texto: String,

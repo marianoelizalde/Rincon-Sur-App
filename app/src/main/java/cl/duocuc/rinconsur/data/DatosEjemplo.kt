@@ -11,7 +11,7 @@ import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.TipoCompania
 import cl.duocuc.rinconsur.model.Sexo
 
-// Datos de ejemplo escritos directamente en el codigo, basados en el Anexo 9 del caso.
+
 object DatosEjemplo {
     val accesos = listOf(
         Acceso(1, "A1", "Principal", "Frente al pasillo central del mall"),
@@ -20,7 +20,7 @@ object DatosEjemplo {
         Acceso(4, "A4", "Conexion", "Hacia la tienda vecina")
     )
 
-    // Contrasena de ambas cuentas: Rincon2026
+
     val colaboradores = listOf(
         Colaborador(3, "Mariano Elizalde", "mariano@rinconsur.cl", "Rincon2026", PerfilUsuario.SUPERVISOR),
         Colaborador(7, "Lukas LLanten", "lukas@rinconsur.cl", "Rincon2026", PerfilUsuario.OBSERVADOR)
@@ -35,7 +35,7 @@ object DatosEjemplo {
         SesionObservacion(6, 4, "2026-10-08", "15:00", "15:45", 7, EstadoSesion.PROGRAMADA)
     )
 
-    // Cantidad de personas por sesion: transito, visita y no determinado (Anexo 9).
+
     private val cantidades = mapOf(
         1 to Triple(61, 52, 5),
         2 to Triple(38, 63, 3),

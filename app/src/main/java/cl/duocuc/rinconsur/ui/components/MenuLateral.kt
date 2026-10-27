@@ -30,16 +30,10 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import kotlinx.coroutines.launch
 
-/** Opciones del menu lateral que llevan a una pantalla. */
+
 enum class OpcionMenu { SESIONES, PERFIL, CREAR_USUARIO }
 
-// =====================================================================
-//  MenuLateral.kt  -  MENU LATERAL (panel lateral) + DIALOGO DE CONFIRMACION
-//  ModalNavigationDrawer = panel que se desliza desde la izquierda.
-//  La pantalla le entrega su contenido y recibe una funcion "abrirMenu"
-//  para conectarla al boton menu de su barra superior.
-//  open()/close() son "suspend" (tienen animacion): van en scope.launch.
-// =====================================================================
+
 @Composable
 fun MenuLateral(
     nombreUsuario: String?,
@@ -51,19 +45,19 @@ fun MenuLateral(
     alCerrarSesion: () -> Unit,
     contenido: @Composable (abrirMenu: () -> Unit) -> Unit
 ) {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)   // panel abierto o cerrado?
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var mostrarDialogo by remember { mutableStateOf(false) }     // dialogo visible?
+    var mostrarDialogo by remember { mutableStateOf(false) }
 
     if (mostrarDialogo) {
         AlertDialog(
-            onDismissRequest = { mostrarDialogo = false },        // tocar fuera = cancelar
+            onDismissRequest = { mostrarDialogo = false },
             title = { Text(stringResource(R.string.dialogo_titulo)) },
             text = { Text(stringResource(R.string.dialogo_mensaje)) },
             confirmButton = {
                 TextButton(onClick = {
                     mostrarDialogo = false
-                    alCerrarSesion()                              // recien aqui se cierra la sesion
+                    alCerrarSesion()
                 }) { Text(stringResource(R.string.menu_cerrar_sesion)) }
             },
             dismissButton = {
@@ -91,8 +85,8 @@ fun MenuLateral(
                     icono = R.drawable.ic_lista,
                     seleccionado = opcionActual == OpcionMenu.SESIONES,
                     onClick = {
-                        scope.launch { drawerState.close() }      // 1) cerrar el panel
-                        if (opcionActual != OpcionMenu.SESIONES) alIrASesiones()   // 2) avisar el evento
+                        scope.launch { drawerState.close() }
+                        if (opcionActual != OpcionMenu.SESIONES) alIrASesiones()
                     }
                 )
                 ItemMenu(
@@ -104,7 +98,7 @@ fun MenuLateral(
                         if (opcionActual != OpcionMenu.PERFIL) alIrAPerfil()
                     }
                 )
-                // Solo el Supervisor ve esta opcion (el Observador solo inicia sesion).
+
                 if (esSupervisor) {
                     ItemMenu(
                         texto = stringResource(R.string.menu_crear_usuario),

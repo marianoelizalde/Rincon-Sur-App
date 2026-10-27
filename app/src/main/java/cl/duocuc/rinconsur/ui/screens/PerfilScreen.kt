@@ -65,29 +65,24 @@ import androidx.compose.runtime.setValue
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import androidx.compose.animation.AnimatedVisibility
 
-// =====================================================================
-//  PerfilScreen.kt  -  Perfil: foto (camara o galeria = recursos nativos), tema y cerrar sesion.
-//  Permisos en 4 pasos (ver permisos/Permisos.kt): declarar en el manifest, verificar, pedir y reaccionar.
-//  La pantalla solo AVISA (onFotoTomada / onImagenElegida); RinconViewModel convierte y guarda en SQLite.
-// =====================================================================
+
 @Composable
 fun PerfilScreen(
-    usuario: UsuarioActual?,                       // viene de RinconViewModel
+    usuario: UsuarioActual?,
     alIrASesiones: () -> Unit,
     alIrACrearUsuario: () -> Unit,
     alCerrarSesion: () -> Unit,
-    tema: ModoTema,                                // viene de RinconViewModel
+    tema: ModoTema,
     onTemaSeleccionado: (ModoTema) -> Unit,
-    onFotoTomada: (Bitmap) -> Unit,                // camara: RinconViewModel.cambiarAvatarDesdeCamara
-    onImagenElegida: (Uri) -> Unit,                 // galeria: RinconViewModel.cambiarAvatarDesdeGaleria
+    onFotoTomada: (Bitmap) -> Unit,
+    onImagenElegida: (Uri) -> Unit,
     onActualizarNombre: (String) -> String?
 ) {
-    // Context = acceso a los servicios de Android (permisos, Ajustes...)
+
     val contexto = LocalContext.current
     val colaborador = usuario?.colaborador
 
-    // Snackbar para avisar cuando el usuario rechaza un permiso.
-    // stringResource solo funciona en un @Composable: los textos se preparan aqui.
+
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val textoCamaraDenegada = stringResource(R.string.permiso_camara_denegado)
@@ -95,8 +90,7 @@ fun PerfilScreen(
     val textoAjustes = stringResource(R.string.btn_ajustes)
     val textoPerfilGuardado = stringResource(R.string.perfil_actualizado)
 
-    // PASO 4 (rechazo): avisar y ofrecer abrir Ajustes.
-    // Si el usuario rechazo 2 veces, Android ya no muestra el dialogo: solo queda Ajustes.
+
     fun avisarPermisoDenegado(mensaje: String) {
         scope.launch {
             val resultado = snackbarHostState.showSnackbar(
@@ -108,18 +102,14 @@ fun PerfilScreen(
         }
     }
 
-    // ------------------------------- CAMARA -------------------------------
 
-    // "launcher" = lanzador de OTRA app que nos devuelve un resultado.
-    // TakePicturePreview abre la app de camara y entrega un Bitmap (o null si cancelo).
     val lanzadorCamara = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { foto: Bitmap? ->
         if (foto != null) onFotoTomada(foto)
     }
 
-    // Se llama SOLO con el permiso ya concedido.
-    // try/catch: si el equipo no tiene app de camara, la app no se cae.
+
     fun abrirCamara() {
         try {
             lanzadorCamara.launch(null)
@@ -127,19 +117,15 @@ fun PerfilScreen(
         }
     }
 
-    // PASO 3 -> PEDIR. RequestPermission muestra el dialogo del sistema y entrega true o false.
+
     val pedirPermisoCamara = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { concedido: Boolean ->
-        // PASO 4 -> REACCIONAR a la respuesta del usuario
+
         if (concedido) abrirCamara() else avisarPermisoDenegado(textoCamaraDenegada)
     }
 
-    // ------------------------------- GALERIA ------------------------------
 
-    // StartActivityForResult lanza un Intent cualquiera y devuelve el resultado.
-    // ACTION_PICK + tabla de imagenes = "abre la galeria para elegir una foto".
-    // RESULT_OK = el usuario eligio algo;  data?.data = Uri de la imagen elegida.
     val lanzadorGaleria = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { resultado ->
@@ -147,7 +133,7 @@ fun PerfilScreen(
         if (resultado.resultCode == Activity.RESULT_OK && uri != null) onImagenElegida(uri)
     }
 
-    // Se llama SOLO con el permiso de imagenes ya concedido.
+
     fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         try {
@@ -156,16 +142,14 @@ fun PerfilScreen(
         }
     }
 
-    // PASO 3 -> PEDIR el permiso de imagenes
-    // (READ_MEDIA_IMAGES o READ_EXTERNAL_STORAGE segun la version: ver Permisos.IMAGENES)
+
     val pedirPermisoImagenes = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { concedido: Boolean ->
         if (concedido) abrirGaleria() else avisarPermisoDenegado(textoGaleriaDenegada)
     }
 
-    // bytes de SQLite -> Bitmap -> ImageBitmap (el tipo que usa Compose).
-    // remember(avatar): se convierte solo cuando la foto CAMBIA, no en cada dibujo.
+
     val foto = remember(colaborador?.avatar) {
         colaborador?.avatar?.let { bytes -> ConvertidorImagen.aBitmap(bytes)?.asImageBitmap() }
     }
@@ -185,7 +169,7 @@ fun PerfilScreen(
             tema = tema,
             snackbarHostState = snackbarHostState,
             onTomarFoto = {
-                // PASO 2 -> VERIFICAR. Ya tengo permiso? Uso la camara. No? Lo pido (PASO 3).
+
                 if (Permisos.tiene(contexto, Permisos.CAMARA)) abrirCamara()
                 else pedirPermisoCamara.launch(Permisos.CAMARA)
             },

@@ -16,14 +16,7 @@ import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.TipoCompania
 import cl.duocuc.rinconsur.model.Sexo
 
-// Base de datos SQLite (rinconsur.db) con CINCO tablas relacionadas:
-//
-//   perfiles <---- colaboradores <---- sesiones <---- registros
-//                                         |
-//                                      accesos
-//
-// clave PRIMARIA (id_xxx)  <------  clave FORANEA (REFERENCES ...)
-// UN helper por base de datos: todas las tablas se crean en el mismo onCreate().
+
 class RinconDbHelper(context: Context) :
     SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
 
@@ -31,30 +24,28 @@ class RinconDbHelper(context: Context) :
         private const val NOMBRE_BD = "rinconsur.db"
         private const val VERSION_BD = 5
 
-        // Tabla perfiles (1 = Supervisor, 2 = Observador)
         private const val TABLA_PERFILES = "perfiles"
         private const val PER_ID = "id_perfil"
         private const val PER_NOMBRE = "nombre_perfil"
 
 
 
-        // Tabla colaboradores (los usuarios de la app)
         private const val TABLA_COLABORADORES = "colaboradores"
         private const val COL_ID = "id_colaborador"
         private const val COL_NOMBRE = "nombre"
         private const val COL_CORREO = "correo"
         private const val COL_CLAVE = "clave"
         private const val COL_PERFIL = "id_perfil"
-        private const val COL_AVATAR = "avatar"           // foto de perfil (BLOB)
+        private const val COL_AVATAR = "avatar"
 
-        // Tabla accesos (A1 a A4)
+
         private const val TABLA_ACCESOS = "accesos"
         private const val ACC_ID = "id_acceso"
         private const val ACC_CODIGO = "codigo"
         private const val ACC_NOMBRE = "nombre_acceso"
         private const val ACC_OBS = "observacion"
 
-        // Tabla sesiones
+
         private const val TABLA_SESIONES = "sesiones"
         private const val SES_ID = "id_sesion"
         private const val SES_ACCESO = "id_acceso"
@@ -66,7 +57,7 @@ class RinconDbHelper(context: Context) :
         private const val SES_VALIDADOR = "id_validador"
         private const val SES_MOTIVO = "motivo_rechazo"
 
-        // Tabla registros (personas observadas, anonimas)
+
         private const val TABLA_REGISTROS = "registros"
         private const val REG_ID = "id_registro"
         private const val REG_SESION = "id_sesion"
@@ -84,7 +75,6 @@ class RinconDbHelper(context: Context) :
                     "$PER_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "$PER_NOMBRE TEXT NOT NULL UNIQUE)"
 
-        // REFERENCES crea la CLAVE FORANEA hacia perfiles(id_perfil)
         private const val SQL_CREAR_COLABORADORES =
             "CREATE TABLE $TABLA_COLABORADORES (" +
                     "$COL_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -125,20 +115,20 @@ class RinconDbHelper(context: Context) :
                     "$REG_ANULADO INTEGER NOT NULL DEFAULT 0, " +
                     "$REG_SEXO TEXT)"
 
-        // SELECT base con INNER JOIN: une cada colaborador con SU perfil.
+
         private const val SQL_SELECT_COLABORADORES =
             "SELECT c.*, p.$PER_NOMBRE AS $PER_NOMBRE " +
                     "FROM $TABLA_COLABORADORES c " +
                     "INNER JOIN $TABLA_PERFILES p ON c.$COL_PERFIL = p.$PER_ID"
     }
 
-    // Se ejecuta CADA VEZ que se abre la conexion: SQLite trae las claves foraneas APAGADAS.
+
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.setForeignKeyConstraintsEnabled(true)
     }
 
-    // Una sola vez, cuando rinconsur.db no existe. Primero las tablas "padre", despues las "hijas".
+
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(SQL_CREAR_PERFILES)
         db.execSQL(SQL_CREAR_COLABORADORES)
@@ -148,7 +138,7 @@ class RinconDbHelper(context: Context) :
         precargar(db)
     }
 
-    // Si sube VERSION_BD: version simple, borra y recrea (se pierden los datos). Orden inverso.
+
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLA_REGISTROS")
         db.execSQL("DROP TABLE IF EXISTS $TABLA_SESIONES")
@@ -158,7 +148,7 @@ class RinconDbHelper(context: Context) :
         onCreate(db)
     }
 
-    // Ejecuta un SELECT y recorre el Cursor fila por fila. El SQL cambia, la lectura es la misma.
+
     private fun <T> consultar(sql: String, args: Array<String>?, leer: (Cursor) -> T): List<T> {
         val lista = mutableListOf<T>()
         readableDatabase.rawQuery(sql, args).use { cursor ->
@@ -186,7 +176,7 @@ class RinconDbHelper(context: Context) :
         return if (isNull(i)) null else getInt(i)
     }
 
-    // Convierte la fila actual del Cursor en un objeto. nombre_perfil llega gracias al JOIN.
+
     private fun leerColaborador(c: Cursor) = Colaborador(
         id = c.entero(COL_ID),
         nombre = c.texto(COL_NOMBRE),
@@ -227,7 +217,7 @@ class RinconDbHelper(context: Context) :
         sexo = c.textoONulo(REG_SEXO)?.let { Sexo.valueOf(it) }
     )
 
-    // Datos de ejemplo (escritos en el codigo, en DatosEjemplo). Todo en una transaccion.
+
     private fun precargar(db: SQLiteDatabase) {
         db.beginTransaction()
         try {
@@ -247,7 +237,7 @@ class RinconDbHelper(context: Context) :
         }
     }
 
-    // ContentValues = mapa columna -> valor (para INSERT y UPDATE)
+
     private fun valoresDe(c: Colaborador, conId: Boolean) = ContentValues().apply {
         if (conId) put(COL_ID, c.id)
         put(COL_NOMBRE, c.nombre)
@@ -287,15 +277,15 @@ class RinconDbHelper(context: Context) :
         put(REG_SEXO, r.sexo?.name)
     }
 
-    // CREATE -> INSERT. Devuelve el id generado (o -1 si falla).
+
     fun insertarColaborador(colaborador: Colaborador): Long =
         writableDatabase.insert(TABLA_COLABORADORES, null, valoresDe(colaborador, conId = false))
 
-    // READ -> todos los colaboradores con su perfil, ordenados por nombre
+
     fun listarColaboradores(): List<Colaborador> =
         consultar("$SQL_SELECT_COLABORADORES ORDER BY c.$COL_NOMBRE", null, ::leerColaborador)
 
-    // READ con filtro: el correo viaja en el "?" (nunca concatenado) para evitar inyeccion SQL.
+
     fun buscarColaboradorPorCorreo(correo: String): Colaborador? =
         consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_CORREO = ?", arrayOf(correo), ::leerColaborador)
             .firstOrNull()
@@ -304,8 +294,7 @@ class RinconDbHelper(context: Context) :
         consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_ID = ?", arrayOf(id.toString()), ::leerColaborador)
             .firstOrNull()
 
-    // UPDATE de UNA sola columna: ContentValues acepta ByteArray y SQLite lo guarda como BLOB.
-    // valoresDe() NO incluye el avatar: al crear un usuario no hay foto y nunca se pisa por error.
+
     fun actualizarAvatar(id: Int, avatar: ByteArray): Int =
         writableDatabase.update(
             TABLA_COLABORADORES,
@@ -340,13 +329,13 @@ class RinconDbHelper(context: Context) :
         consultar("SELECT * FROM $TABLA_SESIONES WHERE $SES_ID = ?", arrayOf(id.toString()), ::leerSesion)
             .firstOrNull()
 
-    // UPDATE: cambia SOLO la fila cuyo id_sesion coincide.
+
     fun actualizarSesion(sesion: SesionObservacion): Int =
         writableDatabase.update(
             TABLA_SESIONES, valoresDe(sesion, conId = false), "$SES_ID = ?", arrayOf(sesion.id.toString())
         )
 
-    // Hay solapamiento si otra sesion del mismo acceso y dia se cruza con el horario pedido
+
     fun haySolapamiento(idAcceso: Int, fecha: String, inicio: String, fin: String): Boolean =
         readableDatabase.rawQuery(
             "SELECT 1 FROM $TABLA_SESIONES WHERE $SES_ACCESO = ? AND $SES_FECHA = ? " +
@@ -357,14 +346,13 @@ class RinconDbHelper(context: Context) :
     fun insertarRegistro(registro: RegistroObservacion): Long =
         writableDatabase.insert(TABLA_REGISTROS, null, valoresDe(registro, conId = false))
 
-    // Registros de UNA sesion (filtro con "?")
     fun listarRegistros(idSesion: Int): List<RegistroObservacion> =
         consultar(
             "SELECT * FROM $TABLA_REGISTROS WHERE $REG_SESION = ? ORDER BY $REG_ID",
             arrayOf(idSesion.toString()), ::leerRegistro
         )
 
-    // Los registros no se borran: se marcan como anulados UPDATE de una columna.
+
     fun anularRegistro(id: Int): Int =
         writableDatabase.update(
             TABLA_REGISTROS,

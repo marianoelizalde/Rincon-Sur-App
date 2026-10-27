@@ -36,7 +36,7 @@ import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
 fun AppNavegacion(rincon: RinconViewModel) {
     val navController = rememberNavController()
 
-    // Estado que lee la interfaz (cada vez que cambia, las pantallas se redibujan)
+
     val usuarioActual by rincon.usuarioActual.collectAsStateWithLifecycle()
     val tema by rincon.tema.collectAsStateWithLifecycle()
     val sesiones by rincon.sesiones.collectAsStateWithLifecycle()
@@ -47,10 +47,9 @@ fun AppNavegacion(rincon: RinconViewModel) {
     val registros by rincon.registros.collectAsStateWithLifecycle()
     val mensaje by rincon.mensaje.collectAsStateWithLifecycle()
 
-    // Si SharedPreferences ya tenia una sesion iniciada se parte en la lista; si no, en el login.
     val inicio = remember { if (rincon.usuarioActual.value == null) Ruta.Login.ruta else Ruta.Sesiones.ruta }
 
-    // Cerrar sesion desde el menu o desde el perfil: borra la sesion guardada y vuelve al login.
+
     val cerrarSesion: () -> Unit = {
         rincon.cerrarSesion()
         navController.navigate(Ruta.Login.ruta) { popUpTo(0) { inclusive = true } }
@@ -82,7 +81,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
             )
         }
 
-        // Solo el Supervisor crea cuentas: si otro perfil llega aqui, se devuelve a la lista.
+
         composable(Ruta.CrearUsuario.ruta) {
             if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR) {
                 CrearUsuarioScreen(
@@ -140,11 +139,11 @@ fun AppNavegacion(rincon: RinconViewModel) {
             arguments = listOf(navArgument("id") { type = NavType.IntType })
         ) { entrada ->
             val id = entrada.arguments?.getInt("id") ?: 0
-            // Le dice a RinconViewModel cual sesion mirar (lee la sesion y sus registros de SQLite)
+
             LaunchedEffect(id) { rincon.abrirSesion(id) }
             SesionScreen(
                 usuario = usuarioActual,
-                sesion = sesionAbierta?.takeIf { it.id == id },   // evita mostrar la sesion anterior
+                sesion = sesionAbierta?.takeIf { it.id == id },
                 registros = registros,
                 accesos = accesos,
                 nombres = nombres,
@@ -179,7 +178,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
     }
 }
 
-// Entra a la lista de sesiones y borra de la pila la pantalla de ingreso (para no volver a ella con "atras").
+
 private fun NavHostController.irASesionesLimpiando(rutaABorrar: String) {
     navigate(Ruta.Sesiones.ruta) {
         popUpTo(rutaABorrar) { inclusive = true }

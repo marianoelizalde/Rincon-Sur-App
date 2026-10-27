@@ -22,11 +22,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosCampo
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  CampoContrasena.kt  -  Campo con puntos (****) y boton "ojo".
-//  visualTransformation cambia COMO se muestra el texto, no lo que vale.
-//  Si la contrasena se ve o no es ESTADO: lo decide el ViewModel.
-// =====================================================================
+
 @Composable
 fun CampoContrasena(
     valor: String,

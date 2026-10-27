@@ -23,7 +23,7 @@ import cl.duocuc.rinconsur.ui.theme.EstadoRechazada
 import cl.duocuc.rinconsur.ui.theme.EstadoValidada
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// Etiqueta con el estado de la sesion; el color cambia con una animacion suave.
+
 @Composable
 fun EtiquetaEstado(estado: EstadoSesion, modifier: Modifier = Modifier) {
     val destino = when (estado) {

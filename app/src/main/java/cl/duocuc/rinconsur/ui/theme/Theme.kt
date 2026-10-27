@@ -14,34 +14,34 @@ private val EsquemaClaro = lightColorScheme(
     primary = Verde,
     onPrimary = Color.White,
     primaryContainer = VerdeClaro,
-    onPrimaryContainer = Color(0xFF0B3D12),
+    onPrimaryContainer = Color(0xFF3D250B),
     secondary = VerdeOliva,
     onSecondary = Color.White,
     secondaryContainer = VerdeOlivaClaro,
-    onSecondaryContainer = Color(0xFF1B3A0A),
+    onSecondaryContainer = Color(0xFF3A200A),
     background = FondoClaro,
     surface = FondoClaro,
-    surfaceVariant = Color(0xFFDDEBDD)
+    surfaceVariant = Color(0xFFEBE5DD)
 )
 
 private val EsquemaOscuro = darkColorScheme(
     primary = VerdeSuave,
-    onPrimary = Color(0xFF0A3818),
-    onPrimaryContainer = Color(0xFFC8E6C9),
-    primaryContainer = Color(0xFF1F5E27),
+    onPrimary = Color(0xFF250E01),
+    onPrimaryContainer = Color(0xFFE6D5C8),
+    primaryContainer = Color(0xFF966930),
     secondary = VerdeOlivaSuave,
-    onSecondary = Color(0xFF1F3A0D),
-    secondaryContainer = Color(0xFF3F6B24),
+    onSecondary = Color(0xFF8C581E),
+    secondaryContainer = Color(0xFF884825),
     onSecondaryContainer = Color(0xFFDCEDC8),
     background = FondoOscuro,
     onBackground = Color(0xFFDFEBDF),
     surface = FondoOscuro,
     onSurface = Color(0xFFDFEBDF),
-    surfaceVariant = Color(0xFF2A3A2C),
-    onSurfaceVariant = Color(0xFFBFD2C0)
+    surfaceVariant = Color(0xFF3A322A),
+    onSurfaceVariant = Color(0xFFD2C9BF)
 )
 
-// Formas (equivale a border-radius): botones, campos y tarjetas toman estas esquinas.
+
 private val Formas = Shapes(
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(12.dp),

@@ -55,19 +55,14 @@ import cl.duocuc.rinconsur.model.EstadoSesion
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.components.GrupoChips
 
-// =====================================================================
-//  SesionesScreen.kt  -  Lista de sesiones (pantalla de inicio despues del login).
-//  El Supervisor las ve todas y programa nuevas; el Observador ve solo las suyas.
-//  No tiene ViewModel propio: recibe los datos de RinconViewModel (via AppNavegacion).
-// =====================================================================
 @Composable
 fun SesionesScreen(
-    usuario: UsuarioActual?,                       // RinconViewModel.usuarioActual
-    sesiones: List<SesionObservacion>,             // RinconViewModel.sesiones
-    accesos: List<Acceso>,                         // RinconViewModel.accesos
-    nombres: Map<Int, String>,                     // RinconViewModel.nombres
-    mensaje: String?,                              // RinconViewModel.mensaje
-    onMensajeMostrado: () -> Unit,                 // RinconViewModel.limpiarMensaje
+    usuario: UsuarioActual?,
+    sesiones: List<SesionObservacion>,
+    accesos: List<Acceso>,
+    nombres: Map<Int, String>,
+    mensaje: String?,
+    onMensajeMostrado: () -> Unit,
     alProgramar: () -> Unit,
     alAbrirSesion: (Int) -> Unit,
     alIrAPerfil: () -> Unit,
@@ -152,7 +147,7 @@ fun SesionesContent(
             )
         },
         floatingActionButton = {
-            // Solo el supervisor programa sesiones; el boton aparece con animacion.
+
             AnimatedVisibility(visible = esSupervisor, enter = scaleIn(), exit = scaleOut()) {
                 ExtendedFloatingActionButton(
                     onClick = onProgramar,
@@ -243,7 +238,7 @@ fun SesionesContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun TarjetaSesion(
     sesion: SesionObservacion,
@@ -283,7 +278,7 @@ private fun TarjetaSesion(
 @Preview(showBackground = true, showSystemUi = true, name = "Supervisor")
 @Composable
 private fun SesionesSupervisorPreview() {
-    RinconSurTheme {
+    RinconSurTheme () {
         SesionesContent(
             sesiones = DatosEjemplo.sesiones,
             accesos = DatosEjemplo.accesos,

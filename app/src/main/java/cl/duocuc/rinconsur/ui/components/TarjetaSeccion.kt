@@ -16,11 +16,7 @@ import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// =====================================================================
-//  TarjetaSeccion.kt  -  CONTENEDOR CARD CON TITULO + "SLOT"
-//  El contenido llega como parametro (@Composable ColumnScope.() -> Unit):
-//  quien usa la tarjeta decide que va adentro.
-// =====================================================================
+
 @Composable
 fun TarjetaSeccion(
     titulo: String,

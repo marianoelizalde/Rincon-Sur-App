@@ -38,18 +38,12 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.ProgramarViewModel
 
-// =====================================================================
-//  ProgramarScreen.kt  -  Formulario del Supervisor para programar una sesion.
-//  Igual que LoginScreen, se separa en DOS funciones:
-//   - ProgramarScreen  : conecta el ViewModel del formulario con RinconViewModel.
-//   - ProgramarContent : solo dibuja lo que recibe (sirve para @Preview).
-//  Los accesos y observadores vienen de RinconViewModel (los pasa AppNavegacion).
-// =====================================================================
+
 @Composable
 fun ProgramarScreen(
-    accesos: List<Acceso>,                                  // RinconViewModel.accesos
-    observadores: List<Colaborador>,                        // RinconViewModel.observadores
-    onProgramarSesion: (SesionObservacion) -> Boolean,      // RinconViewModel.programarSesion(...)
+    accesos: List<Acceso>,
+    observadores: List<Colaborador>,
+    onProgramarSesion: (SesionObservacion) -> Boolean,
     onSesionProgramada: () -> Unit,
     onVolver: () -> Unit,
     viewModel: ProgramarViewModel = viewModel()
@@ -66,9 +60,9 @@ fun ProgramarScreen(
         onHoraInicioCambia = viewModel::onHoraInicioCambia,
         onHoraFinCambia = viewModel::onHoraFinCambia,
         onProgramar = {
-            // 1) el ViewModel de formulario valida y devuelve la sesion (o null si hay errores)
+
             viewModel.onProgramar()?.let { sesion ->
-                // 2) RinconViewModel la guarda en SQLite; false = choca con otra sesion
+
                 if (onProgramarSesion(sesion)) onSesionProgramada() else viewModel.onSolapamiento()
             }
         },

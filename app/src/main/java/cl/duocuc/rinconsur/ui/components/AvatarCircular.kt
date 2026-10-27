@@ -24,12 +24,11 @@ import cl.duocuc.rinconsur.R
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-// Foto de perfil redonda. Si hay foto (leida de SQLite) la dibuja; si no, muestra el icono de persona.
 @Composable
 fun AvatarCircular(
     descripcion: String,
     modifier: Modifier = Modifier,
-    foto: ImageBitmap? = null       // null = sin foto -> icono por defecto
+    foto: ImageBitmap? = null
 ) {
     Box(
         modifier = modifier
@@ -40,7 +39,7 @@ fun AvatarCircular(
         contentAlignment = Alignment.Center
     ) {
         if (foto != null) {
-            // BitmapPainter dibuja una imagen que esta en memoria (la de la base de datos)
+
             Image(
                 painter = BitmapPainter(foto),
                 contentDescription = descripcion,

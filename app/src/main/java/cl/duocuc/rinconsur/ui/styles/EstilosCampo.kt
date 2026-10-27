@@ -15,11 +15,11 @@ object EstilosCampo {
 
     @Composable
     fun colores(): TextFieldColors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = MaterialTheme.colorScheme.primary,      // input:focus
-        unfocusedBorderColor = GrisDeshabilitado,                    // input normal
+        focusedBorderColor = MaterialTheme.colorScheme.primary,
+        unfocusedBorderColor = GrisDeshabilitado,
         focusedLabelColor = MaterialTheme.colorScheme.primary,
         focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-        errorBorderColor = MaterialTheme.colorScheme.error,          // input.error
+        errorBorderColor = MaterialTheme.colorScheme.error,
         cursorColor = MaterialTheme.colorScheme.primary
     )
 }

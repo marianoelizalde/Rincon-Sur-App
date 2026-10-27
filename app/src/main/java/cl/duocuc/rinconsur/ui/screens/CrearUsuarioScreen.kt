@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,12 +39,10 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.CrearUsuarioViewModel
 
-// Formulario para crear una cuenta. Solo el Supervisor llega aqui (desde el menu lateral).
-// Igual que FormularioScreen del profesor: el ViewModel de formulario valida y devuelve el
-// Colaborador; RinconViewModel (que llega como onCrearUsuario) lo guarda en SQLite.
+
 @Composable
 fun CrearUsuarioScreen(
-    onCrearUsuario: (Colaborador) -> Boolean,   // RinconViewModel.registrarUsuario
+    onCrearUsuario: (Colaborador) -> Boolean,
     onUsuarioCreado: () -> Unit,
     onVolver: () -> Unit,
     viewModel: CrearUsuarioViewModel = viewModel()
@@ -62,9 +59,9 @@ fun CrearUsuarioScreen(
         onPerfilSeleccionado = viewModel::onPerfilSeleccionado,
         onTerminosCambia = viewModel::onTerminosCambia,
         onCrear = {
-            // 1) el ViewModel de formulario valida y devuelve el Colaborador (o null si hay errores)
+
             viewModel.onCrear()?.let { colaborador ->
-                // 2) RinconViewModel lo guarda; devuelve false si el correo ya existe
+
                 if (onCrearUsuario(colaborador)) onUsuarioCreado() else viewModel.onCorreoRepetido()
             }
         },

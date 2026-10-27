@@ -32,16 +32,11 @@ import cl.duocuc.rinconsur.ui.components.CampoContrasena
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
-// =====================================================================
-// RecuperarScreen.kt - Recuperar cuenta: el usuario olvido su contrasena.
-// Pide correo + nombre completo (como segunda comprobacion) y una contrasena nueva.
-// Valida los campos aqui; RinconViewModel revisa en SQLite que correo y nombre
-// coincidan y hace el UPDATE de la clave (funcion onRecuperarCuenta).
-// =====================================================================
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecuperarScreen(
-    onRecuperarCuenta: (String, String, String) -> Boolean, // RinconViewModel.recuperarCuenta(correo, nombre, nuevaClave)
+    onRecuperarCuenta: (String, String, String) -> Boolean,
     onVolver: () -> Unit
     ) {
     var correo by remember { mutableStateOf("") }
@@ -55,7 +50,7 @@ fun RecuperarScreen(
     var errorConfirmar by remember { mutableStateOf<String?>(null) }
     var errorGeneral by remember { mutableStateOf<String?>(null) }
     var listo by remember { mutableStateOf(false) }
-    // Boton "Cambiar contrasena": valida los 4 campos y, si todo esta bien, pide el cambio.
+
     fun recuperar() {
         errorCorreo = when {
             correo.isBlank() -> "Ingresa tu correo"

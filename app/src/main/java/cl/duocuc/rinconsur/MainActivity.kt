@@ -17,7 +17,7 @@ import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 
 class MainActivity : ComponentActivity() {
-    // Unico ViewModel que toca SQLite y SharedPreferences (sesion y tema)
+
     private val rinconViewModel: RinconViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                 ModoTema.OSCURO -> true
             }
 
-            // Los iconos de las barras del sistema deben contrastar con el tema elegido.
+
             DisposableEffect(oscuro) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { oscuro },

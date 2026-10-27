@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duocuc.rinconsur.R
-import cl.duocuc.rinconsur.data.DatosEjemplo
 import cl.duocuc.rinconsur.model.Acceso
 import cl.duocuc.rinconsur.model.Clasificacion
 import cl.duocuc.rinconsur.model.EstadoSesion
@@ -49,27 +48,22 @@ import cl.duocuc.rinconsur.model.TipoCompania
 import cl.duocuc.rinconsur.nativo.Vibracion
 import cl.duocuc.rinconsur.ui.components.BotonPrincipal
 import cl.duocuc.rinconsur.ui.components.BotonSecundario
-import cl.duocuc.rinconsur.ui.components.GrupoChips
 import cl.duocuc.rinconsur.ui.components.GrupoOpcionesIcono
 import cl.duocuc.rinconsur.ui.components.InterruptorConTexto
 import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RegistroViewModel
-import cl.duocuc.rinconsur.ui.components.GrupoOpcionesIcono
 
-// =====================================================================
-//  RegistroScreen.kt  -  Registro de una persona: todo se elige con toques.
-//  RegistroViewModel (formulario) valida y devuelve el RegistroObservacion;
-//  RinconViewModel lo guarda en SQLite. Al guardar, el celular vibra (recurso nativo).
-// =====================================================================
+
+
 @Composable
 fun RegistroScreen(
-    sesion: SesionObservacion?,                        // RinconViewModel.sesionAbierta
-    registros: List<RegistroObservacion>,              // RinconViewModel.registros
-    accesos: List<Acceso>,                             // RinconViewModel.accesos
-    onRegistrarPersona: (RegistroObservacion) -> Unit, // RinconViewModel.registrarPersona
-    onDeshacerUltimo: () -> Unit,                      // RinconViewModel.deshacerUltimo
+    sesion: SesionObservacion?,
+    registros: List<RegistroObservacion>,
+    accesos: List<Acceso>,
+    onRegistrarPersona: (RegistroObservacion) -> Unit,
+    onDeshacerUltimo: () -> Unit,
     alVolver: () -> Unit,
     viewModel: RegistroViewModel = viewModel()
 ) {
@@ -92,10 +86,10 @@ fun RegistroScreen(
         onCompraOtraTienda = viewModel::onCompraOtraTienda,
         onRegistrar = {
             sesion?.let { actual ->
-                // 1) el formulario valida y devuelve el registro (null si falta algo)
+
                 viewModel.onRegistrar(actual.id)?.let { registro ->
-                    onRegistrarPersona(registro)       // 2) RinconViewModel lo guarda en SQLite
-                    Vibracion.vibrar(contexto)         // 3) recurso nativo: vibracion
+                    onRegistrarPersona(registro)
+                    Vibracion.vibrar(contexto)
                 }
             }
         },
@@ -152,7 +146,7 @@ fun RegistroContent(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(Dimens.espacioMedio)
         ) {
-            // Contador: el numero se anima cada vez que se registra una persona.
+
             Card(
                 shape = EstilosTarjeta.forma,
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),

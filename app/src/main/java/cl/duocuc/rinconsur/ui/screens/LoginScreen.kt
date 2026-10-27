@@ -35,20 +35,16 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.LoginViewModel
 import androidx.compose.material3.TextButton
-// =====================================================================
-//  LoginScreen.kt  -  Pantalla principal: iniciar sesion (las cuentas las crea el Supervisor).
-//  Se separa en DOS funciones (igual que FormularioScreen del profesor):
-//   - LoginScreen  : lee el estado del ViewModel y conecta los eventos.
-//   - LoginContent : solo dibuja lo que recibe -> se puede ver en @Preview.
-//  Quien revisa si el correo y la clave existen es RinconViewModel, que llega
-//  como la funcion onIniciarSesion (la pasa AppNavegacion).
-// =====================================================================
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.ui.unit.dp
+
 @Composable
 fun LoginScreen(
-    onIniciarSesion: (String, String) -> Boolean,   // RinconViewModel.iniciarSesion(correo, clave)
+    onIniciarSesion: (String, String) -> Boolean,
     onLoginExitoso: () -> Unit,
     onRecuperar: () -> Unit,
-    viewModel: LoginViewModel = viewModel()          // se crea una vez y sobrevive a la rotacion
+    viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -59,9 +55,9 @@ fun LoginScreen(
         onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
         onRecuperar = onRecuperar,
         onIngresar = {
-            // 1) el ViewModel de formulario revisa que los campos esten bien escritos
+
             if (viewModel.onIngresar()) {
-                // 2) RinconViewModel revisa en SQLite que el correo y la clave existan
+
                 if (onIniciarSesion(uiState.correo.lowercase(), uiState.clave)) {
                     onLoginExitoso()
                 } else {
@@ -91,14 +87,12 @@ fun LoginContent(
             verticalArrangement = Arrangement.spacedBy(Dimens.espacioPantalla)
         ) {
             Spacer(Modifier.height(Dimens.espacioGrande))
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = stringResource(R.string.login_subtitulo),
-                style = MaterialTheme.typography.bodyLarge
+            Image(
+                painter = painterResource(R.drawable.logo_rincon_sur),
+                contentDescription = stringResource(R.string.cd_logo),
+                modifier = Modifier
+                    .size(150.dp)
+                    .align(Alignment.CenterHorizontally)
             )
             Text(
                 text = stringResource(R.string.login_titulo),
@@ -122,7 +116,7 @@ fun LoginContent(
                 error = uiState.errorClave
             )
 
-            // Aviso cuando el correo o la contrasena no coinciden con ninguna cuenta.
+
             AnimatedVisibility(visible = uiState.errorGeneral != null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
