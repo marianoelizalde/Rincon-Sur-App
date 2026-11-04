@@ -123,8 +123,11 @@ fun SesionesContent(
 ) {
     var fechaFiltro by remember { mutableStateOf("") }
     var estadoFiltro by remember { mutableStateOf<EstadoSesion?>(null) }
+    var accesoFiltro by remember { mutableStateOf<Acceso?>(null) }
     val filtradas = sesiones.filter { s ->
-        (estadoFiltro == null || s.estado == estadoFiltro) && s.fecha.contains(fechaFiltro.trim())
+        (estadoFiltro == null || s.estado == estadoFiltro) &&
+                (accesoFiltro == null || s.idAcceso == accesoFiltro?.id) &&
+                s.fecha.contains(fechaFiltro.trim())
     }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -208,9 +211,15 @@ fun SesionesContent(
                             onSeleccionar = { estadoFiltro = if (estadoFiltro == it) null else it },
                             textoDe = { it.etiqueta }
                         )
-                        if (fechaFiltro.isNotBlank() || estadoFiltro != null) {
-                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null }) {
-                                Text(stringResource(R.string.filtro_limpiar))
+                        GrupoChips(                                                    // NUEVO
+                            titulo = stringResource(R.string.filtro_acceso),
+                            opciones = accesos,
+                            seleccionada = accesoFiltro,
+                            onSeleccionar = { accesoFiltro = if (accesoFiltro == it) null else it },
+                            textoDe = { it.codigo }
+                        )
+                        if (fechaFiltro.isNotBlank() || estadoFiltro != null || accesoFiltro != null) {
+                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null; accesoFiltro = null }) {
                             }
                         }
                     }

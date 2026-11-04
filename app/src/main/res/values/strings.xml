@@ -120,6 +120,7 @@
 
     <string name="filtro_fecha_ayuda">Escribe el año, el mes o el dia. Ejemplo:2026-09</string>
     <string name="filtro_estado">Estado</string>
+    <string name="filtro_acceso">Acceso</string>
     <string name="filtro_limpiar">Limpiar filtros</string>
     <string name="filtro_sin_resultados">No hay sesiones con ese filtro.</string>
 
