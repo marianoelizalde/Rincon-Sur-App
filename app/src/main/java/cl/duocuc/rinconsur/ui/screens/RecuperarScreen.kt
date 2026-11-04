@@ -61,7 +61,10 @@ fun RecuperarScreen(
         errorClave = when {
             clave.isBlank() -> "Ingresa una contrasena"
             clave.length < 8 -> "Minimo 8 caracteres"
-            clave.none { it.isLetter() } || clave.none { it.isDigit() } -> "Debe tener letras y numeros"
+            clave.none { it.isUpperCase() } -> "Debe tener una mayuscula"
+            clave.none { it.isLowerCase() } -> "Debe tener una minuscula"
+            clave.none { it.isDigit() } -> "Debe tener un numero"
+            clave.none { !it.isLetterOrDigit() } -> "Debe tener un caracter especial (ej: ! # $ %)"
             else -> null
         }
         errorConfirmar = when {

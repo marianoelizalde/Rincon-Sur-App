@@ -104,7 +104,10 @@ class CrearUsuarioViewModel : ViewModel() {
     private fun errorClave(valor: String): String? = when {
         valor.isBlank() -> "Ingresa una contrasena"
         valor.length < 8 -> "Minimo 8 caracteres"
-        valor.none { it.isLetter() } || valor.none { it.isDigit() } -> "Debe tener letras y numeros"
+        valor.none { it.isUpperCase() } -> "Debe tener una mayuscula"
+        valor.none { it.isLowerCase() } -> "Debe tener una minuscula"
+        valor.none { it.isDigit() } -> "Debe tener un numero"
+        valor.none { !it.isLetterOrDigit() } -> "Debe tener un caracter especial (ej: ! # $ %)"
         else -> null
     }
 
