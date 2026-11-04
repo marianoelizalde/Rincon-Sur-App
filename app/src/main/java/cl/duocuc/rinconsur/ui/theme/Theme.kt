@@ -11,26 +11,28 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 private val EsquemaClaro = lightColorScheme(
-    primary = Verde,
+    primary = AzulMontana,
     onPrimary = Color.White,
-    primaryContainer = VerdeClaro,
-    onPrimaryContainer = Color(0xFF3D250B),
-    secondary = VerdeOliva,
-    onSecondary = Color.White,
-    secondaryContainer = VerdeOlivaClaro,
-    onSecondaryContainer = Color(0xFF3A200A),
-    background = FondoClaro,
-    surface = FondoClaro,
-    surfaceVariant = Color(0xFFEBE5DD)
+    primaryContainer = Color(0xFFD5E0E8),
+    onPrimaryContainer = MarronRincon,
+    secondary = NaranjaSol,
+    onSecondary = MarronRincon,
+    secondaryContainer = Color(0xFFFFDCC2),
+    onSecondaryContainer = MarronRincon,
+    background = CremaRincon,
+    onBackground = MarronRincon,
+    surface = CremaRincon,
+    onSurface = MarronRincon,
+    surfaceVariant = Color(0xFFEFE6D2)
 )
 
 private val EsquemaOscuro = darkColorScheme(
-    primary = VerdeSuave,
-    onPrimary = Color(0xFF250E01),
+    primary = Color(0xFF5B7B90),
+    onPrimary = Color.White,
     onPrimaryContainer = Color(0xFFE6D5C8),
     primaryContainer = Color(0xFF966930),
-    secondary = VerdeOlivaSuave,
-    onSecondary = Color(0xFF8C581E),
+    secondary = NaranjaSol,
+    onSecondary = MarronRincon,
     secondaryContainer = Color(0xFF884825),
     onSecondaryContainer = Color(0xFFDCEDC8),
     background = FondoOscuro,

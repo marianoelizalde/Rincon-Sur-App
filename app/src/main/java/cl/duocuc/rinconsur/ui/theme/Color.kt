@@ -1,6 +1,11 @@
 package cl.duocuc.rinconsur.ui.theme
 
 import androidx.compose.ui.graphics.Color
+val AzulMontana = Color(0xFF3F5562)
+val NaranjaSol = Color(0xFFFE7C1A)
+val MarronRincon = Color(0xFF472718)
+val CremaRincon = Color(0xFFFEF8E5)
+
 
 val Verde = Color(0xFFBE3D0C)
 val VerdeClaro = Color(0xFFE39939)
