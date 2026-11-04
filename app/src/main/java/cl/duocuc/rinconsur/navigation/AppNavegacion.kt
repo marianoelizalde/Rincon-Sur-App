@@ -26,12 +26,7 @@ import cl.duocuc.rinconsur.ui.screens.SesionesScreen
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
 
-// =====================================================================
-//  AppNavegacion.kt  -  El NavController vive aqui: las pantallas solo
-//  reciben funciones (lambdas), nunca el controlador.
-//  RinconViewModel se crea UNA vez (en MainActivity) y desde aqui se reparten
-//  sus datos y sus funciones a cada pantalla, igual que UsuariosViewModel del profesor.
-// =====================================================================
+
 @Composable
 fun AppNavegacion(rincon: RinconViewModel) {
     val navController = rememberNavController()
@@ -172,6 +167,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
                 accesos = accesos,
                 onRegistrarPersona = rincon::registrarPersona,
                 onDeshacerUltimo = rincon::deshacerUltimo,
+                onFinalizar = rincon::finalizar,
                 alVolver = { navController.popBackStack() }
             )
         }

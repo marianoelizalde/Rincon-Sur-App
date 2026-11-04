@@ -24,7 +24,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +69,7 @@ fun RegistroScreen(
     registros: List<RegistroObservacion>,
     accesos: List<Acceso>,
     onRegistrarPersona: (RegistroObservacion) -> Unit,
+    onFinalizar: () -> Unit,
     onDeshacerUltimo: () -> Unit,
     alVolver: () -> Unit,
     viewModel: RegistroViewModel = viewModel()
@@ -72,10 +79,33 @@ fun RegistroScreen(
 
     val validos = Estadisticas.registrosValidos(registros)
 
+    var mostrarAlertaCierre by remember { mutableStateOf(false) }
+    val enCurso = sesion?.estado == EstadoSesion.EN_CURSO
+
+    BackHandler(enabled = enCurso) { mostrarAlertaCierre = true }
+
+    if (mostrarAlertaCierre) {
+        AlertDialog(
+            onDismissRequest = { mostrarAlertaCierre = false },
+            title = { Text("Turno en curso") },
+            text = { Text("Tienes un turno en curso. ¿Quieres finalizarlo antes de salir?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    mostrarAlertaCierre = false
+                    onFinalizar()
+                    alVolver()
+                }) { Text("Finalizar y salir") }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarAlertaCierre = false }) { Text("Seguir observando") }
+            }
+        )
+    }
+
     RegistroContent(
         uiState = uiState,
         codigoAcceso = accesos.firstOrNull { it.id == sesion?.idAcceso }?.codigo.orEmpty(),
-        enCurso = sesion?.estado == EstadoSesion.EN_CURSO,
+        enCurso = enCurso,
         totalValidos = validos.size,
         totalTransito = validos.count { it.clasificacion == Clasificacion.TRANSITO },
         totalVisita = validos.count { it.clasificacion == Clasificacion.VISITA },
@@ -161,7 +191,7 @@ fun RegistroContent(
                         targetState = totalValidos,
                         transitionSpec = {
                             (slideInVertically { it } + fadeIn()) togetherWith
-                                (slideOutVertically { -it } + fadeOut())
+                                    (slideOutVertically { -it } + fadeOut())
                         },
                         label = "contador"
                     ) { cantidad ->
