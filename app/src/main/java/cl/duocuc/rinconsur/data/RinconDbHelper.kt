@@ -22,7 +22,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 5
+        private const val VERSION_BD = 6
 
         private const val TABLA_PERFILES = "perfiles"
         private const val PER_ID = "id_perfil"
@@ -37,6 +37,16 @@ class RinconDbHelper(context: Context) :
         private const val COL_CLAVE = "clave"
         private const val COL_PERFIL = "id_perfil"
         private const val COL_AVATAR = "avatar"
+
+        private const val COL_TELEFONO = "telefono"
+
+        private const val COL_RUT = "rut"
+
+        private const val COL_CARGO = "cargo"
+
+        private const val COL_DIRECCION = "direccion"
+
+        private const val COL_COMUNA = "comuna"
 
 
         private const val TABLA_ACCESOS = "accesos"
@@ -82,7 +92,12 @@ class RinconDbHelper(context: Context) :
                     "$COL_CORREO TEXT NOT NULL UNIQUE, " +
                     "$COL_CLAVE TEXT NOT NULL, " +
                     "$COL_PERFIL INTEGER NOT NULL REFERENCES $TABLA_PERFILES($PER_ID), " +
-                    "$COL_AVATAR BLOB)"      // BLOB = guarda bytes tal cual (la foto)
+                    "$COL_AVATAR BLOB, " +
+                    "$COL_TELEFONO TEXT NOT NULL DEFAULT '', " +
+                    "$COL_RUT TEXT NOT NULL DEFAULT '', " +
+                    "$COL_CARGO TEXT NOT NULL DEFAULT '', " +
+                    "$COL_DIRECCION TEXT NOT NULL DEFAULT '', " +
+                    "$COL_COMUNA TEXT NOT NULL DEFAULT '')"
 
         private const val SQL_CREAR_ACCESOS =
             "CREATE TABLE $TABLA_ACCESOS (" +
@@ -183,7 +198,12 @@ class RinconDbHelper(context: Context) :
         correo = c.texto(COL_CORREO),
         clave = c.texto(COL_CLAVE),
         perfil = PerfilUsuario.entries.first { it.etiqueta == c.texto(PER_NOMBRE) },
-        avatar = c.bytesONulo(COL_AVATAR)
+        avatar = c.bytesONulo(COL_AVATAR),
+        telefono = c.texto(COL_TELEFONO),
+        rut = c.texto(COL_RUT),
+        cargo = c.texto(COL_CARGO),
+        direccion = c.texto(COL_DIRECCION),
+        comuna = c.texto(COL_COMUNA)
     )
 
     private fun leerAcceso(c: Cursor) = Acceso(
@@ -244,6 +264,11 @@ class RinconDbHelper(context: Context) :
         put(COL_CORREO, c.correo)
         put(COL_CLAVE, c.clave)
         put(COL_PERFIL, c.perfil.ordinal + 1)
+        put(COL_TELEFONO, c.telefono)
+        put(COL_RUT, c.rut)
+        put(COL_CARGO, c.cargo)
+        put(COL_DIRECCION, c.direccion)
+        put(COL_COMUNA, c.comuna)
     }
 
     private fun valoresDe(a: Acceso) = ContentValues().apply {
@@ -311,6 +336,25 @@ class RinconDbHelper(context: Context) :
         writableDatabase.update(
             TABLA_COLABORADORES,
             ContentValues().apply { put(COL_NOMBRE, nombre) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
+    fun actualizarTelefono(id: Int, telefono: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_TELEFONO, telefono) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+    fun actualizarDireccion(id: Int, direccion: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_DIRECCION, direccion) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+    fun actualizarComuna(id: Int, comuna: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_COMUNA, comuna) },
             "$COL_ID = ?", arrayOf(id.toString())
         )
     fun listarAccesos(): List<Acceso> =

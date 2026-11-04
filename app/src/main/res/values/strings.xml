@@ -43,7 +43,7 @@
     <string name="campo_hora_inicio">Hora de inicio</string>
     <string name="campo_hora_fin">Hora de termino</string>
     <string name="campo_motivo">Motivo</string>
-    <string name="ayuda_contrasena">Minimo 8 caracteres, con letras y numeros</string>
+    <string name="ayuda_contrasena">Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial</string>
     <string name="ayuda_fecha">Formato AAAA-MM-DD</string>
     <string name="ayuda_hora_inicio">Formato HH:MM, desde las 10:00</string>
     <string name="ayuda_hora_fin">Entre 30 y 60 minutos despues, hasta las 21:00</string>
@@ -140,5 +140,12 @@
     <string name="btn_volver_login">Volver a iniciar sesion</string>
 
     <string name="cd_logo">Logo de Rincon Sur</string>
+    <string name="campo_rut">RUT</string>
+    <string name="campo_cargo">Cargo</string>
+    <string name="campo_telefono">Teléfono</string>
+    <string name="campo_direccion">Dirección</string>
+    <string name="campo_comuna">Comuna</string>
+    <string name="perfil_rut">RUT: %1$s</string>
+
 
 </resources>

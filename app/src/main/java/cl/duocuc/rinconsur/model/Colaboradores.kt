@@ -13,8 +13,14 @@ data class Colaborador(
     val clave: String,
     val perfil: PerfilUsuario,
 
-    val avatar: ByteArray? = null
+    val avatar: ByteArray? = null,
+    val telefono: String = "",
+    val rut: String = "",
+    val cargo: String = "",
+    val direccion: String = "",
+    val comuna: String = ""
 )
+
 
 
 data class UsuarioActual(val colaborador: Colaborador)

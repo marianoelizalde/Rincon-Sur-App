@@ -151,7 +151,7 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?:
         return false
         if (!colaborador.nombre.equals(nombre.trim(), ignoreCase = true)) return false
-        db.actualizarClave(colaborador.id, nuevaClave) // UPDATE en SQLite
+        db.actualizarClave(colaborador.id, nuevaClave)
         return true
     }
     fun actualizarNombre(nombre: String): String? {
@@ -160,8 +160,38 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         if (limpio.isEmpty()) return "Ingresa tu nombre"
         if (limpio.length < 3) return "Minimo 3 caracteres"
         if (limpio.any { !it.isLetter() && it != ' ' }) return "Solo letras y espacios"
-        db.actualizarNombre(usuario.colaborador.id, limpio) // UPDATE en SQLite
+        db.actualizarNombre(usuario.colaborador.id, limpio)
         recargar() // vuelve a leer al usuario
+        return null
+    }
+    fun actualizarTelefono(telefono: String): String? {
+        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        val limpio = telefono.trim()
+        if (limpio.isNotEmpty() && (limpio.length != 9 || limpio.any { !it.isDigit() })) {
+            return "El teléfono debe tener 9 dígitos"
+        }
+        db.actualizarTelefono(usuario.colaborador.id, limpio)
+        recargar()
+        return null
+    }
+
+    fun actualizarDireccion(direccion: String): String? {
+        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        val limpio = direccion.trim()
+        if (limpio.isNotEmpty() && limpio.length < 5) return "Mínimo 5 caracteres"
+        if (limpio.length > 80) return "Máximo 80 caracteres"
+        db.actualizarDireccion(usuario.colaborador.id, limpio)
+        recargar()
+        return null
+    }
+
+    fun actualizarComuna(comuna: String): String? {
+        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        val limpio = comuna.trim()
+        if (limpio.isNotEmpty() && limpio.length < 3) return "Mínimo 3 caracteres"
+        if (limpio.any { !it.isLetter() && it != ' ' }) return "Solo letras y espacios"
+        db.actualizarComuna(usuario.colaborador.id, limpio)
+        recargar()
         return null
     }
 
