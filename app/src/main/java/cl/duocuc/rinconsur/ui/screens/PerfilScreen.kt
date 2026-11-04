@@ -64,6 +64,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.ui.text.input.KeyboardType
 
 
 @Composable
@@ -76,7 +77,10 @@ fun PerfilScreen(
     onTemaSeleccionado: (ModoTema) -> Unit,
     onFotoTomada: (Bitmap) -> Unit,
     onImagenElegida: (Uri) -> Unit,
-    onActualizarNombre: (String) -> String?
+    onActualizarNombre: (String) -> String?,
+    onActualizarTelefono: (String) -> String?,
+    onActualizarDireccion: (String) -> String?,
+    onActualizarComuna: (String) -> String?
 ) {
 
     val contexto = LocalContext.current
@@ -184,6 +188,9 @@ fun PerfilScreen(
                 }
                 error
             },
+            onGuardarTelefono = onActualizarTelefono,
+            onGuardarDireccion = onActualizarDireccion,
+            onGuardarComuna = onActualizarComuna,
             onTemaSeleccionado = onTemaSeleccionado,
             onCerrarSesion = alCerrarSesion,
             onAbrirMenu = abrirMenu
@@ -200,6 +207,9 @@ fun PerfilContent(
     onTomarFoto: () -> Unit,
     onElegirDeGaleria: () -> Unit,
     onGuardarNombre: (String) -> String?,
+    onGuardarTelefono: (String) -> String?,
+    onGuardarDireccion: (String) -> String?,
+    onGuardarComuna: (String) -> String?,
     onTemaSeleccionado: (ModoTema) -> Unit,
     onCerrarSesion: () -> Unit,
     onAbrirMenu: () -> Unit,
@@ -208,6 +218,15 @@ fun PerfilContent(
     var nombreEditado by remember(colaborador?.nombre) {
         mutableStateOf(colaborador?.nombre.orEmpty()) }
     var errorNombre by remember { mutableStateOf<String?>(null) }
+    var telefonoEditado by remember(colaborador?.telefono) {
+        mutableStateOf(colaborador?.telefono.orEmpty()) }
+    var errorTelefono by remember { mutableStateOf<String?>(null) }
+    var direccionEditada by remember(colaborador?.direccion) {
+        mutableStateOf(colaborador?.direccion.orEmpty()) }
+    var errorDireccion by remember { mutableStateOf<String?>(null) }
+    var comunaEditada by remember(colaborador?.comuna) {
+        mutableStateOf(colaborador?.comuna.orEmpty()) }
+    var errorComuna by remember { mutableStateOf<String?>(null) }
     var editando by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
@@ -247,7 +266,25 @@ fun PerfilContent(
 
             Text(colaborador?.nombre.orEmpty(), style = MaterialTheme.typography.headlineSmall)
             Text(colaborador?.perfil?.etiqueta.orEmpty(), style = MaterialTheme.typography.bodyLarge)
+            if (!colaborador?.cargo.isNullOrBlank()) {
+                Text(colaborador?.cargo.orEmpty(), style = MaterialTheme.typography.bodyLarge)
+            }
             Text(colaborador?.correo.orEmpty(), style = MaterialTheme.typography.bodyMedium)
+            if (!colaborador?.rut.isNullOrBlank()) {
+                Text(
+                    stringResource(R.string.perfil_rut, colaborador?.rut.orEmpty()),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            if (!colaborador?.telefono.isNullOrBlank()) {
+                Text(colaborador?.telefono.orEmpty(), style = MaterialTheme.typography.bodyMedium)
+            }
+            val ubicacion = listOfNotNull(colaborador?.direccion, colaborador?.comuna)
+                .filter { it.isNotBlank() }
+                .joinToString(", ")
+            if (ubicacion.isNotEmpty()) {
+                Text(ubicacion, style = MaterialTheme.typography.bodyMedium)
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacioItem)) {
                 BotonPrincipal(
@@ -280,11 +317,37 @@ fun PerfilContent(
                         icono = R.drawable.ic_persona,
                         error = errorNombre
                     )
+                    CampoTexto(
+                        valor = telefonoEditado,
+                        onValorCambia = { telefonoEditado = it; errorTelefono = null },
+                        etiqueta = stringResource(R.string.campo_telefono),
+                        icono = R.drawable.ic_persona,
+                        error = errorTelefono,
+                        tipoTeclado = KeyboardType.Phone
+                    )
+                    CampoTexto(
+                        valor = direccionEditada,
+                        onValorCambia = { direccionEditada = it; errorDireccion = null },
+                        etiqueta = stringResource(R.string.campo_direccion),
+                        icono = R.drawable.ic_persona,
+                        error = errorDireccion
+                    )
+                    CampoTexto(
+                        valor = comunaEditada,
+                        onValorCambia = { comunaEditada = it; errorComuna = null },
+                        etiqueta = stringResource(R.string.campo_comuna),
+                        icono = R.drawable.ic_persona,
+                        error = errorComuna
+                    )
                     BotonPrincipal(
                         texto = stringResource(R.string.btn_guardar_cambios),
                         onClick = {
                             errorNombre = onGuardarNombre(nombreEditado)
-                            if (errorNombre == null) editando = false
+                            errorTelefono = onGuardarTelefono(telefonoEditado)
+                            errorDireccion = onGuardarDireccion(direccionEditada)
+                            errorComuna = onGuardarComuna(comunaEditada)
+                            if (errorNombre == null && errorTelefono == null &&
+                                errorDireccion == null && errorComuna == null) editando = false
                         },
                         icono = R.drawable.ic_check,
                         modifier = Modifier.fillMaxWidth()
@@ -322,6 +385,7 @@ private fun PerfilPreview() {
             foto = null,
             tema = ModoTema.SISTEMA,
             onTomarFoto = {}, onElegirDeGaleria = {}, onGuardarNombre = { null },
+            onGuardarTelefono = { null }, onGuardarDireccion = { null }, onGuardarComuna = { null },
             onTemaSeleccionado = {},
             onCerrarSesion = {}, onAbrirMenu = {}
         )

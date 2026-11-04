@@ -22,8 +22,16 @@ object DatosEjemplo {
 
 
     val colaboradores = listOf(
-        Colaborador(3, "Mariano Elizalde", "mariano@rinconsur.cl", "Rincon2026", PerfilUsuario.SUPERVISOR),
-        Colaborador(7, "Lukas LLanten", "lukas@rinconsur.cl", "Rincon2026", PerfilUsuario.OBSERVADOR)
+        Colaborador(
+            3, "Mariano Elizalde", "mariano@rinconsur.cl", "Rincon2026", PerfilUsuario.SUPERVISOR,
+            telefono = "912345678", rut = "12345678-5", cargo = "Supervisor de sala",
+            direccion = "Av. Providencia 1234", comuna = "Providencia"
+        ),
+        Colaborador(
+            7, "Lukas LLanten", "lukas@rinconsur.cl", "Rincon2026", PerfilUsuario.OBSERVADOR,
+            telefono = "987654321", rut = "18765432-7", cargo = "Observador de acceso",
+            direccion = "Los Aromos 567", comuna = "Maipu"
+        )
     )
 
     val sesiones = listOf(
@@ -49,7 +57,7 @@ object DatosEjemplo {
         for (sesion in sesiones) {
             val (transito, visita, noDeterminado) = cantidades[sesion.id] ?: continue
             repeat(transito) { i ->
-                // El destino de un transito es otro acceso distinto al de la sesion.
+
                 val destino = accesos.map { it.id }.filter { it != sesion.idAcceso }[i % 3]
                 lista += nuevo(sesion, Clasificacion.TRANSITO, i)
             }

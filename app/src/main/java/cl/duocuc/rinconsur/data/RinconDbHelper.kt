@@ -22,7 +22,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 6
+        private const val VERSION_BD = 7
 
         private const val TABLA_PERFILES = "perfiles"
         private const val PER_ID = "id_perfil"
