@@ -53,6 +53,9 @@ fun CrearUsuarioScreen(
         uiState = uiState,
         onNombreCambia = viewModel::onNombreCambia,
         onCorreoCambia = viewModel::onCorreoCambia,
+        onRutCambia = viewModel::onRutCambia,
+        onCargoCambia = viewModel::onCargoCambia,
+        onTelefonoCambia = viewModel::onTelefonoCambia,
         onClaveCambia = viewModel::onClaveCambia,
         onConfirmarCambia = viewModel::onConfirmarCambia,
         onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
@@ -76,6 +79,9 @@ fun CrearUsuarioContent(
     uiState: CrearUsuarioUiState,
     onNombreCambia: (String) -> Unit,
     onCorreoCambia: (String) -> Unit,
+    onRutCambia: (String) -> Unit,
+    onCargoCambia: (String) -> Unit,
+    onTelefonoCambia: (String) -> Unit,
     onClaveCambia: (String) -> Unit,
     onConfirmarCambia: (String) -> Unit,
     onAlternarVisibilidad: () -> Unit,
@@ -133,6 +139,28 @@ fun CrearUsuarioContent(
                     icono = R.drawable.ic_correo,
                     error = uiState.errorCorreo,
                     tipoTeclado = KeyboardType.Email
+                )
+                CampoTexto(
+                    valor = uiState.rut,
+                    onValorCambia = onRutCambia,
+                    etiqueta = stringResource(R.string.campo_rut),
+                    icono = R.drawable.ic_persona,
+                    error = uiState.errorRut
+                )
+                CampoTexto(
+                    valor = uiState.cargo,
+                    onValorCambia = onCargoCambia,
+                    etiqueta = stringResource(R.string.campo_cargo),
+                    icono = R.drawable.ic_persona,
+                    error = uiState.errorCargo
+                )
+                CampoTexto(
+                    valor = uiState.telefono,
+                    onValorCambia = onTelefonoCambia,
+                    etiqueta = stringResource(R.string.campo_telefono),
+                    icono = R.drawable.ic_persona,
+                    error = uiState.errorTelefono,
+                    tipoTeclado = KeyboardType.Phone
                 )
                 CampoContrasena(
                     valor = uiState.clave,
@@ -202,7 +230,8 @@ private fun CrearUsuarioVacioPreview() {
     RinconSurTheme {
         CrearUsuarioContent(
             uiState = CrearUsuarioUiState(),
-            onNombreCambia = {}, onCorreoCambia = {}, onClaveCambia = {}, onConfirmarCambia = {},
+            onNombreCambia = {}, onCorreoCambia = {}, onRutCambia = {}, onCargoCambia = {}, onTelefonoCambia = {},
+            onClaveCambia = {}, onConfirmarCambia = {},
             onAlternarVisibilidad = {}, onPerfilSeleccionado = {}, onTerminosCambia = {},
             onCrear = {}, onLimpiar = {}, onVolver = {}
         )
@@ -223,7 +252,8 @@ private fun CrearUsuarioConErroresPreview() {
                 errorConfirmar = "Repite la contrasena",
                 errorTerminos = "Debes aceptar para crear la cuenta"
             ),
-            onNombreCambia = {}, onCorreoCambia = {}, onClaveCambia = {}, onConfirmarCambia = {},
+            onNombreCambia = {}, onCorreoCambia = {}, onRutCambia = {}, onCargoCambia = {}, onTelefonoCambia = {},
+            onClaveCambia = {}, onConfirmarCambia = {},
             onAlternarVisibilidad = {}, onPerfilSeleccionado = {}, onTerminosCambia = {},
             onCrear = {}, onLimpiar = {}, onVolver = {}
         )
