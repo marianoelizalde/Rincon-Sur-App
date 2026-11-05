@@ -7,11 +7,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class ProgramarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProgramarUiState())
     val uiState: StateFlow<ProgramarUiState> = _uiState.asStateFlow()
+
+    // La pantalla parte con valores razonables: hoy, 10:00 y 45 minutos
+    init {
+        onFechaCambia(SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()))
+        onHoraInicioCambia("10:00")
+        onDuracionSeleccionada(45)
+    }
 
     fun onAccesoSeleccionado(id: Int) {
         _uiState.update { it.copy(idAcceso = id, errorAcceso = null, errorGeneral = null) }
@@ -26,12 +36,53 @@ class ProgramarViewModel : ViewModel() {
     }
 
     fun onHoraInicioCambia(valor: String) {
-        _uiState.update { it.copy(horaInicio = valor, errorInicio = errorHora(valor), errorGeneral = null) }
+        _uiState.update {
+            val fin = calcularFin(valor, it.duracion)
+            it.copy(
+                horaInicio = valor,
+                horaFin = fin,
+                errorInicio = errorHora(valor),
+                errorFin = if (fin.isEmpty()) null else errorFin(valor, fin),
+                errorGeneral = null
+            )
+        }
     }
 
-    fun onHoraFinCambia(valor: String) {
+    fun onDuracionSeleccionada(minutos: Int) {
         _uiState.update {
-            it.copy(horaFin = valor, errorFin = errorFin(it.horaInicio, valor), errorGeneral = null)
+            val fin = calcularFin(it.horaInicio, minutos)
+            it.copy(
+                duracion = minutos,
+                horaFin = fin,
+                errorFin = if (fin.isEmpty()) null else errorFin(it.horaInicio, fin),
+                errorGeneral = null
+            )
+        }
+    }
+
+
+    fun onHoraCambiaEn(delta: Int) {
+        val (hora, minuto) = partesDeInicio()
+        onHoraInicioCambia("%02d:%02d".format((hora + delta).coerceIn(10, 20), minuto))
+    }
+
+
+    fun onMinutosCambiaEn(delta: Int) {
+        val (hora, minuto) = partesDeInicio()
+        onHoraInicioCambia("%02d:%02d".format(hora, (minuto + delta * 15 + 60) % 60))
+    }
+
+    fun onDuracionCambiaEn(delta: Int) {
+        val actual = _uiState.value.duracion ?: 45
+        onDuracionSeleccionada((actual + delta * 15).coerceIn(30, 60))
+    }
+
+    private fun partesDeInicio(): Pair<Int, Int> {
+        val inicio = _uiState.value.horaInicio
+        return if (errorHora(inicio) == null) {
+            minutos(inicio) / 60 to minutos(inicio) % 60
+        } else {
+            10 to 0
         }
     }
 
@@ -43,7 +94,8 @@ class ProgramarViewModel : ViewModel() {
         val errorObservador = if (estado.idObservador == null) "Elige un observador" else null
         val errorFecha = errorFecha(estado.fecha)
         val errorInicio = errorHora(estado.horaInicio)
-        val errorFin = errorFin(estado.horaInicio, estado.horaFin)
+        val errorFin = if (estado.duracion == null) "Elige la duracion"
+        else errorFin(estado.horaInicio, estado.horaFin)
 
         _uiState.update {
             it.copy(
@@ -101,7 +153,11 @@ class ProgramarViewModel : ViewModel() {
     private fun minutos(hora: String): Int =
         hora.substring(0, 2).toInt() * 60 + hora.substring(3, 5).toInt()
 
-
+    private fun calcularFin(inicio: String, duracion: Int?): String {
+        if (duracion == null || errorHora(inicio) != null) return ""
+        val total = minutos(inicio) + duracion
+        return "%02d:%02d".format(total / 60, total % 60)
+    }
     private fun errorFin(inicio: String, fin: String): String? {
         errorHora(fin)?.let { return it }
         if (errorHora(inicio) != null) return null

@@ -6,6 +6,8 @@ data class ProgramarUiState(
     val fecha: String="",
     val horaInicio: String="",
     val horaFin: String="",
+    val duracion: Int?=null,
+
     val errorAcceso: String?=null,
     val errorObservador: String?=null,
     val errorFecha: String?=null,

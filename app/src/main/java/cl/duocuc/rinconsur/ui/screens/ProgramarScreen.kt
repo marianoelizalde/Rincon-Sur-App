@@ -3,6 +3,7 @@ package cl.duocuc.rinconsur.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -17,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,12 +33,15 @@ import cl.duocuc.rinconsur.model.PerfilUsuario
 import cl.duocuc.rinconsur.model.ProgramarUiState
 import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.ui.components.BotonPrincipal
-import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.components.GrupoChips
+import cl.duocuc.rinconsur.ui.components.SelectorPaso
 import cl.duocuc.rinconsur.ui.components.TarjetaSeccion
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.ProgramarViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 
 @Composable
@@ -57,8 +62,9 @@ fun ProgramarScreen(
         onAccesoSeleccionado = viewModel::onAccesoSeleccionado,
         onObservadorSeleccionado = viewModel::onObservadorSeleccionado,
         onFechaCambia = viewModel::onFechaCambia,
-        onHoraInicioCambia = viewModel::onHoraInicioCambia,
-        onHoraFinCambia = viewModel::onHoraFinCambia,
+        onHoraCambiaEn = viewModel::onHoraCambiaEn,
+        onMinutosCambiaEn = viewModel::onMinutosCambiaEn,
+        onDuracionCambiaEn = viewModel::onDuracionCambiaEn,
         onProgramar = {
 
             viewModel.onProgramar()?.let { sesion ->
@@ -79,11 +85,17 @@ fun ProgramarContent(
     onAccesoSeleccionado: (Int) -> Unit,
     onObservadorSeleccionado: (Int) -> Unit,
     onFechaCambia: (String) -> Unit,
-    onHoraInicioCambia: (String) -> Unit,
-    onHoraFinCambia: (String) -> Unit,
+    onHoraCambiaEn: (Int) -> Unit,
+    onMinutosCambiaEn: (Int) -> Unit,
+    onDuracionCambiaEn: (Int) -> Unit,
     onProgramar: () -> Unit,
     onVolver: () -> Unit
 ) {
+    val fechas = remember { proximasFechas() }
+    val posicionFecha = fechas.indexOf(uiState.fecha).coerceAtLeast(0)
+    val duracion = uiState.duracion ?: 45
+    val errorHorario = uiState.errorFecha ?: uiState.errorInicio ?: uiState.errorFin
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -132,30 +144,65 @@ fun ProgramarContent(
             }
 
             TarjetaSeccion(titulo = stringResource(R.string.seccion_cuando)) {
-                CampoTexto(
-                    valor = uiState.fecha,
-                    onValorCambia = onFechaCambia,
-                    etiqueta = stringResource(R.string.campo_fecha),
-                    icono = R.drawable.ic_calendario,
-                    error = uiState.errorFecha,
-                    ayuda = stringResource(R.string.ayuda_fecha)
+                SelectorPaso(
+                    titulo = stringResource(R.string.campo_fecha),
+                    valor = when (posicionFecha) {
+                        0 -> "Hoy"
+                        1 -> "Mañana"
+                        else -> fechas[posicionFecha].substring(8, 10) + "/" +
+                                fechas[posicionFecha].substring(5, 7)
+                    },
+                    onMenos = { onFechaCambia(fechas[posicionFecha - 1]) },
+                    onMas = { onFechaCambia(fechas[posicionFecha + 1]) },
+                    menosHabilitado = posicionFecha > 0,
+                    masHabilitado = posicionFecha < fechas.lastIndex,
+                    modifier = Modifier.fillMaxWidth()
                 )
-                CampoTexto(
-                    valor = uiState.horaInicio,
-                    onValorCambia = onHoraInicioCambia,
-                    etiqueta = stringResource(R.string.campo_hora_inicio),
-                    icono = R.drawable.ic_reloj,
-                    error = uiState.errorInicio,
-                    ayuda = stringResource(R.string.ayuda_hora_inicio)
+
+                Text(
+                    text = stringResource(R.string.campo_hora_inicio),
+                    style = MaterialTheme.typography.titleSmall
                 )
-                CampoTexto(
-                    valor = uiState.horaFin,
-                    onValorCambia = onHoraFinCambia,
-                    etiqueta = stringResource(R.string.campo_hora_fin),
-                    icono = R.drawable.ic_reloj,
-                    error = uiState.errorFin,
-                    ayuda = stringResource(R.string.ayuda_hora_fin)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    SelectorPaso(
+                        titulo = "Hora",
+                        valor = uiState.horaInicio.take(2),
+                        onMenos = { onHoraCambiaEn(-1) },
+                        onMas = { onHoraCambiaEn(1) },
+                        modifier = Modifier.weight(1f)
+                    )
+                    SelectorPaso(
+                        titulo = "Minutos",
+                        valor = uiState.horaInicio.takeLast(2),
+                        onMenos = { onMinutosCambiaEn(-1) },
+                        onMas = { onMinutosCambiaEn(1) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                SelectorPaso(
+                    titulo = stringResource(R.string.campo_duracion),
+                    valor = "$duracion min",
+                    onMenos = { onDuracionCambiaEn(-1) },
+                    onMas = { onDuracionCambiaEn(1) },
+                    menosHabilitado = duracion > 30,
+                    masHabilitado = duracion < 60,
+                    modifier = Modifier.fillMaxWidth()
                 )
+
+                if (uiState.horaFin.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.texto_hora_fin, uiState.horaFin),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                if (errorHorario != null) {
+                    Text(
+                        text = errorHorario,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
 
             AnimatedVisibility(visible = uiState.errorGeneral != null) {
@@ -176,16 +223,28 @@ fun ProgramarContent(
     }
 }
 
+// Los proximos 7 dias en formato AAAA-MM-DD (el primero es hoy)
+private fun proximasFechas(dias: Int = 7): List<String> {
+    val formato = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val calendario = Calendar.getInstance()
+    return List(dias) {
+        val fecha = formato.format(calendario.time)
+        calendario.add(Calendar.DAY_OF_YEAR, 1)
+        fecha
+    }
+}
+
 @Preview(showBackground = true, heightDp = 1200)
 @Composable
 private fun ProgramarVacioPreview() {
     RinconSurTheme {
         ProgramarContent(
-            uiState = ProgramarUiState(),
+            uiState = ProgramarUiState(horaInicio = "10:00", duracion = 45, horaFin = "10:45"),
             accesos = DatosEjemplo.accesos,
             observadores = DatosEjemplo.colaboradores.filter { it.perfil == PerfilUsuario.OBSERVADOR },
             onAccesoSeleccionado = {}, onObservadorSeleccionado = {}, onFechaCambia = {},
-            onHoraInicioCambia = {}, onHoraFinCambia = {}, onProgramar = {}, onVolver = {}
+            onHoraCambiaEn = {}, onMinutosCambiaEn = {}, onDuracionCambiaEn = {},
+            onProgramar = {}, onVolver = {}
         )
     }
 }
@@ -196,18 +255,19 @@ private fun ProgramarConErroresPreview() {
     RinconSurTheme {
         ProgramarContent(
             uiState = ProgramarUiState(
-                fecha = "15/09",
-                horaInicio = "09:00",
+                horaInicio = "20:45",
+                duracion = 60,
+                horaFin = "21:45",
                 errorAcceso = "Elige un acceso",
                 errorObservador = "Elige un observador",
-                errorFecha = "Usa el formato AAAA-MM-DD",
-                errorFin = "Ingresa la hora",
+                errorFin = "La tienda cierra a las 21:00",
                 errorGeneral = "Ya hay una sesion en ese acceso y horario"
             ),
             accesos = DatosEjemplo.accesos,
             observadores = DatosEjemplo.colaboradores.filter { it.perfil == PerfilUsuario.OBSERVADOR },
             onAccesoSeleccionado = {}, onObservadorSeleccionado = {}, onFechaCambia = {},
-            onHoraInicioCambia = {}, onHoraFinCambia = {}, onProgramar = {}, onVolver = {}
+            onHoraCambiaEn = {}, onMinutosCambiaEn = {}, onDuracionCambiaEn = {},
+            onProgramar = {}, onVolver = {}
         )
     }
 }

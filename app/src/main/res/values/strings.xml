@@ -145,6 +145,8 @@
     <string name="campo_direccion">Dirección</string>
     <string name="campo_comuna">Comuna</string>
     <string name="perfil_rut">RUT: %1$s</string>
+    <string name="campo_duracion">Duración</string>
+    <string name="texto_hora_fin">Termina a las %1$s</string>
 
 
 </resources>

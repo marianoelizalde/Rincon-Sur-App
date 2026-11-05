@@ -25,8 +25,10 @@ import androidx.compose.ui.unit.dp
 import cl.duocuc.rinconsur.R
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
-
-
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.text.style.TextAlign
 @Composable
 fun CasillaConTexto(
     texto: String,
@@ -135,5 +137,48 @@ private fun ControlesSeleccionPreview() {
                 textoDe = { it }
             )
         }
+    }
+}
+// Selector estilo alarma: [-]  valor  [+]
+@Composable
+fun SelectorPaso(
+    titulo: String,
+    valor: String,
+    onMenos: () -> Unit,
+    onMas: () -> Unit,
+    modifier: Modifier = Modifier,
+    menosHabilitado: Boolean = true,
+    masHabilitado: Boolean = true
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(titulo, style = MaterialTheme.typography.titleSmall)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Dimens.espacioChico)
+        ) {
+            BotonPaso(simbolo = "−", onClick = onMenos, habilitado = menosHabilitado)
+            Text(
+                text = valor,
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.widthIn(min = 64.dp)
+            )
+            BotonPaso(simbolo = "+", onClick = onMas, habilitado = masHabilitado)
+        }
+    }
+}
+
+@Composable
+private fun BotonPaso(simbolo: String, onClick: () -> Unit, habilitado: Boolean) {
+    OutlinedButton(
+        onClick = onClick,
+        enabled = habilitado,
+        contentPadding = PaddingValues(0.dp),
+        modifier = Modifier.size(44.dp)
+    ) {
+        Text(simbolo, style = MaterialTheme.typography.titleLarge)
     }
 }
