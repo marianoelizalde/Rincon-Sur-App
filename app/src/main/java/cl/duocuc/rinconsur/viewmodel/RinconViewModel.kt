@@ -19,6 +19,9 @@ import cl.duocuc.rinconsur.model.UsuarioActual
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class RinconViewModel(application: Application) : AndroidViewModel(application) {
@@ -213,7 +216,24 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         recargar()
     }
 
-    fun iniciar() = cambiarEstado(EstadoSesion.PROGRAMADA, EstadoSesion.EN_CURSO)
+    fun iniciar() {
+        val sesion = sesionAbierta.value ?: return
+        val ahora = Date()
+        val hoy = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(ahora)
+        val hora = SimpleDateFormat("HH:mm", Locale.US).format(ahora)
+
+        val error = when {
+            hoy != sesion.fecha -> "Esta sesion es para el ${sesion.fecha}"
+            hora < sesion.horaInicio -> "Aun no es la hora: parte a las ${sesion.horaInicio}"
+            hora >= sesion.horaFin -> "La sesion ya termino a las ${sesion.horaFin}"
+            else -> null
+        }
+        if (error != null) {
+            _mensaje.value = error
+            return
+        }
+        cambiarEstado(EstadoSesion.PROGRAMADA, EstadoSesion.EN_CURSO)
+    }
 
     fun finalizar() = cambiarEstado(EstadoSesion.EN_CURSO, EstadoSesion.FINALIZADA)
 
