@@ -147,6 +147,8 @@
     <string name="perfil_rut">RUT: %1$s</string>
     <string name="campo_duracion">Duración</string>
     <string name="texto_hora_fin">Termina a las %1$s</string>
+    <string name="titulo_usuarios">Usuarios</string>
+    <string name="btn_nuevo_usuario">Nuevo usuario</string>
 
 
 </resources>

@@ -22,7 +22,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 7
+        private const val VERSION_BD = 8
 
         private const val TABLA_PERFILES = "perfiles"
         private const val PER_ID = "id_perfil"
@@ -47,6 +47,8 @@ class RinconDbHelper(context: Context) :
         private const val COL_DIRECCION = "direccion"
 
         private const val COL_COMUNA = "comuna"
+
+        private const val COL_ACTIVO = "activo"
 
 
         private const val TABLA_ACCESOS = "accesos"
@@ -97,7 +99,8 @@ class RinconDbHelper(context: Context) :
                     "$COL_RUT TEXT NOT NULL DEFAULT '', " +
                     "$COL_CARGO TEXT NOT NULL DEFAULT '', " +
                     "$COL_DIRECCION TEXT NOT NULL DEFAULT '', " +
-                    "$COL_COMUNA TEXT NOT NULL DEFAULT '')"
+                    "$COL_COMUNA TEXT NOT NULL DEFAULT '', " +
+                    "$COL_ACTIVO INTEGER NOT NULL DEFAULT 1)"
 
         private const val SQL_CREAR_ACCESOS =
             "CREATE TABLE $TABLA_ACCESOS (" +
@@ -203,7 +206,8 @@ class RinconDbHelper(context: Context) :
         rut = c.texto(COL_RUT),
         cargo = c.texto(COL_CARGO),
         direccion = c.texto(COL_DIRECCION),
-        comuna = c.texto(COL_COMUNA)
+        comuna = c.texto(COL_COMUNA),
+        activo = c.entero(COL_ACTIVO) == 1
     )
 
     private fun leerAcceso(c: Cursor) = Acceso(
@@ -269,6 +273,7 @@ class RinconDbHelper(context: Context) :
         put(COL_CARGO, c.cargo)
         put(COL_DIRECCION, c.direccion)
         put(COL_COMUNA, c.comuna)
+        put(COL_ACTIVO, if (c.activo) 1 else 0)
     }
 
     private fun valoresDe(a: Acceso) = ContentValues().apply {
@@ -357,6 +362,38 @@ class RinconDbHelper(context: Context) :
             ContentValues().apply { put(COL_COMUNA, comuna) },
             "$COL_ID = ?", arrayOf(id.toString())
         )
+
+    fun actualizarActivo(id: Int, activo: Boolean): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_ACTIVO, if (activo) 1 else 0) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
+    fun actualizarPerfil(id: Int, perfil: PerfilUsuario): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply { put(COL_PERFIL, perfil.ordinal + 1) },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
+
+    fun actualizarDatos(id: Int, nombre: String, rut: String, cargo: String, telefono: String): Int =
+        writableDatabase.update(
+            TABLA_COLABORADORES,
+            ContentValues().apply {
+                put(COL_NOMBRE, nombre)
+                put(COL_RUT, rut)
+                put(COL_CARGO, cargo)
+                put(COL_TELEFONO, telefono)
+            },
+            "$COL_ID = ?", arrayOf(id.toString())
+        )
+
+    fun buscarColaboradorPorRut(rut: String): Colaborador? =
+        consultar("$SQL_SELECT_COLABORADORES WHERE c.$COL_RUT = ?", arrayOf(rut), ::leerColaborador)
+            .firstOrNull()
+
     fun listarAccesos(): List<Acceso> =
         consultar("SELECT * FROM $TABLA_ACCESOS ORDER BY $ACC_CODIGO", null, ::leerAcceso)
 

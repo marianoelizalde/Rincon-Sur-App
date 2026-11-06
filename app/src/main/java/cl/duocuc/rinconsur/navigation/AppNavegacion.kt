@@ -25,6 +25,7 @@ import cl.duocuc.rinconsur.ui.screens.SesionScreen
 import cl.duocuc.rinconsur.ui.screens.SesionesScreen
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
+import cl.duocuc.rinconsur.ui.screens.UsuariosScreen
 
 
 @Composable
@@ -41,6 +42,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
     val sesionAbierta by rincon.sesionAbierta.collectAsStateWithLifecycle()
     val registros by rincon.registros.collectAsStateWithLifecycle()
     val mensaje by rincon.mensaje.collectAsStateWithLifecycle()
+    val usuarios by rincon.usuarios.collectAsStateWithLifecycle()
 
     val inicio = remember { if (rincon.usuarioActual.value == null) Ruta.Login.ruta else Ruta.Sesiones.ruta }
 
@@ -52,6 +54,10 @@ fun AppNavegacion(rincon: RinconViewModel) {
 
     val irACrearUsuario: () -> Unit = {
         navController.navigate(Ruta.CrearUsuario.ruta) { launchSingleTop = true }
+    }
+
+    val irAUsuarios: () -> Unit = {
+        navController.navigate(Ruta.Usuarios.ruta) { launchSingleTop = true }
     }
 
     NavHost(
@@ -89,6 +95,23 @@ fun AppNavegacion(rincon: RinconViewModel) {
             }
         }
 
+        composable(Ruta.Usuarios.ruta) {
+            if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR) {
+                UsuariosScreen(
+                    usuarios = usuarios,
+                    idActual = usuarioActual?.colaborador?.id,
+                    mensaje = mensaje,
+                    onMensajeMostrado = rincon::limpiarMensaje,
+                    onCambiarActivo = rincon::cambiarActivo,
+                    onCambiarRol = rincon::cambiarRol,
+                    onNuevoUsuario = irACrearUsuario,
+                    onVolver = { navController.popBackStack() }
+                )
+            } else {
+                LaunchedEffect(Unit) { navController.popBackStack() }
+            }
+        }
+
         composable(Ruta.Sesiones.ruta) {
             SesionesScreen(
                 usuario = usuarioActual,
@@ -100,7 +123,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
                 alProgramar = { navController.navigate(Ruta.Programar.ruta) },
                 alAbrirSesion = { id -> navController.navigate(Ruta.Sesion.crear(id)) },
                 alIrAPerfil = { navController.navigate(Ruta.Perfil.ruta) { launchSingleTop = true } },
-                alIrACrearUsuario = irACrearUsuario,
+                alIrACrearUsuario = irAUsuarios,
                 alCerrarSesion = cerrarSesion
             )
         }
@@ -109,7 +132,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
             PerfilScreen(
                 usuario = usuarioActual,
                 alIrASesiones = { navController.popBackStack(Ruta.Sesiones.ruta, inclusive = false) },
-                alIrACrearUsuario = irACrearUsuario,
+                alIrACrearUsuario = irAUsuarios,
                 alCerrarSesion = cerrarSesion,
                 tema = tema,
                 onTemaSeleccionado = rincon::onTemaSeleccionado,

@@ -56,6 +56,9 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
     private val _nombres = MutableStateFlow<Map<Int, String>>(emptyMap())
     val nombres: StateFlow<Map<Int, String>> = _nombres.asStateFlow()
 
+    private val _usuarios = MutableStateFlow<List<Colaborador>>(emptyList())
+    val usuarios: StateFlow<List<Colaborador>> = _usuarios.asStateFlow()
+
 
 
     private val _sesionAbierta = MutableStateFlow<SesionObservacion?>(null)
@@ -82,12 +85,13 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         _usuarioActual.value = if (id == -1) {
             null
         } else {
-            db.buscarColaboradorPorId(id)?.let { UsuarioActual(it) }
+            db.buscarColaboradorPorId(id)?.takeIf { it.activo }?.let { UsuarioActual(it) }
         }
         _sesiones.value = db.listarSesiones()
         _accesos.value = db.listarAccesos()
         val colaboradores = db.listarColaboradores()
-        _observadores.value = colaboradores.filter { it.perfil == PerfilUsuario.OBSERVADOR }
+        _usuarios.value = colaboradores
+        _observadores.value = colaboradores.filter { it.perfil == PerfilUsuario.OBSERVADOR && it.activo }
         _nombres.value = colaboradores.associate { it.id to it.nombre }
         _sesionAbierta.value = db.buscarSesion(idSesionAbierta)
         _registros.value = db.listarRegistros(idSesionAbierta)
@@ -101,7 +105,7 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
 
     fun iniciarSesion(correo: String, clave: String): Boolean {
         val colaborador = db.buscarColaboradorPorCorreo(correo.lowercase())
-        if (colaborador == null || colaborador.clave != clave) return false
+        if (colaborador == null || !colaborador.activo || colaborador.clave != clave) return false
         sesion.guardarSesion(colaborador.id)
         recargar()
         return true
@@ -116,6 +120,44 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         _mensaje.value = "Usuario creado: ${colaborador.nombre}"
         recargar()
         return true
+    }
+
+
+    private fun errorDeGestion(id: Int): String? {
+        val actual = _usuarioActual.value?.colaborador ?: return "No hay sesion iniciada"
+        return when {
+            actual.perfil != PerfilUsuario.SUPERVISOR -> "Solo un supervisor puede gestionar usuarios"
+            actual.id == id -> "No puedes cambiar tu propia cuenta"
+            else -> null
+        }
+    }
+
+
+    fun cambiarActivo(id: Int): String? {
+        errorDeGestion(id)?.let { return it }
+        val objetivo = db.buscarColaboradorPorId(id) ?: return "El usuario no existe"
+        db.actualizarActivo(id, !objetivo.activo)         // UPDATE en SQLite
+        _mensaje.value = if (objetivo.activo) {
+            "Usuario desactivado: ${objetivo.nombre}"
+        } else {
+            "Usuario activado: ${objetivo.nombre}"
+        }
+        recargar()
+        return null
+    }
+
+    fun cambiarRol(id: Int): String? {
+        errorDeGestion(id)?.let { return it }
+        val objetivo = db.buscarColaboradorPorId(id) ?: return "El usuario no existe"
+        val nuevo = if (objetivo.perfil == PerfilUsuario.SUPERVISOR) {
+            PerfilUsuario.OBSERVADOR
+        } else {
+            PerfilUsuario.SUPERVISOR
+        }
+        db.actualizarPerfil(id, nuevo)                    // UPDATE en SQLite
+        _mensaje.value = "${objetivo.nombre} ahora es ${nuevo.etiqueta}"
+        recargar()
+        return null
     }
 
     fun cerrarSesion() {
@@ -152,8 +194,8 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
 
     fun recuperarCuenta(correo: String, rut: String, nuevaClave: String): Boolean {
         val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?: return false
-        if (colaborador.rut.isBlank() || colaborador.rut != rut) return false
-        db.actualizarClave(colaborador.id, nuevaClave) // UPDATE en SQLite
+        if (!colaborador.activo || colaborador.rut.isBlank() || colaborador.rut != rut) return false
+        db.actualizarClave(colaborador.id, nuevaClave)
         return true
     }
     fun actualizarNombre(nombre: String): String? {

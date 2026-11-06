@@ -18,7 +18,8 @@ data class Colaborador(
     val rut: String = "",
     val cargo: String = "",
     val direccion: String = "",
-    val comuna: String = ""
+    val comuna: String = "",
+    val activo: Boolean = true
 )
 
 

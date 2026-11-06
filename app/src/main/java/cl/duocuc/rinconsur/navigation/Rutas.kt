@@ -5,6 +5,8 @@ sealed class Ruta(val ruta: String) {
 
     data object Recuperar : Ruta("recuperar")
     data object CrearUsuario : Ruta("crear_usuario")
+
+    data object Usuarios : Ruta("usuarios")
     data object Sesiones : Ruta("sesiones")
     data object Perfil : Ruta("perfil")
     data object Programar : Ruta("programar")
