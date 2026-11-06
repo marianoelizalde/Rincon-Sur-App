@@ -165,6 +165,24 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
         recargar()
     }
 
+
+    fun rutEnUso(rut: String, idExcluido: Int = 0): Boolean {
+        val otro = db.buscarColaboradorPorRut(rut) ?: return false
+        return otro.id != idExcluido
+    }
+
+
+    fun editarUsuario(id: Int, nombre: String, rut: String, cargo: String, telefono: String): String? {
+        val actual = _usuarioActual.value?.colaborador ?: return "No hay sesion iniciada"
+        if (actual.perfil != PerfilUsuario.SUPERVISOR) return "Solo un supervisor puede gestionar usuarios"
+        if (db.buscarColaboradorPorId(id) == null) return "El usuario no existe"
+        if (rutEnUso(rut, id)) return "Ese RUT ya pertenece a otro usuario"
+        db.actualizarDatos(id, nombre, rut, cargo, telefono)   // UPDATE en SQLite
+        _mensaje.value = "Datos actualizados: $nombre"
+        recargar()
+        return null
+    }
+
     fun onTemaSeleccionado(modo: ModoTema) {
         sesion.guardarTema(modo.name)
         _tema.value = modo

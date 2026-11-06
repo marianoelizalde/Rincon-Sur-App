@@ -133,7 +133,6 @@
     <string name="titulo_recuperar">Recuperar cuenta</string>
     <string name="login_olvido">Olvidaste tu contrasena?</string>
     <string name="recuperar_explicacion">Ingresa tu correo y tu RUT para elegir una nueva contraseña.</string>
-    <string name="campo_contrasena_nueva">Contrasena nueva</string>
     <string name="btn_cambiar_contrasena">Cambiar contrasena</string>
     <string name="recuperar_exito">Contrasena actualizada. Ya puedes iniciar sesion.</string>
     <string name="btn_volver_login">Volver a iniciar sesion</string>
@@ -149,6 +148,11 @@
     <string name="texto_hora_fin">Termina a las %1$s</string>
     <string name="titulo_usuarios">Usuarios</string>
     <string name="btn_nuevo_usuario">Nuevo usuario</string>
+    <string name="titulo_editar_usuario">Editar usuario</string>
+    <string name="campo_contrasena_nueva">Contrasena nueva</string>
+
+
+
 
 
 </resources>

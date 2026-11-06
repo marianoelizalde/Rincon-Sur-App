@@ -26,6 +26,7 @@ import cl.duocuc.rinconsur.ui.screens.SesionesScreen
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
 import cl.duocuc.rinconsur.ui.screens.UsuariosScreen
+import cl.duocuc.rinconsur.ui.screens.EditarUsuarioScreen
 
 
 @Composable
@@ -87,6 +88,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
             if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR) {
                 CrearUsuarioScreen(
                     onCrearUsuario = rincon::registrarUsuario,
+                    onRutEnUso = { rut -> rincon.rutEnUso(rut) },
                     onUsuarioCreado = { navController.popBackStack() },
                     onVolver = { navController.popBackStack() }
                 )
@@ -104,7 +106,27 @@ fun AppNavegacion(rincon: RinconViewModel) {
                     onMensajeMostrado = rincon::limpiarMensaje,
                     onCambiarActivo = rincon::cambiarActivo,
                     onCambiarRol = rincon::cambiarRol,
+                    onEditar = { id -> navController.navigate(Ruta.EditarUsuario.crear(id)) },
                     onNuevoUsuario = irACrearUsuario,
+                    onVolver = { navController.popBackStack() }
+                )
+            } else {
+                LaunchedEffect(Unit) { navController.popBackStack() }
+            }
+        }
+
+        composable(
+            route = Ruta.EditarUsuario.ruta,
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { entrada ->
+            val id = entrada.arguments?.getInt("id") ?: 0
+            val usuarioAEditar = usuarios.firstOrNull { it.id == id }
+            if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR && usuarioAEditar != null) {
+                EditarUsuarioScreen(
+                    usuario = usuarioAEditar,
+                    onRutEnUso = rincon::rutEnUso,
+                    onEditarUsuario = rincon::editarUsuario,
+                    onGuardado = { navController.popBackStack() },
                     onVolver = { navController.popBackStack() }
                 )
             } else {

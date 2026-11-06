@@ -108,6 +108,10 @@ class CrearUsuarioViewModel : ViewModel() {
         _uiState.update { it.copy(errorCorreo = "Ese correo ya tiene una cuenta") }
     }
 
+    fun onRutRepetido() {
+        _uiState.update { it.copy(errorRut = "Ese RUT ya pertenece a otro usuario") }
+    }
+
 
 
     private fun errorNombre(valor: String): String? = when {

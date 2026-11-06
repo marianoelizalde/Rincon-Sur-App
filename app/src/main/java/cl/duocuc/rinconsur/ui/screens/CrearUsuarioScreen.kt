@@ -43,6 +43,7 @@ import cl.duocuc.rinconsur.viewmodel.CrearUsuarioViewModel
 @Composable
 fun CrearUsuarioScreen(
     onCrearUsuario: (Colaborador) -> Boolean,
+    onRutEnUso: (String) -> Boolean,
     onUsuarioCreado: () -> Unit,
     onVolver: () -> Unit,
     viewModel: CrearUsuarioViewModel = viewModel()
@@ -65,7 +66,13 @@ fun CrearUsuarioScreen(
 
             viewModel.onCrear()?.let { colaborador ->
 
-                if (onCrearUsuario(colaborador)) onUsuarioCreado() else viewModel.onCorreoRepetido()
+                if (onRutEnUso(colaborador.rut)) {
+                    viewModel.onRutRepetido()
+                } else if (onCrearUsuario(colaborador)) {
+                    onUsuarioCreado()
+                } else {
+                    viewModel.onCorreoRepetido()
+                }
             }
         },
         onLimpiar = viewModel::onLimpiar,

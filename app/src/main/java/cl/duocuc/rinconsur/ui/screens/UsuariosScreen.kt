@@ -43,6 +43,7 @@ fun UsuariosScreen(
     onMensajeMostrado: () -> Unit,
     onCambiarActivo: (Int) -> String?,
     onCambiarRol: (Int) -> String?,
+    onEditar: (Int) -> Unit,
     onNuevoUsuario: () -> Unit,
     onVolver: () -> Unit
 ) {
@@ -66,6 +67,7 @@ fun UsuariosScreen(
         idActual = idActual,
         onCambiarActivo = { mostrarError(onCambiarActivo(it)) },
         onCambiarRol = { mostrarError(onCambiarRol(it)) },
+        onEditar = onEditar,
         onNuevoUsuario = onNuevoUsuario,
         onVolver = onVolver,
         snackbarHostState = snackbarHostState
@@ -79,6 +81,7 @@ fun UsuariosContent(
     idActual: Int?,
     onCambiarActivo: (Int) -> Unit,
     onCambiarRol: (Int) -> Unit,
+    onEditar: (Int) -> Unit,
     onNuevoUsuario: () -> Unit,
     onVolver: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
@@ -119,7 +122,8 @@ fun UsuariosContent(
                         usuario = usuario,
                         esMiCuenta = usuario.id == idActual,
                         onCambiarActivo = { onCambiarActivo(usuario.id) },
-                        onCambiarRol = { onCambiarRol(usuario.id) }
+                        onCambiarRol = { onCambiarRol(usuario.id) },
+                        onEditar = { onEditar(usuario.id) }
                     )
                 }
             }
@@ -140,7 +144,8 @@ private fun TarjetaUsuario(
     usuario: Colaborador,
     esMiCuenta: Boolean,
     onCambiarActivo: () -> Unit,
-    onCambiarRol: () -> Unit
+    onCambiarRol: () -> Unit,
+    onEditar: () -> Unit
 ) {
     TarjetaSeccion(titulo = if (esMiCuenta) "${usuario.nombre} (tú)" else usuario.nombre) {
         Text(usuario.correo, style = MaterialTheme.typography.bodyMedium)
@@ -155,20 +160,27 @@ private fun TarjetaUsuario(
             color = if (usuario.activo) MaterialTheme.colorScheme.primary
             else MaterialTheme.colorScheme.error
         )
-        // En mi propia cuenta no se muestran acciones
-        if (!esMiCuenta) {
-            Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacioChico)) {
-                BotonSecundario(
-                    texto = if (usuario.activo) "Desactivar" else "Activar",
-                    onClick = onCambiarActivo,
-                    modifier = Modifier.weight(1f)
-                )
+        Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacioChico)) {
+            BotonSecundario(
+                texto = "Editar",
+                onClick = onEditar,
+                modifier = Modifier.weight(1f)
+            )
+            // En mi propia cuenta solo se puede editar
+            if (!esMiCuenta) {
                 BotonSecundario(
                     texto = "Cambiar rol",
                     onClick = onCambiarRol,
                     modifier = Modifier.weight(1f)
                 )
             }
+        }
+        if (!esMiCuenta) {
+            BotonSecundario(
+                texto = if (usuario.activo) "Desactivar" else "Activar",
+                onClick = onCambiarActivo,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -180,7 +192,8 @@ private fun UsuariosPreview() {
         UsuariosContent(
             usuarios = DatosEjemplo.colaboradores,
             idActual = DatosEjemplo.colaboradores.first().id,
-            onCambiarActivo = {}, onCambiarRol = {}, onNuevoUsuario = {}, onVolver = {}
+            onCambiarActivo = {}, onCambiarRol = {}, onEditar = {},
+            onNuevoUsuario = {}, onVolver = {}
         )
     }
 }
