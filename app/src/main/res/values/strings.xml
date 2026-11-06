@@ -132,7 +132,7 @@
 
     <string name="titulo_recuperar">Recuperar cuenta</string>
     <string name="login_olvido">Olvidaste tu contrasena?</string>
-    <string name="recuperar_explicacion">Escribe tu correo y tu nombre completo, como estan en tu cuenta, y elige una contrasena nueva.</string>
+    <string name="recuperar_explicacion">Ingresa tu correo y tu RUT para elegir una nueva contraseña.</string>
     <string name="campo_contrasena_nueva">Contrasena nueva</string>
     <string name="btn_cambiar_contrasena">Cambiar contrasena</string>
     <string name="recuperar_exito">Contrasena actualizada. Ya puedes iniciar sesion.</string>

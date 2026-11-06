@@ -150,11 +150,10 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
     }
 
 
-    fun recuperarCuenta(correo: String, nombre: String, nuevaClave: String): Boolean {
-        val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?:
-        return false
-        if (!colaborador.nombre.equals(nombre.trim(), ignoreCase = true)) return false
-        db.actualizarClave(colaborador.id, nuevaClave)
+    fun recuperarCuenta(correo: String, rut: String, nuevaClave: String): Boolean {
+        val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?: return false
+        if (colaborador.rut.isBlank() || colaborador.rut != rut) return false
+        db.actualizarClave(colaborador.id, nuevaClave) // UPDATE en SQLite
         return true
     }
     fun actualizarNombre(nombre: String): String? {

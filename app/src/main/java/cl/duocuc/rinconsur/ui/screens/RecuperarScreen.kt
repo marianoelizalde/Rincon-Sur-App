@@ -17,76 +17,58 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.duocuc.rinconsur.R
-import cl.duocuc.rinconsur.R.string.titulo_recuperar
+import cl.duocuc.rinconsur.model.RecuperarUiState
 import cl.duocuc.rinconsur.ui.components.BotonPrincipal
 import cl.duocuc.rinconsur.ui.components.CampoContrasena
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
+import cl.duocuc.rinconsur.viewmodel.RecuperarViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecuperarScreen(
     onRecuperarCuenta: (String, String, String) -> Boolean,
+    onVolver: () -> Unit,
+    viewModel: RecuperarViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    RecuperarContent(
+        uiState = uiState,
+        onCorreoCambia = viewModel::onCorreoCambia,
+        onRutCambia = viewModel::onRutCambia,
+        onClaveCambia = viewModel::onClaveCambia,
+        onConfirmarCambia = viewModel::onConfirmarCambia,
+        onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
+        onRecuperar = { viewModel.onRecuperar(onRecuperarCuenta) },
+        onVolver = onVolver
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecuperarContent(
+    uiState: RecuperarUiState,
+    onCorreoCambia: (String) -> Unit,
+    onRutCambia: (String) -> Unit,
+    onClaveCambia: (String) -> Unit,
+    onConfirmarCambia: (String) -> Unit,
+    onAlternarVisibilidad: () -> Unit,
+    onRecuperar: () -> Unit,
     onVolver: () -> Unit
-    ) {
-    var correo by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var clave by remember { mutableStateOf("") }
-    var confirmar by remember { mutableStateOf("") }
-    var visible by remember { mutableStateOf(false) }
-    var errorCorreo by remember { mutableStateOf<String?>(null) }
-    var errorNombre by remember { mutableStateOf<String?>(null) }
-    var errorClave by remember { mutableStateOf<String?>(null) }
-    var errorConfirmar by remember { mutableStateOf<String?>(null) }
-    var errorGeneral by remember { mutableStateOf<String?>(null) }
-    var listo by remember { mutableStateOf(false) }
-
-    fun recuperar() {
-        errorCorreo = when {
-            correo.isBlank() -> "Ingresa tu correo"
-            !correo.contains("@") || !correo.contains(".") -> "Correo no valido (ej:nombre@correo.cl)"
-            else -> null
-        }
-        errorNombre = if (nombre.isBlank()) "Ingresa tu nombre completo" else null
-        errorClave = when {
-            clave.isBlank() -> "Ingresa una contrasena"
-            clave.length < 8 -> "Minimo 8 caracteres"
-            clave.none { it.isUpperCase() } -> "Debe tener una mayuscula"
-            clave.none { it.isLowerCase() } -> "Debe tener una minuscula"
-            clave.none { it.isDigit() } -> "Debe tener un numero"
-            clave.none { !it.isLetterOrDigit() } -> "Debe tener un caracter especial (ej: ! # $ %)"
-            else -> null
-        }
-        errorConfirmar = when {
-            confirmar.isBlank() -> "Repite la contrasena"
-            clave != confirmar -> "Las contrasenas no coinciden"
-            else -> null
-        }
-        errorGeneral = null
-
-        val hayErrores = listOf(errorCorreo, errorNombre, errorClave, errorConfirmar).any {
-            it != null }
-        if (hayErrores) return
-        if (onRecuperarCuenta(correo.trim().lowercase(), nombre.trim(), clave)) {
-            listo = true
-        } else {
-            errorGeneral = "Los datos no coinciden con ninguna cuenta"
-        }
-    }
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(titulo_recuperar)) },
+                title = { Text(stringResource(R.string.titulo_recuperar)) },
                 navigationIcon = {
                     IconButton(onClick = onVolver) {
                         Icon(
@@ -112,7 +94,7 @@ fun RecuperarScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(Dimens.espacioMedio)
         ) {
-            if (listo) {
+            if (uiState.listo) {
                 Text(
                     text = stringResource(R.string.recuperar_exito),
                     style = MaterialTheme.typography.titleMedium,
@@ -129,48 +111,46 @@ fun RecuperarScreen(
                     style = MaterialTheme.typography.bodyLarge
                 )
                 CampoTexto(
-                    valor = correo,
-                    onValorCambia = { correo = it; errorCorreo = null; errorGeneral = null
-                    },
+                    valor = uiState.correo,
+                    onValorCambia = onCorreoCambia,
                     etiqueta = stringResource(R.string.campo_correo),
                     icono = R.drawable.ic_correo,
-                    error = errorCorreo,
+                    error = uiState.errorCorreo,
                     tipoTeclado = KeyboardType.Email
                 )
                 CampoTexto(
-                    valor = nombre,
-                    onValorCambia = { nombre = it; errorNombre = null; errorGeneral = null
-                    },
-                    etiqueta = stringResource(R.string.campo_nombre),
+                    valor = uiState.rut,
+                    onValorCambia = onRutCambia,
+                    etiqueta = stringResource(R.string.campo_rut),
                     icono = R.drawable.ic_persona,
-                    error = errorNombre
+                    error = uiState.errorRut
                 )
                 CampoContrasena(
-                    valor = clave,
-                    onValorCambia = { clave = it; errorClave = null },
+                    valor = uiState.clave,
+                    onValorCambia = onClaveCambia,
                     etiqueta = stringResource(R.string.campo_contrasena_nueva),
-                    visible = visible,
-                    onAlternarVisible = { visible = !visible },
-                    error = errorClave
+                    visible = uiState.claveVisible,
+                    onAlternarVisible = onAlternarVisibilidad,
+                    error = uiState.errorClave
                 )
                 CampoContrasena(
-                    valor = confirmar,
-                    onValorCambia = { confirmar = it; errorConfirmar = null },
+                    valor = uiState.confirmar,
+                    onValorCambia = onConfirmarCambia,
                     etiqueta = stringResource(R.string.campo_repetir_contrasena),
-                    visible = visible,
-                    onAlternarVisible = { visible = !visible },
-                    error = errorConfirmar
+                    visible = uiState.claveVisible,
+                    onAlternarVisible = onAlternarVisibilidad,
+                    error = uiState.errorConfirmar
                 )
-                if (errorGeneral != null) {
+                if (uiState.errorGeneral != null) {
                     Text(
-                        text = errorGeneral.orEmpty(),
+                        text = uiState.errorGeneral.orEmpty(),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 BotonPrincipal(
                     texto = stringResource(R.string.btn_cambiar_contrasena),
-                    onClick = { recuperar() },
+                    onClick = onRecuperar,
                     icono = R.drawable.ic_check,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -178,10 +158,35 @@ fun RecuperarScreen(
         }
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-private fun RecuperarPreview() {
+private fun RecuperarVacioPreview() {
     RinconSurTheme {
-        RecuperarScreen(onRecuperarCuenta = { _, _, _ -> true }, onVolver = {})
+        RecuperarContent(
+            uiState = RecuperarUiState(),
+            onCorreoCambia = {}, onRutCambia = {}, onClaveCambia = {}, onConfirmarCambia = {},
+            onAlternarVisibilidad = {}, onRecuperar = {}, onVolver = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, heightDp = 900, name = "Con errores")
+@Composable
+private fun RecuperarConErroresPreview() {
+    RinconSurTheme {
+        RecuperarContent(
+            uiState = RecuperarUiState(
+                correo = "ana@",
+                rut = "123",
+                errorCorreo = "Correo no valido (ej: nombre@correo.cl)",
+                errorRut = "RUT no valido (ej: 12345678-5)",
+                errorClave = "Ingresa una contrasena",
+                errorConfirmar = "Repite la contrasena",
+                errorGeneral = "Los datos no coinciden con ninguna cuenta"
+            ),
+            onCorreoCambia = {}, onRutCambia = {}, onClaveCambia = {}, onConfirmarCambia = {},
+            onAlternarVisibilidad = {}, onRecuperar = {}, onVolver = {}
+        )
     }
 }
