@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import cl.duocuc.rinconsur.data.Contrasenas
 
 
 class RinconViewModel(application: Application) : AndroidViewModel(application) {
@@ -105,7 +106,7 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
 
     fun iniciarSesion(correo: String, clave: String): Boolean {
         val colaborador = db.buscarColaboradorPorCorreo(correo.lowercase())
-        if (colaborador == null || !colaborador.activo || colaborador.clave != clave) return false
+        if (colaborador == null || !colaborador.activo || !Contrasenas.verificar(clave, colaborador.clave)) return false
         sesion.guardarSesion(colaborador.id)
         recargar()
         return true

@@ -22,7 +22,7 @@ class RinconDbHelper(context: Context) :
 
     companion object {
         private const val NOMBRE_BD = "rinconsur.db"
-        private const val VERSION_BD = 8
+        private const val VERSION_BD = 9
 
         private const val TABLA_PERFILES = "perfiles"
         private const val PER_ID = "id_perfil"
@@ -266,7 +266,7 @@ class RinconDbHelper(context: Context) :
         if (conId) put(COL_ID, c.id)
         put(COL_NOMBRE, c.nombre)
         put(COL_CORREO, c.correo)
-        put(COL_CLAVE, c.clave)
+        put(COL_CLAVE, Contrasenas.hashear(c.clave))
         put(COL_PERFIL, c.perfil.ordinal + 1)
         put(COL_TELEFONO, c.telefono)
         put(COL_RUT, c.rut)
@@ -334,7 +334,7 @@ class RinconDbHelper(context: Context) :
     fun actualizarClave(id: Int, clave: String): Int =
         writableDatabase.update(
             TABLA_COLABORADORES,
-            ContentValues().apply { put(COL_CLAVE, clave) },
+            ContentValues().apply { put(COL_CLAVE, Contrasenas.hashear(clave)) },
             "$COL_ID = ?", arrayOf(id.toString())
         )
     fun actualizarNombre(id: Int, nombre: String): Int =
