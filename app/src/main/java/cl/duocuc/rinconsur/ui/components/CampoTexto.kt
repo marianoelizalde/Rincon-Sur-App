@@ -22,7 +22,6 @@ import cl.duocuc.rinconsur.ui.styles.EstilosCampo
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
 @Composable
 fun CampoTexto(
     valor: String,

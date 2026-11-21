@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import cl.duocuc.rinconsur.R
+import cl.duocuc.rinconsur.data.Textos
 
 class RegistroViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(RegistroUiState())
@@ -44,8 +46,6 @@ class RegistroViewModel : ViewModel() {
         _uiState.update { it.copy(compraOtraTienda = valor) }
     }
 
-
-
     fun onRegistrar(idSesion: Int): RegistroObservacion? {
         val estado = _uiState.value
 
@@ -53,10 +53,10 @@ class RegistroViewModel : ViewModel() {
 
         val pideDetalle = clasificacion != null
 
-        val errorClasificacion = if (clasificacion == null) "Elige una clasificacion" else null
-        val errorRango = if (pideDetalle && estado.rango == null) "Elige un rango de edad" else null
-        val errorCompania = if (pideDetalle && estado.compania == null) "Elige con quien viene" else null
-        val errorSexo = if (pideDetalle && estado.sexo == null) "Elige el sexo" else null
+        val errorClasificacion = if (clasificacion == null) Textos.obtener(R.string.msg_elige_una_clasificacion) else null
+        val errorRango = if (pideDetalle && estado.rango == null) Textos.obtener(R.string.msg_elige_un_rango_de_edad) else null
+        val errorCompania = if (pideDetalle && estado.compania == null) Textos.obtener(R.string.msg_elige_con_quien_viene) else null
+        val errorSexo = if (pideDetalle && estado.sexo == null) Textos.obtener(R.string.msg_elige_el_sexo) else null
         _uiState.update {
             it.copy(
                 errorClasificacion = errorClasificacion,

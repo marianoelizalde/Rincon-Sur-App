@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -66,7 +67,6 @@ import cl.duocuc.rinconsur.ui.components.CampoTexto
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.ui.text.input.KeyboardType
 
-
 @Composable
 fun PerfilScreen(
     usuario: UsuarioActual?,
@@ -80,12 +80,14 @@ fun PerfilScreen(
     onActualizarNombre: (String) -> String?,
     onActualizarTelefono: (String) -> String?,
     onActualizarDireccion: (String) -> String?,
-    onActualizarComuna: (String) -> String?
+    onActualizarComuna: (String) -> String?,
+
+    mensaje: String? = null,
+    onMensajeMostrado: () -> Unit = {}
 ) {
 
     val contexto = LocalContext.current
     val colaborador = usuario?.colaborador
-
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -94,6 +96,12 @@ fun PerfilScreen(
     val textoAjustes = stringResource(R.string.btn_ajustes)
     val textoPerfilGuardado = stringResource(R.string.perfil_actualizado)
 
+    LaunchedEffect(mensaje) {
+        mensaje?.let {
+            snackbarHostState.showSnackbar(it)
+            onMensajeMostrado()
+        }
+    }
 
     fun avisarPermisoDenegado(mensaje: String) {
         scope.launch {
@@ -106,13 +114,11 @@ fun PerfilScreen(
         }
     }
 
-
     val lanzadorCamara = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicturePreview()
     ) { foto: Bitmap? ->
         if (foto != null) onFotoTomada(foto)
     }
-
 
     fun abrirCamara() {
         try {
@@ -121,7 +127,6 @@ fun PerfilScreen(
         }
     }
 
-
     val pedirPermisoCamara = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { concedido: Boolean ->
@@ -129,14 +134,12 @@ fun PerfilScreen(
         if (concedido) abrirCamara() else avisarPermisoDenegado(textoCamaraDenegada)
     }
 
-
     val lanzadorGaleria = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { resultado ->
         val uri = resultado.data?.data
         if (resultado.resultCode == Activity.RESULT_OK && uri != null) onImagenElegida(uri)
     }
-
 
     fun abrirGaleria() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -146,13 +149,11 @@ fun PerfilScreen(
         }
     }
 
-
     val pedirPermisoImagenes = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { concedido: Boolean ->
         if (concedido) abrirGaleria() else avisarPermisoDenegado(textoGaleriaDenegada)
     }
-
 
     val foto = remember(colaborador?.avatar) {
         colaborador?.avatar?.let { bytes -> ConvertidorImagen.aBitmap(bytes)?.asImageBitmap() }

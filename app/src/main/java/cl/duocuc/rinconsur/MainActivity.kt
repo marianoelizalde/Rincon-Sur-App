@@ -12,6 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cl.duocuc.rinconsur.data.ModoTema
+import cl.duocuc.rinconsur.data.Textos
 import cl.duocuc.rinconsur.navigation.AppNavegacion
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Textos.iniciar(applicationContext)
         setContent {
             val modo by rinconViewModel.tema.collectAsStateWithLifecycle()
             val oscuro = when (modo) {
@@ -29,7 +31,6 @@ class MainActivity : ComponentActivity() {
                 ModoTema.CLARO -> false
                 ModoTema.OSCURO -> true
             }
-
 
             DisposableEffect(oscuro) {
                 enableEdgeToEdge(

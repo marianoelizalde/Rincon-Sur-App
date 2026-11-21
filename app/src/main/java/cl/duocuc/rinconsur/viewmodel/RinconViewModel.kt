@@ -4,13 +4,18 @@ import android.app.Application
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import cl.duocuc.rinconsur.data.ConvertidorImagen
 import cl.duocuc.rinconsur.data.ModoTema
-import cl.duocuc.rinconsur.data.RinconDbHelper
+import cl.duocuc.rinconsur.data.RegistroRepository
 import cl.duocuc.rinconsur.data.SesionPreferencias
+import cl.duocuc.rinconsur.data.SesionRepository
+import cl.duocuc.rinconsur.data.UsuarioRepository
+import cl.duocuc.rinconsur.data.remote.UsuarioEnSesion
 import cl.duocuc.rinconsur.model.Acceso
 import cl.duocuc.rinconsur.model.Colaborador
 import cl.duocuc.rinconsur.model.EstadoSesion
+import cl.duocuc.rinconsur.model.EstadoBd
 import cl.duocuc.rinconsur.model.Estadisticas
 import cl.duocuc.rinconsur.model.PerfilUsuario
 import cl.duocuc.rinconsur.model.RegistroObservacion
@@ -19,48 +24,47 @@ import cl.duocuc.rinconsur.model.UsuarioActual
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import cl.duocuc.rinconsur.data.Contrasenas
-
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import cl.duocuc.rinconsur.R
+import cl.duocuc.rinconsur.data.Textos
 
 class RinconViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val db = RinconDbHelper(application)
-    private val sesion = SesionPreferencias(application)
+    private val prefs = SesionPreferencias(application)
 
+    private val usuariosRepo = UsuarioRepository()
+    private val sesionesRepo = SesionRepository()
+    private val registrosRepo = RegistroRepository()
 
-
+    private val candadoPerfil = Mutex()
 
     private val _usuarioActual = MutableStateFlow<UsuarioActual?>(null)
     val usuarioActual: StateFlow<UsuarioActual?> = _usuarioActual.asStateFlow()
 
     private val _tema = MutableStateFlow(
-        ModoTema.entries.firstOrNull { it.name == sesion.leerTema() } ?: ModoTema.SISTEMA
+        ModoTema.entries.firstOrNull { it.name == prefs.leerTema() } ?: ModoTema.SISTEMA
     )
     val tema: StateFlow<ModoTema> = _tema.asStateFlow()
 
     private val _sesiones = MutableStateFlow<List<SesionObservacion>>(emptyList())
     val sesiones: StateFlow<List<SesionObservacion>> = _sesiones.asStateFlow()
 
+    private val _estados = MutableStateFlow<List<EstadoBd>>(emptyList())
+    val estados: StateFlow<List<EstadoBd>> = _estados.asStateFlow()
+
     private val _accesos = MutableStateFlow<List<Acceso>>(emptyList())
     val accesos: StateFlow<List<Acceso>> = _accesos.asStateFlow()
-
-
-
-    private val _observadores = MutableStateFlow<List<Colaborador>>(emptyList())
-    val observadores: StateFlow<List<Colaborador>> = _observadores.asStateFlow()
-
-
-
-    private val _nombres = MutableStateFlow<Map<Int, String>>(emptyMap())
-    val nombres: StateFlow<Map<Int, String>> = _nombres.asStateFlow()
 
     private val _usuarios = MutableStateFlow<List<Colaborador>>(emptyList())
     val usuarios: StateFlow<List<Colaborador>> = _usuarios.asStateFlow()
 
+    private val _observadores = MutableStateFlow<List<Colaborador>>(emptyList())
+    val observadores: StateFlow<List<Colaborador>> = _observadores.asStateFlow()
 
+    private val _nombres = MutableStateFlow<Map<Int, String>>(emptyMap())
+    val nombres: StateFlow<Map<Int, String>> = _nombres.asStateFlow()
 
     private val _sesionAbierta = MutableStateFlow<SesionObservacion?>(null)
     val sesionAbierta: StateFlow<SesionObservacion?> = _sesionAbierta.asStateFlow()
@@ -68,321 +72,406 @@ class RinconViewModel(application: Application) : AndroidViewModel(application) 
     private val _registros = MutableStateFlow<List<RegistroObservacion>>(emptyList())
     val registros: StateFlow<List<RegistroObservacion>> = _registros.asStateFlow()
 
-
-
     private val _mensaje = MutableStateFlow<String?>(null)
     val mensaje: StateFlow<String?> = _mensaje.asStateFlow()
 
     private var idSesionAbierta = 0
 
     init {
-        recargar()
-    }
-
-
-
-    private fun recargar() {
-        val id = sesion.leerSesion()
-        _usuarioActual.value = if (id == -1) {
-            null
-        } else {
-            db.buscarColaboradorPorId(id)?.takeIf { it.activo }?.let { UsuarioActual(it) }
-        }
-        _sesiones.value = db.listarSesiones()
-        _accesos.value = db.listarAccesos()
-        val colaboradores = db.listarColaboradores()
-        _usuarios.value = colaboradores
-        _observadores.value = colaboradores.filter { it.perfil == PerfilUsuario.OBSERVADOR && it.activo }
-        _nombres.value = colaboradores.associate { it.id to it.nombre }
-        _sesionAbierta.value = db.buscarSesion(idSesionAbierta)
-        _registros.value = db.listarRegistros(idSesionAbierta)
+        restaurarSesion()
     }
 
     fun limpiarMensaje() {
         _mensaje.value = null
     }
 
-
-
-    fun iniciarSesion(correo: String, clave: String): Boolean {
-        val colaborador = db.buscarColaboradorPorCorreo(correo.lowercase())
-        if (colaborador == null || !colaborador.activo || !Contrasenas.verificar(clave, colaborador.clave)) return false
-        sesion.guardarSesion(colaborador.id)
-        recargar()
-        return true
+    private fun avisar(error: Exception) {
+        _mensaje.value = error.message ?: Textos.obtener(R.string.msg_ocurrio_un_error_inesperado)
     }
 
+    private fun idActual(): Int? = _usuarioActual.value?.colaborador?.id
 
+    private fun restaurarSesion() {
+        val id = prefs.leerSesion()
+        if (id == -1) return
+        viewModelScope.launch {
+            try {
+                val colaborador = usuariosRepo.obtener(id)
+                if (colaborador.activo) {
+                    UsuarioEnSesion.id = colaborador.id.toLong()
+                    _usuarioActual.value = UsuarioActual(colaborador)
+                    cargarTodo()
+                } else {
+                    prefs.borrarSesion()
+                }
+            } catch (e: Exception) {
 
-    fun registrarUsuario(colaborador: Colaborador): Boolean {
-        if (usuarioActual.value?.colaborador?.perfil != PerfilUsuario.SUPERVISOR) return false
-        if (db.buscarColaboradorPorCorreo(colaborador.correo) != null) return false
-        db.insertarColaborador(colaborador)               // INSERT en SQLite
-        _mensaje.value = "Usuario creado: ${colaborador.nombre}"
-        recargar()
-        return true
+            }
+        }
     }
 
+    private suspend fun cargarTodo() {
+        try {
+            _accesos.value = sesionesRepo.accesos()
+
+            _estados.value = try { sesionesRepo.estados() } catch (e: Exception) { emptyList() }
+            aplicarUsuarios(usuariosRepo.listar())
+            _sesiones.value = sesionesRepo.listar()
+        } catch (e: Exception) {
+            avisar(e)
+        }
+    }
+
+    private fun aplicarUsuarios(lista: List<Colaborador>) {
+        _usuarios.value = lista
+        _observadores.value = lista.filter { it.perfil == PerfilUsuario.OBSERVADOR && it.activo }
+        _nombres.value = lista.associate { it.id to it.nombre }
+    }
+
+    private suspend fun refrescarUsuarios() {
+        try {
+            aplicarUsuarios(usuariosRepo.listar())
+        } catch (e: Exception) {
+            avisar(e)
+        }
+    }
+
+    private suspend fun refrescarSesiones() {
+        try {
+            _sesiones.value = sesionesRepo.listar()
+        } catch (e: Exception) {
+            avisar(e)
+        }
+    }
+
+    private suspend fun refrescarSesionAbierta() {
+        val id = idSesionAbierta
+        if (id == 0) return
+        try {
+            _sesionAbierta.value = sesionesRepo.obtener(id)
+            _registros.value = registrosRepo.listar(id)
+        } catch (e: Exception) {
+            avisar(e)
+        }
+    }
+
+    fun recargarSesiones() {
+        viewModelScope.launch { refrescarSesiones() }
+    }
+
+    fun recargarUsuarios() {
+        viewModelScope.launch { refrescarUsuarios() }
+    }
+
+    suspend fun iniciarSesion(correo: String, clave: String): String? {
+        return try {
+            val colaborador = usuariosRepo.iniciarSesion(correo.lowercase(), clave)
+            prefs.guardarSesion(colaborador.id)
+            UsuarioEnSesion.id = colaborador.id.toLong()
+            _usuarioActual.value = UsuarioActual(colaborador)
+            viewModelScope.launch { cargarTodo() }
+            null
+        } catch (e: Exception) {
+            e.message ?: Textos.obtener(R.string.msg_no_se_pudo_iniciar_sesion)
+        }
+    }
+
+    fun cerrarSesion() {
+        prefs.borrarSesion()
+        UsuarioEnSesion.id = null
+        _usuarioActual.value = null
+        _sesiones.value = emptyList()
+        _usuarios.value = emptyList()
+        _observadores.value = emptyList()
+        _nombres.value = emptyMap()
+        _sesionAbierta.value = null
+        _registros.value = emptyList()
+        idSesionAbierta = 0
+    }
+
+    fun onTemaSeleccionado(modo: ModoTema) {
+        prefs.guardarTema(modo.name)
+        _tema.value = modo
+    }
+
+    suspend fun registrarUsuario(colaborador: Colaborador): String? {
+        if (_usuarioActual.value?.colaborador?.perfil != PerfilUsuario.SUPERVISOR) {
+            return Textos.obtener(R.string.msg_solo_un_supervisor_puede_crear_usuarios)
+        }
+        return try {
+            usuariosRepo.registrar(colaborador)
+            _mensaje.value = Textos.obtener(R.string.msg_usuario_creado, colaborador.nombre)
+            refrescarUsuarios()
+            null
+        } catch (e: Exception) {
+            e.message ?: Textos.obtener(R.string.msg_no_se_pudo_crear_el_usuario)
+        }
+    }
+
+    suspend fun recuperarCuenta(correo: String, rut: String, nuevaClave: String): String? {
+        return try {
+            usuariosRepo.recuperar(correo.trim().lowercase(), rut, nuevaClave)
+            null
+        } catch (e: Exception) {
+            e.message ?: Textos.obtener(R.string.msg_no_se_pudo_cambiar_la_contrasena)
+        }
+    }
 
     private fun errorDeGestion(id: Int): String? {
-        val actual = _usuarioActual.value?.colaborador ?: return "No hay sesion iniciada"
+        val actual = _usuarioActual.value?.colaborador ?: return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
         return when {
-            actual.perfil != PerfilUsuario.SUPERVISOR -> "Solo un supervisor puede gestionar usuarios"
-            actual.id == id -> "No puedes cambiar tu propia cuenta"
+            actual.perfil != PerfilUsuario.SUPERVISOR -> Textos.obtener(R.string.msg_solo_un_supervisor_puede_gestionar_usuarios)
+            actual.id == id -> Textos.obtener(R.string.msg_no_puedes_cambiar_tu_propia_cuenta)
             else -> null
         }
     }
 
-
     fun cambiarActivo(id: Int): String? {
         errorDeGestion(id)?.let { return it }
-        val objetivo = db.buscarColaboradorPorId(id) ?: return "El usuario no existe"
-        db.actualizarActivo(id, !objetivo.activo)         // UPDATE en SQLite
-        _mensaje.value = if (objetivo.activo) {
-            "Usuario desactivado: ${objetivo.nombre}"
-        } else {
-            "Usuario activado: ${objetivo.nombre}"
+        val objetivo = _usuarios.value.firstOrNull { it.id == id } ?: return Textos.obtener(R.string.msg_el_usuario_no_existe)
+        val idActor = idActual() ?: return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
+        viewModelScope.launch {
+            try {
+                val nuevo = usuariosRepo.cambiarActivo(id, !objetivo.activo, idActor)
+                _mensaje.value = if (nuevo.activo) {
+                    Textos.obtener(R.string.msg_usuario_activado, nuevo.nombre)
+                } else {
+                    Textos.obtener(R.string.msg_usuario_desactivado, nuevo.nombre)
+                }
+                refrescarUsuarios()
+            } catch (e: Exception) {
+                avisar(e)
+            }
         }
-        recargar()
         return null
     }
 
     fun cambiarRol(id: Int): String? {
         errorDeGestion(id)?.let { return it }
-        val objetivo = db.buscarColaboradorPorId(id) ?: return "El usuario no existe"
-        val nuevo = if (objetivo.perfil == PerfilUsuario.SUPERVISOR) {
+        val objetivo = _usuarios.value.firstOrNull { it.id == id } ?: return Textos.obtener(R.string.msg_el_usuario_no_existe)
+        val idActor = idActual() ?: return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
+        val nuevoPerfil = if (objetivo.perfil == PerfilUsuario.SUPERVISOR) {
             PerfilUsuario.OBSERVADOR
         } else {
             PerfilUsuario.SUPERVISOR
         }
-        db.actualizarPerfil(id, nuevo)                    // UPDATE en SQLite
-        _mensaje.value = "${objetivo.nombre} ahora es ${nuevo.etiqueta}"
-        recargar()
+        viewModelScope.launch {
+            try {
+                usuariosRepo.cambiarPerfil(id, nuevoPerfil, idActor)
+                _mensaje.value = Textos.obtener(R.string.msg_ahora_es, objetivo.nombre, nuevoPerfil.etiqueta)
+                refrescarUsuarios()
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
         return null
     }
 
-    fun cerrarSesion() {
-        sesion.borrarSesion()
-        recargar()
+    suspend fun editarUsuario(id: Int, nombre: String, rut: String, cargo: String, telefono: String): String? {
+        val actual = _usuarioActual.value?.colaborador ?: return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
+        if (actual.perfil != PerfilUsuario.SUPERVISOR) return Textos.obtener(R.string.msg_solo_un_supervisor_puede_gestionar_usuarios)
+        val objetivo = _usuarios.value.firstOrNull { it.id == id } ?: return Textos.obtener(R.string.msg_el_usuario_no_existe)
+        return try {
+            val guardado = usuariosRepo.actualizar(
+                objetivo.copy(nombre = nombre, rut = rut, cargo = cargo, telefono = telefono)
+            )
+            _mensaje.value = Textos.obtener(R.string.msg_datos_actualizados, guardado.nombre)
+            if (guardado.id == actual.id) {
+                _usuarioActual.value = UsuarioActual(guardado.copy(avatar = actual.avatar))
+            }
+            refrescarUsuarios()
+            null
+        } catch (e: Exception) {
+            e.message ?: Textos.obtener(R.string.msg_no_se_pudieron_guardar_los_datos)
+        }
     }
-
-
-    fun rutEnUso(rut: String, idExcluido: Int = 0): Boolean {
-        val otro = db.buscarColaboradorPorRut(rut) ?: return false
-        return otro.id != idExcluido
-    }
-
-
-    fun editarUsuario(id: Int, nombre: String, rut: String, cargo: String, telefono: String): String? {
-        val actual = _usuarioActual.value?.colaborador ?: return "No hay sesion iniciada"
-        if (actual.perfil != PerfilUsuario.SUPERVISOR) return "Solo un supervisor puede gestionar usuarios"
-        if (db.buscarColaboradorPorId(id) == null) return "El usuario no existe"
-        if (rutEnUso(rut, id)) return "Ese RUT ya pertenece a otro usuario"
-        db.actualizarDatos(id, nombre, rut, cargo, telefono)   // UPDATE en SQLite
-        _mensaje.value = "Datos actualizados: $nombre"
-        recargar()
-        return null
-    }
-
-    fun onTemaSeleccionado(modo: ModoTema) {
-        sesion.guardarTema(modo.name)
-        _tema.value = modo
-    }
-
-
 
     fun cambiarAvatarDesdeCamara(foto: Bitmap) {
-        guardarAvatar(ConvertidorImagen.aBytes(foto))
+        subirAvatar(ConvertidorImagen.aBytes(foto))
     }
-
-
 
     fun cambiarAvatarDesdeGaleria(uri: Uri) {
         val imagen = ConvertidorImagen.desdeUri(getApplication(), uri) ?: return
-        guardarAvatar(ConvertidorImagen.aBytes(imagen))
+        subirAvatar(ConvertidorImagen.aBytes(imagen))
     }
 
-
-
-    private fun guardarAvatar(bytes: ByteArray) {
-        val usuario = _usuarioActual.value ?: return
-        db.actualizarAvatar(usuario.colaborador.id, bytes)
-        recargar()
+    private fun subirAvatar(bytes: ByteArray) {
+        val usuario = _usuarioActual.value?.colaborador ?: return
+        viewModelScope.launch {
+            try {
+                usuariosRepo.subirAvatar(usuario.id, bytes)
+                val actual = _usuarioActual.value?.colaborador ?: return@launch
+                _usuarioActual.value = UsuarioActual(actual.copy(avatar = bytes))
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
     }
 
-
-    fun recuperarCuenta(correo: String, rut: String, nuevaClave: String): Boolean {
-        val colaborador = db.buscarColaboradorPorCorreo(correo.trim().lowercase()) ?: return false
-        if (!colaborador.activo || colaborador.rut.isBlank() || colaborador.rut != rut) return false
-        db.actualizarClave(colaborador.id, nuevaClave)
-        return true
+    private fun guardarPerfil(cambio: (Colaborador) -> Colaborador) {
+        viewModelScope.launch {
+            candadoPerfil.withLock {
+                val actual = _usuarioActual.value?.colaborador ?: return@withLock
+                val nuevo = cambio(actual)
+                if (nuevo == actual) return@withLock
+                try {
+                    val guardado = usuariosRepo.actualizar(nuevo)
+                    _usuarioActual.value = UsuarioActual(guardado.copy(avatar = actual.avatar))
+                } catch (e: Exception) {
+                    avisar(e)
+                }
+            }
+        }
     }
+
     fun actualizarNombre(nombre: String): String? {
-        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        if (_usuarioActual.value == null) return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
         val limpio = nombre.trim()
-        if (limpio.isEmpty()) return "Ingresa tu nombre"
-        if (limpio.length < 3) return "Minimo 3 caracteres"
-        if (limpio.any { !it.isLetter() && it != ' ' }) return "Solo letras y espacios"
-        db.actualizarNombre(usuario.colaborador.id, limpio)
-        recargar() // vuelve a leer al usuario
+        if (limpio.isEmpty()) return Textos.obtener(R.string.msg_ingresa_tu_nombre)
+        if (limpio.length < 3) return Textos.obtener(R.string.msg_minimo_3_caracteres)
+        if (limpio.any { !it.isLetter() && it != ' ' }) return Textos.obtener(R.string.msg_solo_letras_y_espacios)
+        guardarPerfil { it.copy(nombre = limpio) }
         return null
     }
+
     fun actualizarTelefono(telefono: String): String? {
-        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        if (_usuarioActual.value == null) return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
         val limpio = telefono.trim()
         if (limpio.isNotEmpty() && (limpio.length != 9 || limpio.any { !it.isDigit() })) {
-            return "El teléfono debe tener 9 dígitos"
+            return Textos.obtener(R.string.msg_el_telefono_debe_tener_9_digitos)
         }
-        db.actualizarTelefono(usuario.colaborador.id, limpio)
-        recargar()
+        guardarPerfil { it.copy(telefono = limpio) }
         return null
     }
 
     fun actualizarDireccion(direccion: String): String? {
-        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        if (_usuarioActual.value == null) return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
         val limpio = direccion.trim()
-        if (limpio.isNotEmpty() && limpio.length < 5) return "Mínimo 5 caracteres"
-        if (limpio.length > 80) return "Máximo 80 caracteres"
-        db.actualizarDireccion(usuario.colaborador.id, limpio)
-        recargar()
+        if (limpio.isNotEmpty() && limpio.length < 5) return Textos.obtener(R.string.msg_minimo_5_caracteres)
+        if (limpio.length > 80) return Textos.obtener(R.string.msg_maximo_80_caracteres)
+        guardarPerfil { it.copy(direccion = limpio) }
         return null
     }
 
     fun actualizarComuna(comuna: String): String? {
-        val usuario = _usuarioActual.value ?: return "No hay sesion iniciada"
+        if (_usuarioActual.value == null) return Textos.obtener(R.string.msg_no_hay_sesion_iniciada)
         val limpio = comuna.trim()
-        if (limpio.isNotEmpty() && limpio.length < 3) return "Mínimo 3 caracteres"
-        if (limpio.any { !it.isLetter() && it != ' ' }) return "Solo letras y espacios"
-        db.actualizarComuna(usuario.colaborador.id, limpio)
-        recargar()
+        if (limpio.isNotEmpty() && limpio.length < 3) return Textos.obtener(R.string.msg_minimo_3_caracteres)
+        if (limpio.any { !it.isLetter() && it != ' ' }) return Textos.obtener(R.string.msg_solo_letras_y_espacios)
+        guardarPerfil { it.copy(comuna = limpio) }
         return null
     }
 
-
-
-
-    fun programarSesion(nueva: SesionObservacion): Boolean {
-        if (db.haySolapamiento(nueva.idAcceso, nueva.fecha, nueva.horaInicio, nueva.horaFin)) return false
-        db.insertarSesion(nueva)                          // INSERT en SQLite
-        recargar()
-        return true
+    suspend fun programarSesion(nueva: SesionObservacion): String? {
+        return try {
+            sesionesRepo.programar(nueva)
+            refrescarSesiones()
+            null
+        } catch (e: Exception) {
+            e.message ?: Textos.obtener(R.string.msg_no_se_pudo_programar_la_sesion)
+        }
     }
-
-
-
 
     fun abrirSesion(id: Int) {
         idSesionAbierta = id
-        recargar()
+        viewModelScope.launch { refrescarSesionAbierta() }
     }
 
-    fun iniciar() {
-        val sesion = sesionAbierta.value ?: return
-        val ahora = Date()
-        val hoy = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(ahora)
-        val hora = SimpleDateFormat("HH:mm", Locale.US).format(ahora)
-
-        val error = when {
-            hoy != sesion.fecha -> "Esta sesion es para el ${sesion.fecha}"
-            hora < sesion.horaInicio -> "Aun no es la hora: parte a las ${sesion.horaInicio}"
-            hora >= sesion.horaFin -> "La sesion ya termino a las ${sesion.horaFin}"
-            else -> null
+    private fun accionSobreSesion(peticion: suspend (Int) -> SesionObservacion) {
+        val actual = _sesionAbierta.value ?: return
+        viewModelScope.launch {
+            try {
+                _sesionAbierta.value = peticion(actual.id)
+                refrescarSesiones()
+            } catch (e: Exception) {
+                avisar(e)
+            }
         }
-        if (error != null) {
-            _mensaje.value = error
-            return
-        }
-        cambiarEstado(EstadoSesion.PROGRAMADA, EstadoSesion.EN_CURSO)
     }
 
-    fun finalizar() = cambiarEstado(EstadoSesion.EN_CURSO, EstadoSesion.FINALIZADA)
+    fun iniciar() = accionSobreSesion { sesionesRepo.iniciar(it) }
 
-    fun cancelar() = cambiarEstado(EstadoSesion.PROGRAMADA, EstadoSesion.CANCELADA)
+    fun finalizar() = accionSobreSesion { sesionesRepo.finalizar(it) }
 
-    private fun cambiarEstado(desde: EstadoSesion, hacia: EstadoSesion) {
-        val actual = sesionAbierta.value ?: return
-        if (actual.estado != desde) return
-        guardar(actual.copy(estado = hacia))
-    }
-
-
-
+    fun cancelar() = accionSobreSesion { sesionesRepo.cancelar(it) }
 
     fun validar(idValidador: Int) {
-        val actual = sesionAbierta.value ?: return
+        val actual = _sesionAbierta.value ?: return
         if (actual.estado != EstadoSesion.FINALIZADA) return
         if (idValidador == actual.idObservador) {
-            _mensaje.value = "El validador no puede ser quien observo la sesion"
+            _mensaje.value = Textos.obtener(R.string.msg_el_validador_no_puede_ser_quien)
             return
         }
-        val validos = Estadisticas.registrosValidos(registros.value).size
-        if (validos < Estadisticas.MINIMO_REGISTROS_VALIDOS) {
-            guardar(
-                actual.copy(
-                    estado = EstadoSesion.RECHAZADA,
-                    idValidador = idValidador,
-                    motivoRechazo = "Muestra insuficiente"
-                )
-            )
-            _mensaje.value = "Rechazada: solo hay $validos registros validos (minimo 30)"
-        } else {
-            guardar(actual.copy(estado = EstadoSesion.VALIDADA, idValidador = idValidador))
-            _mensaje.value = "Sesion validada"
+        viewModelScope.launch {
+            try {
+                val nueva = sesionesRepo.validar(actual.id, idValidador)
+                _sesionAbierta.value = nueva
+                refrescarSesiones()
+                val validos = Estadisticas.registrosValidos(_registros.value).size
+                _mensaje.value = if (nueva.estado == EstadoSesion.VALIDADA) {
+                    Textos.obtener(R.string.msg_sesion_validada)
+                } else {
+                    Textos.obtener(R.string.msg_rechazada_solo_hay_registros_validos_minimo, validos, Estadisticas.MINIMO_REGISTROS_VALIDOS)
+                }
+            } catch (e: Exception) {
+                avisar(e)
+            }
         }
     }
 
-
-
-
     fun rechazar(idValidador: Int, motivo: String): String? {
-        val actual = sesionAbierta.value ?: return "No se encontro la sesion"
-        if (motivo.isBlank()) return "Escribe el motivo del rechazo"
-        if (motivo.trim().length < 5) return "Minimo 5 caracteres"
-        if (idValidador == actual.idObservador) return "El validador no puede ser quien observo la sesion"
-        guardar(
-            actual.copy(
-                estado = EstadoSesion.RECHAZADA,
-                idValidador = idValidador,
-                motivoRechazo = motivo.trim()
-            )
-        )
+        val actual = _sesionAbierta.value ?: return Textos.obtener(R.string.msg_no_se_encontro_la_sesion)
+        if (motivo.isBlank()) return Textos.obtener(R.string.msg_escribe_el_motivo_del_rechazo)
+        if (motivo.trim().length < 5) return Textos.obtener(R.string.msg_minimo_5_caracteres)
+        if (idValidador == actual.idObservador) return Textos.obtener(R.string.msg_el_validador_no_puede_ser_quien)
+        viewModelScope.launch {
+            try {
+                _sesionAbierta.value = sesionesRepo.rechazar(actual.id, idValidador, motivo.trim())
+                refrescarSesiones()
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
         return null
     }
 
-
-
-
-    private fun guardar(nueva: SesionObservacion) {
-        db.actualizarSesion(nueva)
-        recargar()
-    }
-
-
-
-
     fun registrarPersona(registro: RegistroObservacion) {
-        if (sesionAbierta.value?.estado != EstadoSesion.EN_CURSO) return
-        db.insertarRegistro(registro)                     // INSERT en SQLite
-        recargar()
+        if (_sesionAbierta.value?.estado != EstadoSesion.EN_CURSO) return
+        val idActor = idActual() ?: return
+        viewModelScope.launch {
+            try {
+                val nuevo = registrosRepo.registrar(registro, idActor)
+                _registros.value = _registros.value + nuevo
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
     }
-
-
-
 
     fun anularRegistro(registro: RegistroObservacion) {
-        if (sesionAbierta.value?.estado != EstadoSesion.EN_CURSO) return
-        db.anularRegistro(registro.id)
-        recargar()
+        if (_sesionAbierta.value?.estado != EstadoSesion.EN_CURSO) return
+        val idActor = idActual() ?: return
+        viewModelScope.launch {
+            try {
+                val anulado = registrosRepo.anular(registro.id, idActor)
+                _registros.value = _registros.value.map { if (it.id == anulado.id) anulado else it }
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
     }
-
-
 
     fun deshacerUltimo() {
-        val ultimo = Estadisticas.registrosValidos(registros.value).lastOrNull() ?: return
-        anularRegistro(ultimo)
-    }
-
-    override fun onCleared() {
-        db.close()
+        val actual = _sesionAbierta.value ?: return
+        if (actual.estado != EstadoSesion.EN_CURSO) return
+        val idActor = idActual() ?: return
+        viewModelScope.launch {
+            try {
+                registrosRepo.deshacerUltimo(actual.id, idActor)
+                _registros.value = registrosRepo.listar(actual.id)
+            } catch (e: Exception) {
+                avisar(e)
+            }
+        }
     }
 }

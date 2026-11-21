@@ -1,124 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-
-    <string name="app_name">Rincon Sur</string>
-
-
-    <string name="titulo_sesiones">Sesiones de observacion</string>
+    <string name="app_name">Rincón Sur</string>
+    <string name="titulo_sesiones">Sesiones de observación</string>
     <string name="titulo_perfil">Mi perfil</string>
     <string name="titulo_crear_usuario">Crear usuario</string>
-    <string name="titulo_programar">Programar sesion</string>
-    <string name="titulo_detalle_sesion">Detalle de la sesion</string>
+    <string name="titulo_programar">Programar sesión</string>
+    <string name="titulo_detalle_sesion">Detalle de la sesión</string>
     <string name="titulo_registro">Registrar persona - %1$s</string>
-
-
     <string name="saludo">Hola, %1$s</string>
     <string name="menu_sesiones">Sesiones</string>
     <string name="menu_mi_perfil">Mi perfil</string>
-    <string name="menu_cerrar_sesion">Cerrar sesion</string>
+    <string name="menu_cerrar_sesion">Cerrar sesión</string>
     <string name="menu_crear_usuario">Crear usuario</string>
-    <string name="dialogo_titulo">Cerrar sesion?</string>
-    <string name="dialogo_mensaje">Tendras que ingresar de nuevo con tu correo y contrasena.</string>
+    <string name="dialogo_titulo">¿Cerrar sesión?</string>
+    <string name="dialogo_mensaje">Tendrás que ingresar de nuevo con tu correo y contraseña.</string>
     <string name="dialogo_cancelar">Cancelar</string>
-
-
-    <string name="login_subtitulo">Segmentacion del flujo de clientes por acceso</string>
-    <string name="login_titulo">Iniciar sesion</string>
-    <string name="login_sin_cuenta">No tienes cuenta?</string>
-
-
+    <string name="login_subtitulo">Segmentación del flujo de clientes por acceso</string>
+    <string name="login_titulo">Iniciar sesión</string>
+    <string name="login_sin_cuenta">¿No tienes cuenta?</string>
     <string name="crear_intro">Completa tus datos para crear tu cuenta.</string>
     <string name="seccion_datos_cuenta">Datos de la cuenta</string>
     <string name="seccion_rol">Rol en la app</string>
     <string name="etiqueta_perfil">Perfil</string>
     <string name="opcion_terminos">Acepto que mis datos se usen solo para operar la app</string>
-
-
     <string name="campo_nombre">Nombre completo</string>
-    <string name="campo_correo">Correo electronico</string>
-    <string name="campo_contrasena">Contrasena</string>
-    <string name="campo_repetir_contrasena">Repetir contrasena</string>
+    <string name="campo_correo">Correo electrónico</string>
+    <string name="campo_contrasena">Contraseña</string>
+    <string name="campo_repetir_contrasena">Repetir contraseña</string>
     <string name="campo_fecha">Fecha</string>
     <string name="campo_hora_inicio">Hora de inicio</string>
-    <string name="campo_hora_fin">Hora de termino</string>
+    <string name="campo_hora_fin">Hora de término</string>
     <string name="campo_motivo">Motivo</string>
     <string name="ayuda_contrasena">Mínimo 8 caracteres, con mayúscula, minúscula, número y carácter especial</string>
     <string name="ayuda_fecha">Formato AAAA-MM-DD</string>
     <string name="ayuda_hora_inicio">Formato HH:MM, desde las 10:00</string>
-    <string name="ayuda_hora_fin">Entre 30 y 60 minutos despues, hasta las 21:00</string>
-
-
+    <string name="ayuda_hora_fin">Entre 30 y 60 minutos después, hasta las 21:00</string>
     <string name="btn_ingresar">Ingresar</string>
     <string name="btn_crear_usuario">Crear usuario</string>
     <string name="btn_crear_cuenta">Crear cuenta</string>
     <string name="btn_limpiar">Limpiar</string>
     <string name="btn_cancelar">Cancelar</string>
     <string name="btn_programar">Programar</string>
-    <string name="btn_programar_sesion">Programar sesion</string>
-    <string name="btn_iniciar_sesion">Iniciar sesion de observacion</string>
-    <string name="btn_cancelar_sesion">Cancelar sesion</string>
+    <string name="btn_programar_sesion">Programar sesión</string>
+    <string name="btn_iniciar_sesion">Iniciar sesión de observación</string>
+    <string name="btn_cancelar_sesion">Cancelar sesión</string>
     <string name="btn_registrar_personas">Registrar personas</string>
-    <string name="btn_finalizar_sesion">Finalizar sesion</string>
-    <string name="btn_validar_sesion">Validar sesion</string>
-    <string name="btn_rechazar_sesion">Rechazar sesion</string>
+    <string name="btn_finalizar_sesion">Finalizar sesión</string>
+    <string name="btn_validar_sesion">Validar sesión</string>
+    <string name="btn_rechazar_sesion">Rechazar sesión</string>
     <string name="btn_rechazar">Rechazar</string>
     <string name="btn_registrar_persona">Registrar persona</string>
-    <string name="btn_deshacer_ultimo">Deshacer ultimo registro</string>
-    <string name="btn_camara">Camara</string>
-    <string name="btn_galeria">Galeria</string>
-
-
-    <string name="sesiones_vacio_supervisor">Aun no hay sesiones. Toca el boton Programar para crear la primera.</string>
+    <string name="btn_deshacer_ultimo">Deshacer último registro</string>
+    <string name="btn_camara">Cámara</string>
+    <string name="btn_galeria">Galería</string>
+    <string name="sesiones_vacio_supervisor">Aún no hay sesiones. Toca el botón Programar para crear la primera.</string>
     <string name="sesiones_vacio_observador">No tienes sesiones asignadas. Pide al supervisor que programe una para ti.</string>
     <string name="sesion_acceso">%1$s - %2$s</string>
     <string name="sesion_horario">%1$s  %2$s a %3$s</string>
     <string name="sesion_observador">Observador: %1$s</string>
     <string name="sesion_validador">Validador: %1$s</string>
     <string name="sesion_motivo">Motivo: %1$s</string>
-    <string name="sesion_muestra">Muestra: %1$d de %2$d minimos</string>
-    <string name="sesion_porcentaje">Porcentaje de transito: %1$s%%</string>
-    <string name="sesion_porcentaje_sin_datos">Porcentaje de transito: sin datos</string>
-    <string name="sesion_ultimos_registros">Ultimos registros</string>
-    <string name="sesion_esperando_validacion">Esperando la validacion de un supervisor.</string>
-    <string name="sesion_cerrada">Esta sesion ya esta cerrada.</string>
+    <string name="sesion_muestra">Muestra: %1$d de %2$d mínimos</string>
+    <string name="sesion_porcentaje">Porcentaje de tránsito: %1$s%%</string>
+    <string name="sesion_porcentaje_sin_datos">Porcentaje de tránsito: sin datos</string>
+    <string name="sesion_ultimos_registros">Últimos registros</string>
+    <string name="sesion_esperando_validacion">Esperando la validación de un supervisor.</string>
+    <string name="sesion_cerrada">Esta sesión ya está cerrada.</string>
     <string name="registro_fila">%1$s  %2$s  %3$s  %4$s</string>
-
-
-    <string name="seccion_donde_quien">Donde y quien?</string>
-    <string name="seccion_cuando">Cuando?</string>
+    <string name="seccion_donde_quien">¿Dónde y quién?</string>
+    <string name="seccion_cuando">¿Cuándo?</string>
     <string name="etiqueta_acceso">Acceso</string>
     <string name="etiqueta_observador">Observador</string>
-
-
     <string name="registro_personas">personas registradas</string>
-    <string name="registro_resumen">Transito %1$d  Visita %2$d</string>
-    <string name="registro_no_en_curso">Esta sesion no esta en curso. Vuelve al detalle para iniciarla.</string>
-    <string name="etiqueta_clasificacion">Clasificacion</string>
+    <string name="registro_resumen">Tránsito %1$d  Visita %2$d</string>
+    <string name="registro_no_en_curso">Esta sesión no está en curso. Vuelve al detalle para iniciarla.</string>
+    <string name="etiqueta_clasificacion">Clasificación</string>
     <string name="etiqueta_rango">Rango de edad</string>
-    <string name="etiqueta_compania">Compania</string>
+    <string name="etiqueta_compania">Compañía</string>
     <string name="etiqueta_sexo">Sexo</string>
     <string name="etiqueta_destino">Acceso de destino (opcional)</string>
-    <string name="opcion_compra_otra_tienda">Compro en otra tienda</string>
-
-
+    <string name="opcion_compra_otra_tienda">Compró en otra tienda</string>
     <string name="seccion_apariencia">Apariencia</string>
     <string name="etiqueta_tema">Tema de la app</string>
-    <string name="permiso_camara_denegado">Sin permiso de camara. Puedes darlo en Ajustes o elegir una foto de la galeria.</string>
+    <string name="permiso_camara_denegado">Sin permiso de cámara. Puedes darlo en Ajustes o elegir una foto de la galería.</string>
     <string name="permiso_galeria_denegado">Sin permiso para ver tus fotos. Puedes darlo en Ajustes.</string>
     <string name="btn_ajustes">Ajustes</string>
-
-
-    <string name="cd_menu">Abrir menu</string>
+    <string name="cd_menu">Abrir menú</string>
     <string name="cd_volver">Volver</string>
     <string name="cd_error">Error</string>
-    <string name="cd_mostrar_contrasena">Mostrar contrasena</string>
-    <string name="cd_ocultar_contrasena">Ocultar contrasena</string>
+    <string name="cd_mostrar_contrasena">Mostrar contraseña</string>
+    <string name="cd_ocultar_contrasena">Ocultar contraseña</string>
     <string name="cd_anular_registro">Anular registro</string>
     <string name="cd_foto_perfil">Foto de perfil</string>
     <string name="filtro_fecha">Buscar por fecha</string>
-
-    <string name="filtro_fecha_ayuda">Escribe el año, el mes o el dia. Ejemplo:2026-09</string>
+    <string name="filtro_fecha_ayuda">Escribe el año, el mes o el día. Ejemplo: 2026-09</string>
     <string name="filtro_estado">Estado</string>
     <string name="filtro_acceso">Acceso</string>
     <string name="filtro_limpiar">Limpiar filtros</string>
@@ -127,17 +102,14 @@
     <string name="campo_nombre_perfil">Nombre</string>
     <string name="btn_guardar_cambios">Guardar cambios</string>
     <string name="perfil_actualizado">Perfil actualizado</string>
-
     <string name="btn_cambiar_nombre">Cambiar datos</string>
-
     <string name="titulo_recuperar">Recuperar cuenta</string>
-    <string name="login_olvido">Olvidaste tu contrasena?</string>
+    <string name="login_olvido">¿Olvidaste tu contraseña?</string>
     <string name="recuperar_explicacion">Ingresa tu correo y tu RUT para elegir una nueva contraseña.</string>
-    <string name="btn_cambiar_contrasena">Cambiar contrasena</string>
-    <string name="recuperar_exito">Contrasena actualizada. Ya puedes iniciar sesion.</string>
-    <string name="btn_volver_login">Volver a iniciar sesion</string>
-
-    <string name="cd_logo">Logo de Rincon Sur</string>
+    <string name="btn_cambiar_contrasena">Cambiar contraseña</string>
+    <string name="recuperar_exito">Contraseña actualizada. Ya puedes iniciar sesión.</string>
+    <string name="btn_volver_login">Volver a iniciar sesión</string>
+    <string name="cd_logo">Logo de Rincón Sur</string>
     <string name="campo_rut">RUT</string>
     <string name="campo_cargo">Cargo</string>
     <string name="campo_telefono">Teléfono</string>
@@ -149,10 +121,115 @@
     <string name="titulo_usuarios">Usuarios</string>
     <string name="btn_nuevo_usuario">Nuevo usuario</string>
     <string name="titulo_editar_usuario">Editar usuario</string>
-    <string name="campo_contrasena_nueva">Contrasena nueva</string>
-
-
-
-
-
+    <string name="campo_contrasena_nueva">Contraseña nueva</string>
+    <string name="clasificacion_transito">Tránsito</string>
+    <string name="clasificacion_visita">Visita</string>
+    <string name="rango_menor_18">Niño</string>
+    <string name="rango_18_25">Joven</string>
+    <string name="rango_26_40">Adulto</string>
+    <string name="rango_41_60">Maduro</string>
+    <string name="rango_61_mas">Anciano</string>
+    <string name="compania_solo">Solo</string>
+    <string name="compania_pareja">Pareja</string>
+    <string name="compania_con_ninos">Con niños</string>
+    <string name="compania_grupo">Grupo</string>
+    <string name="estado_programada">Programada</string>
+    <string name="estado_en_curso">En curso</string>
+    <string name="estado_finalizada">Finalizada</string>
+    <string name="estado_validada">Validada</string>
+    <string name="estado_rechazada">Rechazada</string>
+    <string name="estado_cancelada">Cancelada</string>
+    <string name="sexo_masculino">Masculino</string>
+    <string name="sexo_femenino">Femenino</string>
+    <string name="tema_sistema">Sistema</string>
+    <string name="tema_claro">Claro</string>
+    <string name="tema_oscuro">Oscuro</string>
+    <string name="turno_manana">Mañana</string>
+    <string name="turno_tarde">Tarde</string>
+    <string name="turno_noche">Noche</string>
+    <string name="filtro_turno">Turno</string>
+    <string name="filtro_observador">Observador</string>
+    <string name="fecha_hoy">Hoy</string>
+    <string name="fecha_manana">Mañana</string>
+    <string name="campo_hora">Hora</string>
+    <string name="campo_minutos">Minutos</string>
+    <string name="duracion_minutos">%1$d min</string>
+    <string name="usuario_tu">%1$s (tú)</string>
+    <string name="usuario_perfil_rut">%1$s · %2$s</string>
+    <string name="usuario_sin_rut">Sin RUT</string>
+    <string name="usuario_activo">Activo</string>
+    <string name="usuario_desactivado">Desactivado</string>
+    <string name="btn_editar">Editar</string>
+    <string name="btn_cambiar_rol">Cambiar rol</string>
+    <string name="btn_desactivar">Desactivar</string>
+    <string name="btn_activar">Activar</string>
+    <string name="alerta_turno_titulo">Turno en curso</string>
+    <string name="alerta_turno_mensaje">Tienes un turno en curso. ¿Quieres finalizarlo antes de salir?</string>
+    <string name="alerta_finalizar_salir">Finalizar y salir</string>
+    <string name="alerta_seguir">Seguir observando</string>
+    <string name="msg_debes_aceptar_para_crear_la_cuenta">Debes aceptar para crear la cuenta</string>
+    <string name="msg_ese_correo_ya_tiene_una_cuenta">Ese correo ya tiene una cuenta</string>
+    <string name="msg_ese_rut_ya_pertenece_a_otro">Ese RUT ya pertenece a otro usuario</string>
+    <string name="msg_ingresa_tu_nombre">Ingresa tu nombre</string>
+    <string name="msg_minimo_3_caracteres">Mínimo 3 caracteres</string>
+    <string name="msg_solo_letras_y_espacios">Solo letras y espacios</string>
+    <string name="msg_ingresa_tu_correo">Ingresa tu correo</string>
+    <string name="msg_correo_no_valido_ej_nombre_correo">Correo no válido (ej: nombre@correo.cl)</string>
+    <string name="msg_ingresa_una_contrasena">Ingresa una contraseña</string>
+    <string name="msg_minimo_8_caracteres">Mínimo 8 caracteres</string>
+    <string name="msg_debe_tener_una_mayuscula">Debe tener una mayúscula</string>
+    <string name="msg_debe_tener_una_minuscula">Debe tener una minúscula</string>
+    <string name="msg_debe_tener_un_numero">Debe tener un número</string>
+    <string name="msg_debe_tener_un_caracter_especial_ej">Debe tener un carácter especial (ej: ! # $ %%)</string>
+    <string name="msg_ingresa_el_rut">Ingresa el RUT</string>
+    <string name="msg_rut_no_valido_ej_12345678_5">RUT no válido (ej: 12345678-5)</string>
+    <string name="msg_ingresa_el_cargo">Ingresa el cargo</string>
+    <string name="msg_el_telefono_debe_tener_9_digitos">El teléfono debe tener 9 dígitos</string>
+    <string name="msg_repite_la_contrasena">Repite la contraseña</string>
+    <string name="msg_las_contrasenas_no_coinciden">Las contraseñas no coinciden</string>
+    <string name="msg_elige_una_clasificacion">Elige una clasificación</string>
+    <string name="msg_elige_un_rango_de_edad">Elige un rango de edad</string>
+    <string name="msg_elige_con_quien_viene">Elige con quién viene</string>
+    <string name="msg_elige_el_sexo">Elige el sexo</string>
+    <string name="msg_ocurrio_un_error_inesperado">Ocurrió un error inesperado</string>
+    <string name="msg_no_se_pudo_iniciar_sesion">No se pudo iniciar sesión</string>
+    <string name="msg_solo_un_supervisor_puede_crear_usuarios">Solo un supervisor puede crear usuarios</string>
+    <string name="msg_usuario_creado">Usuario creado: %1$s</string>
+    <string name="msg_no_se_pudo_crear_el_usuario">No se pudo crear el usuario</string>
+    <string name="msg_no_se_pudo_cambiar_la_contrasena">No se pudo cambiar la contraseña</string>
+    <string name="msg_no_hay_sesion_iniciada">No hay sesión iniciada</string>
+    <string name="msg_solo_un_supervisor_puede_gestionar_usuarios">Solo un supervisor puede gestionar usuarios</string>
+    <string name="msg_no_puedes_cambiar_tu_propia_cuenta">No puedes cambiar tu propia cuenta</string>
+    <string name="msg_el_usuario_no_existe">El usuario no existe</string>
+    <string name="msg_usuario_activado">Usuario activado: %1$s</string>
+    <string name="msg_usuario_desactivado">Usuario desactivado: %1$s</string>
+    <string name="msg_ahora_es">%1$s ahora es %2$s</string>
+    <string name="msg_datos_actualizados">Datos actualizados: %1$s</string>
+    <string name="msg_no_se_pudieron_guardar_los_datos">No se pudieron guardar los datos</string>
+    <string name="msg_minimo_5_caracteres">Mínimo 5 caracteres</string>
+    <string name="msg_maximo_80_caracteres">Máximo 80 caracteres</string>
+    <string name="msg_no_se_pudo_programar_la_sesion">No se pudo programar la sesión</string>
+    <string name="msg_el_validador_no_puede_ser_quien">El validador no puede ser quien observó la sesión</string>
+    <string name="msg_sesion_validada">Sesión validada</string>
+    <string name="msg_rechazada_solo_hay_registros_validos_minimo">Rechazada: solo hay %1$d registros válidos (mínimo %2$d)</string>
+    <string name="msg_no_se_encontro_la_sesion">No se encontró la sesión</string>
+    <string name="msg_escribe_el_motivo_del_rechazo">Escribe el motivo del rechazo</string>
+    <string name="msg_elige_un_acceso">Elige un acceso</string>
+    <string name="msg_elige_un_observador">Elige un observador</string>
+    <string name="msg_elige_la_duracion">Elige la duración</string>
+    <string name="msg_ingresa_la_fecha">Ingresa la fecha</string>
+    <string name="msg_usa_el_formato_aaaa_mm_dd">Usa el formato AAAA-MM-DD</string>
+    <string name="msg_el_mes_debe_estar_entre_01">El mes debe estar entre 01 y 12</string>
+    <string name="msg_ese_dia_no_existe_en_el">Ese día no existe en el mes</string>
+    <string name="msg_ingresa_la_hora">Ingresa la hora</string>
+    <string name="msg_usa_el_formato_hh_mm_24">Usa el formato HH:MM (24 horas)</string>
+    <string name="msg_la_tienda_abre_a_las_10">La tienda abre a las 10:00</string>
+    <string name="msg_la_tienda_cierra_a_las_21">La tienda cierra a las 21:00</string>
+    <string name="msg_la_sesion_debe_durar_entre_30">La sesión debe durar entre 30 y 60 minutos</string>
+    <string name="msg_ingresa_el_nombre">Ingresa el nombre</string>
+    <string name="msg_ingresa_tu_rut">Ingresa tu RUT</string>
+    <string name="msg_ingresa_tu_contrasena">Ingresa tu contraseña</string>
+    <string name="msg_no_se_pudo_conectar_con_el">No se pudo conectar con el servidor</string>
+    <string name="msg_error_del_servidor">Error del servidor (%1$d)</string>
+    <string name="msg_no_existe_el_perfil">No existe el perfil %1$s</string>
 </resources>

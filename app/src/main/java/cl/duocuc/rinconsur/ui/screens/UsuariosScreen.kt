@@ -57,7 +57,6 @@ fun UsuariosScreen(
         }
     }
 
-    // Si la operacion devuelve un error, se muestra en el snackbar
     fun mostrarError(error: String?) {
         if (error != null) scope.launch { snackbarHostState.showSnackbar(error) }
     }
@@ -147,29 +146,32 @@ private fun TarjetaUsuario(
     onCambiarRol: () -> Unit,
     onEditar: () -> Unit
 ) {
-    TarjetaSeccion(titulo = if (esMiCuenta) "${usuario.nombre} (tú)" else usuario.nombre) {
+    TarjetaSeccion(titulo = if (esMiCuenta) stringResource(R.string.usuario_tu, usuario.nombre) else usuario.nombre) {
         Text(usuario.correo, style = MaterialTheme.typography.bodyMedium)
         Text(
-            text = "${usuario.perfil.etiqueta} · " +
-                    if (usuario.rut.isBlank()) "Sin RUT" else usuario.rut,
+            text = stringResource(
+                R.string.usuario_perfil_rut,
+                usuario.perfil.etiqueta,
+                if (usuario.rut.isBlank()) stringResource(R.string.usuario_sin_rut) else usuario.rut
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = if (usuario.activo) "Activo" else "Desactivado",
+            text = stringResource(if (usuario.activo) R.string.usuario_activo else R.string.usuario_desactivado),
             style = MaterialTheme.typography.titleSmall,
             color = if (usuario.activo) MaterialTheme.colorScheme.primary
             else MaterialTheme.colorScheme.error
         )
         Row(horizontalArrangement = Arrangement.spacedBy(Dimens.espacioChico)) {
             BotonSecundario(
-                texto = "Editar",
+                texto = stringResource(R.string.btn_editar),
                 onClick = onEditar,
                 modifier = Modifier.weight(1f)
             )
-            // En mi propia cuenta solo se puede editar
+
             if (!esMiCuenta) {
                 BotonSecundario(
-                    texto = "Cambiar rol",
+                    texto = stringResource(R.string.btn_cambiar_rol),
                     onClick = onCambiarRol,
                     modifier = Modifier.weight(1f)
                 )
@@ -177,7 +179,7 @@ private fun TarjetaUsuario(
         }
         if (!esMiCuenta) {
             BotonSecundario(
-                texto = if (usuario.activo) "Desactivar" else "Activar",
+                texto = stringResource(if (usuario.activo) R.string.btn_desactivar else R.string.btn_activar),
                 onClick = onCambiarActivo,
                 modifier = Modifier.fillMaxWidth()
             )

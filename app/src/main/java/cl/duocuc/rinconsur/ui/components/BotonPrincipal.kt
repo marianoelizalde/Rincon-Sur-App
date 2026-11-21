@@ -20,7 +20,6 @@ import cl.duocuc.rinconsur.ui.styles.EstilosBoton
 import cl.duocuc.rinconsur.ui.styles.estiloAltoBoton
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
 @Composable
 fun BotonPrincipal(
     texto: String,
@@ -41,7 +40,7 @@ fun BotonPrincipal(
         if (icono != null) {
             Icon(
                 painter = painterResource(id = icono),
-                contentDescription = null,      // decorativo: el texto ya describe
+                contentDescription = null,
                 modifier = Modifier.size(ButtonDefaults.IconSize)
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))

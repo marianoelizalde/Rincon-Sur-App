@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import cl.duocuc.rinconsur.R
+import cl.duocuc.rinconsur.data.Textos
 
 class RecuperarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(RecuperarUiState())
@@ -31,16 +33,15 @@ class RecuperarViewModel : ViewModel() {
         _uiState.update { it.copy(claveVisible = !it.claveVisible) }
     }
 
-    // Recibe la funcion que verifica y cambia la clave (viene de RinconViewModel)
-    fun onRecuperar(recuperarCuenta: (String, String, String) -> Boolean) {
+    suspend fun onRecuperar(recuperarCuenta: suspend (String, String, String) -> String?) {
         val estado = _uiState.value
 
         val errorCorreo = errorCorreo(estado.correo)
         val errorRut = errorRut(estado.rut)
         val errorClave = errorClave(estado.clave)
         val errorConfirmar = when {
-            estado.confirmar.isBlank() -> "Repite la contrasena"
-            estado.clave != estado.confirmar -> "Las contrasenas no coinciden"
+            estado.confirmar.isBlank() -> Textos.obtener(R.string.msg_repite_la_contrasena)
+            estado.clave != estado.confirmar -> Textos.obtener(R.string.msg_las_contrasenas_no_coinciden)
             else -> null
         }
 
@@ -58,46 +59,44 @@ class RecuperarViewModel : ViewModel() {
             .any { it != null }
         if (hayErrores) return
 
-        val cambiada = recuperarCuenta(
+        val error = recuperarCuenta(
             estado.correo.trim().lowercase(),
             normalizarRut(estado.rut),
             estado.clave
         )
         _uiState.update {
-            if (cambiada) it.copy(listo = true)
-            else it.copy(errorGeneral = "Los datos no coinciden con ninguna cuenta")
+            if (error == null) it.copy(listo = true)
+            else it.copy(errorGeneral = error)
         }
     }
 
     private fun errorCorreo(valor: String): String? = when {
-        valor.isBlank() -> "Ingresa tu correo"
-        !valor.contains("@") || !valor.contains(".") -> "Correo no valido (ej: nombre@correo.cl)"
+        valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_tu_correo)
+        !valor.contains("@") || !valor.contains(".") -> Textos.obtener(R.string.msg_correo_no_valido_ej_nombre_correo)
         else -> null
     }
 
     private fun errorRut(valor: String): String? = when {
-        valor.isBlank() -> "Ingresa tu RUT"
-        !REGEX_RUT.matches(normalizarRut(valor)) -> "RUT no valido (ej: 12345678-5)"
+        valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_tu_rut)
+        !REGEX_RUT.matches(normalizarRut(valor)) -> Textos.obtener(R.string.msg_rut_no_valido_ej_12345678_5)
         else -> null
     }
-
 
     private fun normalizarRut(valor: String): String {
         val limpio = valor.filter { it != '.' && it != '-' && !it.isWhitespace() }.uppercase()
         return if (limpio.length > 1) limpio.dropLast(1) + "-" + limpio.last() else limpio
     }
 
-
     private companion object {
         val REGEX_RUT = Regex("""^\d{7,8}-[\dK]$""")
     }
 }
 private fun errorClave(valor: String): String? = when {
-    valor.isBlank() -> "Ingresa una contrasena"
-    valor.length < 8 -> "Minimo 8 caracteres"
-    valor.none { it.isUpperCase() } -> "Debe tener una mayuscula"
-    valor.none { it.isLowerCase() } -> "Debe tener una minuscula"
-    valor.none { it.isDigit() } -> "Debe tener un numero"
-    valor.none { !it.isLetterOrDigit() } -> "Debe tener un caracter especial (ej: ! # $ %)"
+    valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_una_contrasena)
+    valor.length < 8 -> Textos.obtener(R.string.msg_minimo_8_caracteres)
+    valor.none { it.isUpperCase() } -> Textos.obtener(R.string.msg_debe_tener_una_mayuscula)
+    valor.none { it.isLowerCase() } -> Textos.obtener(R.string.msg_debe_tener_una_minuscula)
+    valor.none { it.isDigit() } -> Textos.obtener(R.string.msg_debe_tener_un_numero)
+    valor.none { !it.isLetterOrDigit() } -> Textos.obtener(R.string.msg_debe_tener_un_caracter_especial_ej)
     else -> null
 }

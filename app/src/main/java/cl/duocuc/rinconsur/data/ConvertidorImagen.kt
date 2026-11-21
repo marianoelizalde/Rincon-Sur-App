@@ -1,7 +1,5 @@
 package cl.duocuc.rinconsur.data
 
-
-
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,15 +8,11 @@ import android.net.Uri
 import android.os.Build
 import java.io.ByteArrayOutputStream
 
-
 object ConvertidorImagen {
-
 
     private const val LADO_MAXIMO = 400
 
-
     private const val CALIDAD_JPEG = 80
-
 
     fun desdeUri(context: Context, uri: Uri): Bitmap? = try {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -37,7 +31,6 @@ object ConvertidorImagen {
         null
     }
 
-
     fun aBytes(bitmap: Bitmap): ByteArray {
         val chico = achicar(bitmap)
         val salida = ByteArrayOutputStream()
@@ -45,10 +38,8 @@ object ConvertidorImagen {
         return salida.toByteArray()
     }
 
-
     fun aBitmap(bytes: ByteArray): Bitmap? =
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-
 
     private fun achicar(bitmap: Bitmap): Bitmap {
         val ladoMayor = maxOf(bitmap.width, bitmap.height)

@@ -9,12 +9,9 @@ import android.os.Build
 import android.provider.Settings
 import androidx.core.content.ContextCompat
 
-
 object Permisos {
 
-
     val CAMARA: String = Manifest.permission.CAMERA
-
 
     val IMAGENES: String =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -23,10 +20,8 @@ object Permisos {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
 
-
     fun tiene(context: Context, permiso: String): Boolean =
         ContextCompat.checkSelfPermission(context, permiso) == PackageManager.PERMISSION_GRANTED
-
 
     fun abrirAjustes(context: Context) {
         val intent = Intent(

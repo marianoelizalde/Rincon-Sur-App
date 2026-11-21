@@ -12,9 +12,3 @@ data class RegistroUiState(
     val errorSexo: String? = null,
 )
 
-
-
-
-
-
-

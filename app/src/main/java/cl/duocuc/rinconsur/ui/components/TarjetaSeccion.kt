@@ -16,7 +16,6 @@ import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
 @Composable
 fun TarjetaSeccion(
     titulo: String,

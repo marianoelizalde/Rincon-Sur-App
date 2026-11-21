@@ -9,8 +9,11 @@ data class  SesionObservacion(
     val idObservador: Int,
     val estado: EstadoSesion = EstadoSesion.PROGRAMADA,
     val idValidador: Int? = null,
-    val motivoRechazo: String? = null
+    val motivoRechazo: String? = null,
+
+    val estadoEtiqueta: String? = null,
+
+    val turno: String = ""
 
 )
-
 

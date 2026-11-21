@@ -18,7 +18,6 @@ import cl.duocuc.rinconsur.ui.styles.EstilosBoton
 import cl.duocuc.rinconsur.ui.styles.estiloAltoBoton
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
 @Composable
 fun BotonSecundario(
     texto: String,

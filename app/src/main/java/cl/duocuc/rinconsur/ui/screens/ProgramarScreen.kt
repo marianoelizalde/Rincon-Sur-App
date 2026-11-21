@@ -18,6 +18,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,17 +45,18 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
 @Composable
 fun ProgramarScreen(
     accesos: List<Acceso>,
     observadores: List<Colaborador>,
-    onProgramarSesion: (SesionObservacion) -> Boolean,
+
+    onProgramarSesion: suspend (SesionObservacion) -> String?,
     onSesionProgramada: () -> Unit,
     onVolver: () -> Unit,
     viewModel: ProgramarViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     ProgramarContent(
         uiState = uiState,
@@ -68,8 +71,10 @@ fun ProgramarScreen(
         onProgramar = {
 
             viewModel.onProgramar()?.let { sesion ->
-
-                if (onProgramarSesion(sesion)) onSesionProgramada() else viewModel.onSolapamiento()
+                scope.launch {
+                    val error = onProgramarSesion(sesion)
+                    if (error == null) onSesionProgramada() else viewModel.onErrorGeneral(error)
+                }
             }
         },
         onVolver = onVolver
@@ -147,8 +152,8 @@ fun ProgramarContent(
                 SelectorPaso(
                     titulo = stringResource(R.string.campo_fecha),
                     valor = when (posicionFecha) {
-                        0 -> "Hoy"
-                        1 -> "Mañana"
+                        0 -> stringResource(R.string.fecha_hoy)
+                        1 -> stringResource(R.string.fecha_manana)
                         else -> fechas[posicionFecha].substring(8, 10) + "/" +
                                 fechas[posicionFecha].substring(5, 7)
                     },
@@ -165,14 +170,14 @@ fun ProgramarContent(
                 )
                 Row(modifier = Modifier.fillMaxWidth()) {
                     SelectorPaso(
-                        titulo = "Hora",
+                        titulo = stringResource(R.string.campo_hora),
                         valor = uiState.horaInicio.take(2),
                         onMenos = { onHoraCambiaEn(-1) },
                         onMas = { onHoraCambiaEn(1) },
                         modifier = Modifier.weight(1f)
                     )
                     SelectorPaso(
-                        titulo = "Minutos",
+                        titulo = stringResource(R.string.campo_minutos),
                         valor = uiState.horaInicio.takeLast(2),
                         onMenos = { onMinutosCambiaEn(-1) },
                         onMas = { onMinutosCambiaEn(1) },
@@ -182,7 +187,7 @@ fun ProgramarContent(
 
                 SelectorPaso(
                     titulo = stringResource(R.string.campo_duracion),
-                    valor = "$duracion min",
+                    valor = stringResource(R.string.duracion_minutos, duracion),
                     onMenos = { onDuracionCambiaEn(-1) },
                     onMas = { onDuracionCambiaEn(1) },
                     menosHabilitado = duracion > 30,
@@ -223,7 +228,6 @@ fun ProgramarContent(
     }
 }
 
-// Los proximos 7 dias en formato AAAA-MM-DD (el primero es hoy)
 private fun proximasFechas(dias: Int = 7): List<String> {
     val formato = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     val calendario = Calendar.getInstance()

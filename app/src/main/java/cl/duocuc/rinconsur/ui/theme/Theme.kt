@@ -43,7 +43,6 @@ private val EsquemaOscuro = darkColorScheme(
     onSurfaceVariant = Color(0xFFD2C9BF)
 )
 
-
 private val Formas = Shapes(
     small = RoundedCornerShape(8.dp),
     medium = RoundedCornerShape(12.dp),

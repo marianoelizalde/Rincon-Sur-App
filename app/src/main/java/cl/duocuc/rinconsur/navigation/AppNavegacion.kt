@@ -28,16 +28,15 @@ import cl.duocuc.rinconsur.ui.screens.RecuperarScreen
 import cl.duocuc.rinconsur.ui.screens.UsuariosScreen
 import cl.duocuc.rinconsur.ui.screens.EditarUsuarioScreen
 
-
 @Composable
 fun AppNavegacion(rincon: RinconViewModel) {
     val navController = rememberNavController()
-
 
     val usuarioActual by rincon.usuarioActual.collectAsStateWithLifecycle()
     val tema by rincon.tema.collectAsStateWithLifecycle()
     val sesiones by rincon.sesiones.collectAsStateWithLifecycle()
     val accesos by rincon.accesos.collectAsStateWithLifecycle()
+    val estados by rincon.estados.collectAsStateWithLifecycle()
     val observadores by rincon.observadores.collectAsStateWithLifecycle()
     val nombres by rincon.nombres.collectAsStateWithLifecycle()
     val sesionAbierta by rincon.sesionAbierta.collectAsStateWithLifecycle()
@@ -47,6 +46,11 @@ fun AppNavegacion(rincon: RinconViewModel) {
 
     val inicio = remember { if (rincon.usuarioActual.value == null) Ruta.Login.ruta else Ruta.Sesiones.ruta }
 
+    LaunchedEffect(usuarioActual) {
+        if (usuarioActual != null && navController.currentDestination?.route == Ruta.Login.ruta) {
+            navController.irASesionesLimpiando(Ruta.Login.ruta)
+        }
+    }
 
     val cerrarSesion: () -> Unit = {
         rincon.cerrarSesion()
@@ -72,7 +76,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
         composable(Ruta.Login.ruta) {
             LoginScreen(
                 onIniciarSesion = rincon::iniciarSesion,
-                onLoginExitoso = { navController.irASesionesLimpiando(Ruta.Login.ruta) },
+                onLoginExitoso = { },
                 onRecuperar = { navController.navigate(Ruta.Recuperar.ruta) }
             )
         }
@@ -83,12 +87,10 @@ fun AppNavegacion(rincon: RinconViewModel) {
             )
         }
 
-
         composable(Ruta.CrearUsuario.ruta) {
             if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR) {
                 CrearUsuarioScreen(
                     onCrearUsuario = rincon::registrarUsuario,
-                    onRutEnUso = { rut -> rincon.rutEnUso(rut) },
                     onUsuarioCreado = { navController.popBackStack() },
                     onVolver = { navController.popBackStack() }
                 )
@@ -98,6 +100,7 @@ fun AppNavegacion(rincon: RinconViewModel) {
         }
 
         composable(Ruta.Usuarios.ruta) {
+            LaunchedEffect(Unit) { rincon.recargarUsuarios() }
             if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR) {
                 UsuariosScreen(
                     usuarios = usuarios,
@@ -124,7 +127,6 @@ fun AppNavegacion(rincon: RinconViewModel) {
             if (usuarioActual?.colaborador?.perfil == PerfilUsuario.SUPERVISOR && usuarioAEditar != null) {
                 EditarUsuarioScreen(
                     usuario = usuarioAEditar,
-                    onRutEnUso = rincon::rutEnUso,
                     onEditarUsuario = rincon::editarUsuario,
                     onGuardado = { navController.popBackStack() },
                     onVolver = { navController.popBackStack() }
@@ -135,10 +137,14 @@ fun AppNavegacion(rincon: RinconViewModel) {
         }
 
         composable(Ruta.Sesiones.ruta) {
+
+            LaunchedEffect(Unit) { rincon.recargarSesiones() }
             SesionesScreen(
                 usuario = usuarioActual,
                 sesiones = sesiones,
                 accesos = accesos,
+                estados = estados,
+                observadores = observadores,
                 nombres = nombres,
                 mensaje = mensaje,
                 onMensajeMostrado = rincon::limpiarMensaje,
@@ -163,11 +169,14 @@ fun AppNavegacion(rincon: RinconViewModel) {
                 onActualizarNombre = rincon::actualizarNombre,
                 onActualizarTelefono = rincon::actualizarTelefono,
                 onActualizarDireccion = rincon::actualizarDireccion,
-                onActualizarComuna = rincon::actualizarComuna
+                onActualizarComuna = rincon::actualizarComuna,
+                mensaje = mensaje,
+                onMensajeMostrado = rincon::limpiarMensaje
             )
         }
 
         composable(Ruta.Programar.ruta) {
+            LaunchedEffect(Unit) { rincon.recargarUsuarios() }
             ProgramarScreen(
                 accesos = accesos,
                 observadores = observadores,
@@ -221,7 +230,6 @@ fun AppNavegacion(rincon: RinconViewModel) {
         }
     }
 }
-
 
 private fun NavHostController.irASesionesLimpiando(rutaABorrar: String) {
     navigate(Ruta.Sesiones.ruta) {

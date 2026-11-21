@@ -1,5 +1,3 @@
-
-
 package cl.duocuc.rinconsur.model
 
 data class EditarUsuarioUiState(

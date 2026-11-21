@@ -7,13 +7,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-// La validacion de formularios vive dentro de los ViewModels (como en el proyecto del profesor);
-// aqui se prueba la regla de negocio pura: el porcentaje de transito.
 class EstadisticasTest {
 
     @Test
     fun porcentajeDeTransitoDelAnexo9() {
-        // Sesion S-0001: 61 transito, 52 visita, 5 no determinados -> 61 / (118 - 5) = 54,0 %
+
         val registros = List(61) { registro(Clasificacion.TRANSITO) } +
             List(52) { registro(Clasificacion.VISITA) } +
             List(5) { registro(Clasificacion.NO_DETERMINADO) }

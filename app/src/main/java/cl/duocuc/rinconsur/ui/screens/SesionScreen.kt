@@ -55,8 +55,6 @@ import cl.duocuc.rinconsur.ui.styles.EstilosTarjeta
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
-
 @Composable
 fun SesionScreen(
     usuario: UsuarioActual?,
@@ -186,7 +184,7 @@ fun SesionContent(
                                 text = stringResource(R.string.sesion_acceso, acceso?.codigo ?: "?", acceso?.nombre ?: ""),
                                 style = MaterialTheme.typography.titleLarge
                             )
-                            EtiquetaEstado(sesion.estado)
+                            EtiquetaEstado(sesion.estado, texto = sesion.estadoEtiqueta)
                         }
                         Text(stringResource(R.string.sesion_horario, sesion.fecha, sesion.horaInicio, sesion.horaFin))
                         Text(stringResource(R.string.sesion_observador, nombres[sesion.idObservador] ?: "-"))
@@ -369,7 +367,6 @@ private fun FilaRegistro(registro: RegistroObservacion, puedeAnular: Boolean, on
         }
     }
 }
-
 
 @Composable
 private fun DialogoRechazo(onCancelar: () -> Unit, onConfirmar: (String) -> String?) {

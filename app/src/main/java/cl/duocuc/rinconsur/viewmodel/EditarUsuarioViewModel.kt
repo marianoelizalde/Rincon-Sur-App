@@ -1,6 +1,5 @@
 package cl.duocuc.rinconsur.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import cl.duocuc.rinconsur.model.Colaborador
 import cl.duocuc.rinconsur.model.EditarUsuarioUiState
@@ -8,12 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import cl.duocuc.rinconsur.R
+import cl.duocuc.rinconsur.data.Textos
 
 class EditarUsuarioViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EditarUsuarioUiState())
     val uiState: StateFlow<EditarUsuarioUiState> = _uiState.asStateFlow()
 
-    // Llena el formulario con los datos actuales del usuario (una sola vez por usuario)
     fun cargar(usuario: Colaborador) {
         if (_uiState.value.idUsuario == usuario.id) return
         _uiState.value = EditarUsuarioUiState(
@@ -41,10 +41,8 @@ class EditarUsuarioViewModel : ViewModel() {
         _uiState.update { it.copy(telefono = valor.trim(), errorTelefono = null, errorGeneral = null) }
     }
 
-
-    fun onGuardar(
-        rutEnUso: (String, Int) -> Boolean,
-        editarUsuario: (Int, String, String, String, String) -> String?
+    suspend fun onGuardar(
+        editarUsuario: suspend (Int, String, String, String, String) -> String?
     ): Boolean {
         val estado = _uiState.value
 
@@ -54,24 +52,18 @@ class EditarUsuarioViewModel : ViewModel() {
         val errorTelefono = errorTelefono(estado.telefono)
 
         val rut = normalizarRut(estado.rut)
-        // El RUT repetido solo se revisa si el formato ya es valido
-        val rutRepetido = if (errorRut == null && rutEnUso(rut, estado.idUsuario)) {
-            "Ese RUT ya pertenece a otro usuario"
-        } else {
-            errorRut
-        }
 
         _uiState.update {
             it.copy(
                 errorNombre = errorNombre,
-                errorRut = rutRepetido,
+                errorRut = errorRut,
                 errorCargo = errorCargo,
                 errorTelefono = errorTelefono,
                 errorGeneral = null
             )
         }
 
-        val hayErrores = listOf(errorNombre, rutRepetido, errorCargo, errorTelefono)
+        val hayErrores = listOf(errorNombre, errorRut, errorCargo, errorTelefono)
             .any { it != null }
         if (hayErrores) return false
 
@@ -83,36 +75,36 @@ class EditarUsuarioViewModel : ViewModel() {
             estado.telefono
         )
         if (error != null) {
-            _uiState.update { it.copy(errorGeneral = error) }
+            _uiState.update {
+                if (error.contains("RUT", ignoreCase = true)) it.copy(errorRut = error)
+                else it.copy(errorGeneral = error)
+            }
             return false
         }
         return true
     }
 
-
     private fun errorNombre(valor: String): String? = when {
-        valor.isBlank() -> "Ingresa el nombre"
-        valor.trim().length < 3 -> "Minimo 3 caracteres"
-        valor.any { !it.isLetter() && it != ' ' } -> "Solo letras y espacios"
+        valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_el_nombre)
+        valor.trim().length < 3 -> Textos.obtener(R.string.msg_minimo_3_caracteres)
+        valor.any { !it.isLetter() && it != ' ' } -> Textos.obtener(R.string.msg_solo_letras_y_espacios)
         else -> null
     }
 
     private fun errorRut(valor: String): String? {
-        if (valor.isBlank()) return "Ingresa el RUT"
+        if (valor.isBlank()) return Textos.obtener(R.string.msg_ingresa_el_rut)
         val rut = normalizarRut(valor)
         val cuerpo = rut.substringBefore("-")
         val dv = rut.substringAfter("-", "")
-        if (cuerpo.length !in 7..8 || cuerpo.any { !it.isDigit() }) return "RUT no valido (ej: 12345678-5)"
-        if (dv != digitoVerificador(cuerpo)) return "RUT no valido (ej: 12345678-5)"
+        if (cuerpo.length !in 7..8 || cuerpo.any { !it.isDigit() }) return Textos.obtener(R.string.msg_rut_no_valido_ej_12345678_5)
+        if (dv != digitoVerificador(cuerpo)) return Textos.obtener(R.string.msg_rut_no_valido_ej_12345678_5)
         return null
     }
-
 
     private fun normalizarRut(texto: String): String {
         val limpio = texto.filter { it.isLetterOrDigit() }.uppercase()
         return if (limpio.length < 2) limpio else limpio.dropLast(1) + "-" + limpio.last()
     }
-
 
     private fun digitoVerificador(cuerpo: String): String {
         var suma = 0
@@ -129,14 +121,14 @@ class EditarUsuarioViewModel : ViewModel() {
     }
 
     private fun errorCargo(valor: String): String? = when {
-        valor.isBlank() -> "Ingresa el cargo"
-        valor.trim().length < 3 -> "Minimo 3 caracteres"
+        valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_el_cargo)
+        valor.trim().length < 3 -> Textos.obtener(R.string.msg_minimo_3_caracteres)
         else -> null
     }
 
     private fun errorTelefono(valor: String): String? = when {
         valor.isEmpty() -> null
-        valor.length != 9 || valor.any { !it.isDigit() } -> "El telefono debe tener 9 digitos"
+        valor.length != 9 || valor.any { !it.isDigit() } -> Textos.obtener(R.string.msg_el_telefono_debe_tener_9_digitos)
         else -> null
     }
 }

@@ -11,7 +11,6 @@ import cl.duocuc.rinconsur.model.SesionObservacion
 import cl.duocuc.rinconsur.model.TipoCompania
 import cl.duocuc.rinconsur.model.Sexo
 
-
 object DatosEjemplo {
     val accesos = listOf(
         Acceso(1, "A1", "Principal", "Frente al pasillo central del mall"),
@@ -19,7 +18,6 @@ object DatosEjemplo {
         Acceso(3, "A3", "Estacionamiento", "Senal demasiado debil"),
         Acceso(4, "A4", "Conexion", "Hacia la tienda vecina")
     )
-
 
     val colaboradores = listOf(
         Colaborador(
@@ -43,7 +41,6 @@ object DatosEjemplo {
         SesionObservacion(6, 4, "2026-10-08", "15:00", "15:45", 7, EstadoSesion.PROGRAMADA)
     )
 
-
     private val cantidades = mapOf(
         1 to Triple(61, 52, 5),
         2 to Triple(38, 63, 3),
@@ -63,7 +60,7 @@ object DatosEjemplo {
             }
             repeat(visita) { i -> lista += nuevo(sesion, Clasificacion.VISITA, i) }
         }
-        // Cada registro necesita un id propio (antes lo asignaba la base de datos).
+
         return lista.mapIndexed { i, registro -> registro.copy(id = i + 1) }
     }
 

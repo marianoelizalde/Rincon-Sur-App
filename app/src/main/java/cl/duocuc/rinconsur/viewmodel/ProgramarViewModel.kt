@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
+import cl.duocuc.rinconsur.R
+import cl.duocuc.rinconsur.data.Textos
 
 class ProgramarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(ProgramarUiState())
     val uiState: StateFlow<ProgramarUiState> = _uiState.asStateFlow()
 
-    // La pantalla parte con valores razonables: hoy, 10:00 y 45 minutos
     init {
         onFechaCambia(SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date()))
         onHoraInicioCambia("10:00")
@@ -60,12 +60,10 @@ class ProgramarViewModel : ViewModel() {
         }
     }
 
-
     fun onHoraCambiaEn(delta: Int) {
         val (hora, minuto) = partesDeInicio()
         onHoraInicioCambia("%02d:%02d".format((hora + delta).coerceIn(10, 20), minuto))
     }
-
 
     fun onMinutosCambiaEn(delta: Int) {
         val (hora, minuto) = partesDeInicio()
@@ -86,15 +84,14 @@ class ProgramarViewModel : ViewModel() {
         }
     }
 
-
     fun onProgramar(): SesionObservacion? {
         val estado = _uiState.value
 
-        val errorAcceso = if (estado.idAcceso == null) "Elige un acceso" else null
-        val errorObservador = if (estado.idObservador == null) "Elige un observador" else null
+        val errorAcceso = if (estado.idAcceso == null) Textos.obtener(R.string.msg_elige_un_acceso) else null
+        val errorObservador = if (estado.idObservador == null) Textos.obtener(R.string.msg_elige_un_observador) else null
         val errorFecha = errorFecha(estado.fecha)
         val errorInicio = errorHora(estado.horaInicio)
-        val errorFin = if (estado.duracion == null) "Elige la duracion"
+        val errorFin = if (estado.duracion == null) Textos.obtener(R.string.msg_elige_la_duracion)
         else errorFin(estado.horaInicio, estado.horaFin)
 
         _uiState.update {
@@ -121,16 +118,13 @@ class ProgramarViewModel : ViewModel() {
         )
     }
 
-
-    fun onSolapamiento() {
-        _uiState.update { it.copy(errorGeneral = "Ya hay una sesion en ese acceso y horario") }
+    fun onErrorGeneral(mensaje: String) {
+        _uiState.update { it.copy(errorGeneral = mensaje) }
     }
 
-
-
     private fun errorFecha(valor: String): String? {
-        if (valor.isBlank()) return "Ingresa la fecha"
-        if (!REGEX_FECHA.matches(valor)) return "Usa el formato AAAA-MM-DD"
+        if (valor.isBlank()) return Textos.obtener(R.string.msg_ingresa_la_fecha)
+        if (!REGEX_FECHA.matches(valor)) return Textos.obtener(R.string.msg_usa_el_formato_aaaa_mm_dd)
         val anio = valor.substring(0, 4).toInt()
         val mes = valor.substring(5, 7).toInt()
         val dia = valor.substring(8, 10).toInt()
@@ -139,14 +133,14 @@ class ProgramarViewModel : ViewModel() {
             1, 3, 5, 7, 8, 10, 12 -> 31
             4, 6, 9, 11 -> 30
             2 -> if (bisiesto) 29 else 28
-            else -> return "El mes debe estar entre 01 y 12"
+            else -> return Textos.obtener(R.string.msg_el_mes_debe_estar_entre_01)
         }
-        return if (dia < 1 || dia > diasDelMes) "Ese dia no existe en el mes" else null
+        return if (dia < 1 || dia > diasDelMes) Textos.obtener(R.string.msg_ese_dia_no_existe_en_el) else null
     }
 
     private fun errorHora(valor: String): String? = when {
-        valor.isBlank() -> "Ingresa la hora"
-        !REGEX_HORA.matches(valor) -> "Usa el formato HH:MM (24 horas)"
+        valor.isBlank() -> Textos.obtener(R.string.msg_ingresa_la_hora)
+        !REGEX_HORA.matches(valor) -> Textos.obtener(R.string.msg_usa_el_formato_hh_mm_24)
         else -> null
     }
 
@@ -161,10 +155,10 @@ class ProgramarViewModel : ViewModel() {
     private fun errorFin(inicio: String, fin: String): String? {
         errorHora(fin)?.let { return it }
         if (errorHora(inicio) != null) return null
-        if (minutos(inicio) < 10 * 60) return "La tienda abre a las 10:00"
-        if (minutos(fin) > 21 * 60) return "La tienda cierra a las 21:00"
+        if (minutos(inicio) < 10 * 60) return Textos.obtener(R.string.msg_la_tienda_abre_a_las_10)
+        if (minutos(fin) > 21 * 60) return Textos.obtener(R.string.msg_la_tienda_cierra_a_las_21)
         val duracion = minutos(fin) - minutos(inicio)
-        return if (duracion !in 30..60) "La sesion debe durar entre 30 y 60 minutos" else null
+        return if (duracion !in 30..60) Textos.obtener(R.string.msg_la_sesion_debe_durar_entre_30) else null
     }
 
     private companion object {

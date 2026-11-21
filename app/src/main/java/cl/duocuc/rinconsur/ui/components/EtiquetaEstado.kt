@@ -23,9 +23,9 @@ import cl.duocuc.rinconsur.ui.theme.EstadoRechazada
 import cl.duocuc.rinconsur.ui.theme.EstadoValidada
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 
-
 @Composable
-fun EtiquetaEstado(estado: EstadoSesion, modifier: Modifier = Modifier) {
+
+fun EtiquetaEstado(estado: EstadoSesion, modifier: Modifier = Modifier, texto: String? = null) {
     val destino = when (estado) {
         EstadoSesion.PROGRAMADA -> EstadoProgramada
         EstadoSesion.EN_CURSO -> EstadoEnCurso
@@ -41,7 +41,7 @@ fun EtiquetaEstado(estado: EstadoSesion, modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         Text(
-            estado.etiqueta,
+            texto ?: estado.etiqueta,
             color = Color.White,
             style = MaterialTheme.typography.labelMedium,
             modifier = Modifier.padding(PaddingValues(horizontal = Dimens.espacioEtiqueta, vertical = Dimens.espacioMini))

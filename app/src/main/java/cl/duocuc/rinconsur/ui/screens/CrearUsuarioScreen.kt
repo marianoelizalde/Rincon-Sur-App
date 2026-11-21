@@ -17,6 +17,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,16 +43,17 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.CrearUsuarioViewModel
 
-
 @Composable
 fun CrearUsuarioScreen(
-    onCrearUsuario: (Colaborador) -> Boolean,
-    onRutEnUso: (String) -> Boolean,
+
+    onCrearUsuario: suspend (Colaborador) -> String?,
     onUsuarioCreado: () -> Unit,
     onVolver: () -> Unit,
     viewModel: CrearUsuarioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val contexto = LocalContext.current
 
     CrearUsuarioContent(
         uiState = uiState,
@@ -66,12 +71,14 @@ fun CrearUsuarioScreen(
 
             viewModel.onCrear()?.let { colaborador ->
 
-                if (onRutEnUso(colaborador.rut)) {
-                    viewModel.onRutRepetido()
-                } else if (onCrearUsuario(colaborador)) {
-                    onUsuarioCreado()
-                } else {
-                    viewModel.onCorreoRepetido()
+                scope.launch {
+                    val error = onCrearUsuario(colaborador)
+                    when {
+                        error == null -> onUsuarioCreado()
+                        error.contains("RUT", ignoreCase = true) -> viewModel.onRutRepetido(error)
+                        error.contains("correo", ignoreCase = true) -> viewModel.onCorreoRepetido(error)
+                        else -> Toast.makeText(contexto, error, Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         },

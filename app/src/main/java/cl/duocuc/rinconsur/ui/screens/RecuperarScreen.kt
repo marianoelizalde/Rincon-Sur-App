@@ -17,6 +17,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,11 +37,13 @@ import cl.duocuc.rinconsur.viewmodel.RecuperarViewModel
 
 @Composable
 fun RecuperarScreen(
-    onRecuperarCuenta: (String, String, String) -> Boolean,
+
+    onRecuperarCuenta: suspend (String, String, String) -> String?,
     onVolver: () -> Unit,
     viewModel: RecuperarViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     RecuperarContent(
         uiState = uiState,
@@ -48,7 +52,7 @@ fun RecuperarScreen(
         onClaveCambia = viewModel::onClaveCambia,
         onConfirmarCambia = viewModel::onConfirmarCambia,
         onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
-        onRecuperar = { viewModel.onRecuperar(onRecuperarCuenta) },
+        onRecuperar = { scope.launch { viewModel.onRecuperar(onRecuperarCuenta) } },
         onVolver = onVolver
     )
 }

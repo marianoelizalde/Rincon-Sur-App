@@ -61,8 +61,6 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RegistroViewModel
 
-
-
 @Composable
 fun RegistroScreen(
     sesion: SesionObservacion?,
@@ -87,17 +85,17 @@ fun RegistroScreen(
     if (mostrarAlertaCierre) {
         AlertDialog(
             onDismissRequest = { mostrarAlertaCierre = false },
-            title = { Text("Turno en curso") },
-            text = { Text("Tienes un turno en curso. ¿Quieres finalizarlo antes de salir?") },
+            title = { Text(stringResource(R.string.alerta_turno_titulo)) },
+            text = { Text(stringResource(R.string.alerta_turno_mensaje)) },
             confirmButton = {
                 TextButton(onClick = {
                     mostrarAlertaCierre = false
                     onFinalizar()
                     alVolver()
-                }) { Text("Finalizar y salir") }
+                }) { Text(stringResource(R.string.alerta_finalizar_salir)) }
             },
             dismissButton = {
-                TextButton(onClick = { mostrarAlertaCierre = false }) { Text("Seguir observando") }
+                TextButton(onClick = { mostrarAlertaCierre = false }) { Text(stringResource(R.string.alerta_seguir)) }
             }
         )
     }
@@ -291,7 +289,6 @@ fun RegistroContent(
                         )
                     }
                 }
-
 
                 BotonPrincipal(
                     texto = stringResource(R.string.btn_registrar_persona),

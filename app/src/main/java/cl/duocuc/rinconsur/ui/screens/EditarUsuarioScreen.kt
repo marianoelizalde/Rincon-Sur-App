@@ -1,7 +1,5 @@
 package cl.duocuc.rinconsur.ui.screens
 
-
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +17,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,15 +40,15 @@ import cl.duocuc.rinconsur.viewmodel.EditarUsuarioViewModel
 @Composable
 fun EditarUsuarioScreen(
     usuario: Colaborador,
-    onRutEnUso: (String, Int) -> Boolean,
-    onEditarUsuario: (Int, String, String, String, String) -> String?,
+
+    onEditarUsuario: suspend (Int, String, String, String, String) -> String?,
     onGuardado: () -> Unit,
     onVolver: () -> Unit,
     viewModel: EditarUsuarioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
-    // Llena el formulario con los datos actuales del usuario
     LaunchedEffect(usuario.id) { viewModel.cargar(usuario) }
 
     EditarUsuarioContent(
@@ -58,7 +58,9 @@ fun EditarUsuarioScreen(
         onCargoCambia = viewModel::onCargoCambia,
         onTelefonoCambia = viewModel::onTelefonoCambia,
         onGuardar = {
-            if (viewModel.onGuardar(onRutEnUso, onEditarUsuario)) onGuardado()
+            scope.launch {
+                if (viewModel.onGuardar(onEditarUsuario)) onGuardado()
+            }
         },
         onVolver = onVolver
     )

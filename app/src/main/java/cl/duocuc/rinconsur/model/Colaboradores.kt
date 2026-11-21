@@ -5,7 +5,6 @@ enum class PerfilUsuario(val etiqueta: String) {
     OBSERVADOR("Observador")
 }
 
-
 data class Colaborador(
     val id: Int = 0,
     val nombre: String,
@@ -21,7 +20,5 @@ data class Colaborador(
     val comuna: String = "",
     val activo: Boolean = true
 )
-
-
 
 data class UsuarioActual(val colaborador: Colaborador)

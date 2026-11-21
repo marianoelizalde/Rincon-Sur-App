@@ -6,7 +6,6 @@ val NaranjaSol = Color(0xFFFE7C1A)
 val MarronRincon = Color(0xFF472718)
 val CremaRincon = Color(0xFFFEF8E5)
 
-
 val Verde = Color(0xFFBE3D0C)
 val VerdeClaro = Color(0xFFE39939)
 val VerdeOliva = Color(0xFFFFBC5E)

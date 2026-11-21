@@ -16,7 +16,6 @@ import cl.duocuc.rinconsur.ui.theme.Blanco
 import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.GrisDeshabilitado
 
-
 object EstilosBoton {
 
     val forma: Shape = RoundedCornerShape(Dimens.radioBoton)
@@ -30,17 +29,14 @@ object EstilosBoton {
         disabledContentColor = Blanco
     )
 
-
     @Composable
     fun coloresSecundario(): ButtonColors = ButtonDefaults.outlinedButtonColors(
         contentColor = MaterialTheme.colorScheme.primary
     )
 
-
     @Composable
     fun bordeSecundario(): BorderStroke =
         BorderStroke(Dimens.bordeBoton, MaterialTheme.colorScheme.primary)
-
 
     @Composable
     fun elevacion(): ButtonElevation = ButtonDefaults.buttonElevation(
@@ -48,6 +44,5 @@ object EstilosBoton {
         pressedElevation = 1.dp
     )
 }
-
 
 fun Modifier.estiloAltoBoton(): Modifier = this.height(Dimens.alturaBoton)

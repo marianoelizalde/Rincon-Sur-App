@@ -52,7 +52,6 @@ fun CasillaConTexto(
     }
 }
 
-
 @Composable
 fun InterruptorConTexto(
     texto: String,
@@ -66,13 +65,12 @@ fun InterruptorConTexto(
             .toggleable(value = activado, onValueChange = onCambio, role = Role.Switch)
             .padding(vertical = Dimens.espacioMini),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween   // texto a la izquierda, switch a la derecha
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = texto, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
         Switch(checked = activado, onCheckedChange = null)
     }
 }
-
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -139,7 +137,7 @@ private fun ControlesSeleccionPreview() {
         }
     }
 }
-// Selector estilo alarma: [-]  valor  [+]
+
 @Composable
 fun SelectorPaso(
     titulo: String,
@@ -159,7 +157,7 @@ fun SelectorPaso(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Dimens.espacioChico)
         ) {
-            BotonPaso(simbolo = "−", onClick = onMenos, habilitado = menosHabilitado)
+            BotonPaso(simbolo = "\u2212", onClick = onMenos, habilitado = menosHabilitado)
             Text(
                 text = valor,
                 style = MaterialTheme.typography.headlineMedium,

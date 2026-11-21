@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,12 +43,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoginScreen(
-    onIniciarSesion: (String, String) -> Boolean,
+
+    onIniciarSesion: suspend (String, String) -> String?,
     onLoginExitoso: () -> Unit,
     onRecuperar: () -> Unit,
     viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
 
     LoginContent(
         uiState = uiState,
@@ -55,13 +59,17 @@ fun LoginScreen(
         onAlternarVisibilidad = viewModel::onAlternarVisibilidad,
         onRecuperar = onRecuperar,
         onIngresar = {
+            if (!uiState.cargando && viewModel.onIngresar()) {
 
-            if (viewModel.onIngresar()) {
-
-                if (onIniciarSesion(uiState.correo.lowercase(), uiState.clave)) {
-                    onLoginExitoso()
-                } else {
-                    viewModel.onCredencialesIncorrectas()
+                scope.launch {
+                    viewModel.onCargando(true)
+                    val error = onIniciarSesion(uiState.correo.lowercase(), uiState.clave)
+                    viewModel.onCargando(false)
+                    if (error == null) {
+                        onLoginExitoso()
+                    } else {
+                        viewModel.onErrorGeneral(error)
+                    }
                 }
             }
         }
@@ -115,7 +123,6 @@ fun LoginContent(
                 onAlternarVisible = onAlternarVisibilidad,
                 error = uiState.errorClave
             )
-
 
             AnimatedVisibility(visible = uiState.errorGeneral != null) {
                 Row(verticalAlignment = Alignment.CenterVertically) {

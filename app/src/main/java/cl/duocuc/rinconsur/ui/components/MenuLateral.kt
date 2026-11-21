@@ -30,9 +30,7 @@ import cl.duocuc.rinconsur.ui.theme.Dimens
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import kotlinx.coroutines.launch
 
-
 enum class OpcionMenu { SESIONES, PERFIL, CREAR_USUARIO }
-
 
 @Composable
 fun MenuLateral(

@@ -51,7 +51,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import cl.duocuc.rinconsur.model.Colaborador
+import cl.duocuc.rinconsur.model.EstadoBd
 import cl.duocuc.rinconsur.model.EstadoSesion
+import cl.duocuc.rinconsur.model.TurnoSesion
 import cl.duocuc.rinconsur.ui.components.CampoTexto
 import cl.duocuc.rinconsur.ui.components.GrupoChips
 
@@ -60,6 +63,8 @@ fun SesionesScreen(
     usuario: UsuarioActual?,
     sesiones: List<SesionObservacion>,
     accesos: List<Acceso>,
+    estados: List<EstadoBd>,
+    observadores: List<Colaborador>,
     nombres: Map<Int, String>,
     mensaje: String?,
     onMensajeMostrado: () -> Unit,
@@ -97,6 +102,8 @@ fun SesionesScreen(
         SesionesContent(
             sesiones = visibles,
             accesos = accesos,
+            estados = estados,
+            observadores = observadores,
             nombres = nombres,
             nombreUsuario = colaborador?.nombre.orEmpty(),
             esSupervisor = esSupervisor,
@@ -119,16 +126,28 @@ fun SesionesContent(
     onProgramar: () -> Unit,
     onAbrirSesion: (Int) -> Unit,
     onAbrirMenu: () -> Unit,
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    estados: List<EstadoBd> = emptyList(),
+    observadores: List<Colaborador> = emptyList()
 ) {
+
     var fechaFiltro by remember { mutableStateOf("") }
-    var estadoFiltro by remember { mutableStateOf<EstadoSesion?>(null) }
+    var estadoFiltro by remember { mutableStateOf<EstadoBd?>(null) }
     var accesoFiltro by remember { mutableStateOf<Acceso?>(null) }
+    var turnoFiltro by remember { mutableStateOf<TurnoSesion?>(null) }
+    var observadorFiltro by remember { mutableStateOf<Int?>(null) }
+
+    val opcionesEstado = estados.ifEmpty { EstadoSesion.entries.map { EstadoBd(it.name, it.etiqueta) } }
+
     val filtradas = sesiones.filter { s ->
-        (estadoFiltro == null || s.estado == estadoFiltro) &&
+        (estadoFiltro == null || s.estado.name == estadoFiltro?.codigo) &&
                 (accesoFiltro == null || s.idAcceso == accesoFiltro?.id) &&
+                (turnoFiltro == null || s.turno == turnoFiltro?.name) &&
+                (observadorFiltro == null || s.idObservador == observadorFiltro) &&
                 s.fecha.contains(fechaFiltro.trim())
     }
+    val hayFiltros = fechaFiltro.isNotBlank() || estadoFiltro != null || accesoFiltro != null ||
+            turnoFiltro != null || observadorFiltro != null
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -206,20 +225,44 @@ fun SesionesContent(
                         )
                         GrupoChips(
                             titulo = stringResource(R.string.filtro_estado),
-                            opciones = EstadoSesion.entries,
+                            opciones = opcionesEstado,
                             seleccionada = estadoFiltro,
                             onSeleccionar = { estadoFiltro = if (estadoFiltro == it) null else it },
                             textoDe = { it.etiqueta }
                         )
-                        GrupoChips(                                                    // NUEVO
+                        GrupoChips(
+                            titulo = stringResource(R.string.filtro_turno),
+                            opciones = TurnoSesion.entries,
+                            seleccionada = turnoFiltro,
+                            onSeleccionar = { turnoFiltro = if (turnoFiltro == it) null else it },
+                            textoDe = { it.etiqueta }
+                        )
+                        GrupoChips(
                             titulo = stringResource(R.string.filtro_acceso),
                             opciones = accesos,
                             seleccionada = accesoFiltro,
                             onSeleccionar = { accesoFiltro = if (accesoFiltro == it) null else it },
                             textoDe = { it.codigo }
                         )
-                        if (fechaFiltro.isNotBlank() || estadoFiltro != null || accesoFiltro != null) {
-                            TextButton(onClick = { fechaFiltro = ""; estadoFiltro = null; accesoFiltro = null }) {
+
+                        if (esSupervisor && observadores.isNotEmpty()) {
+                            GrupoChips(
+                                titulo = stringResource(R.string.filtro_observador),
+                                opciones = observadores,
+                                seleccionada = observadores.firstOrNull { it.id == observadorFiltro },
+                                onSeleccionar = { observadorFiltro = if (observadorFiltro == it.id) null else it.id },
+                                textoDe = { it.nombre }
+                            )
+                        }
+                        if (hayFiltros) {
+                            TextButton(onClick = {
+                                fechaFiltro = ""
+                                estadoFiltro = null
+                                accesoFiltro = null
+                                turnoFiltro = null
+                                observadorFiltro = null
+                            }) {
+                                Text(stringResource(R.string.filtro_limpiar))
                             }
                         }
                     }
@@ -247,7 +290,6 @@ fun SesionesContent(
     }
 }
 
-
 @Composable
 private fun TarjetaSesion(
     sesion: SesionObservacion,
@@ -270,7 +312,7 @@ private fun TarjetaSesion(
                     text = stringResource(R.string.sesion_acceso, acceso?.codigo ?: "?", acceso?.nombre ?: ""),
                     style = MaterialTheme.typography.titleMedium
                 )
-                EtiquetaEstado(sesion.estado)
+                EtiquetaEstado(sesion.estado, texto = sesion.estadoEtiqueta)
             }
             Text(stringResource(R.string.sesion_horario, sesion.fecha, sesion.horaInicio,
                 sesion.horaFin))
