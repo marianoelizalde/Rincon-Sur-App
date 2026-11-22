@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cl.duocuc.rinconsur.data.ModoTema
 import cl.duocuc.rinconsur.data.Textos
@@ -17,11 +18,13 @@ import cl.duocuc.rinconsur.navigation.AppNavegacion
 import cl.duocuc.rinconsur.ui.theme.RinconSurTheme
 import cl.duocuc.rinconsur.viewmodel.RinconViewModel
 
+
 class MainActivity : ComponentActivity() {
 
     private val rinconViewModel: RinconViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         Textos.iniciar(applicationContext)
         setContent {
