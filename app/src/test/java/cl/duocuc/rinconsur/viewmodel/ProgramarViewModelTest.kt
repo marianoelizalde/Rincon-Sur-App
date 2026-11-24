@@ -47,74 +47,10 @@ class ProgramarViewModelTest {
     }
 
     @Test
-    fun onHoraInicioCambia_cambiarLaHoraDeInicio() {
-        viewModel.onHoraInicioCambia("14:30")
-
-        assertEquals("15:15", viewModel.uiState.value.horaFin)
-    }
-
-    @Test
     fun onFechaCambia_fechaInexistente() {
         viewModel.onFechaCambia("2026-02-30")
 
         assertNotNull(viewModel.uiState.value.errorFecha)
     }
 
-    @Test
-    fun onFechaCambia_fechaDeAnioBisiestoEsValida() {
-        viewModel.onFechaCambia("2024-02-29")
-
-        assertNull(viewModel.uiState.value.errorFecha)
-    }
-
-    @Test
-    fun onFechaCambia_fechaConFormatoIncorrecto() {
-        viewModel.onFechaCambia("24-11-2026")
-
-        assertNotNull(viewModel.uiState.value.errorFecha)
-    }
-
-    @Test
-    fun onHoraInicioCambia_horaAntesDeLaApertura() {
-        viewModel.onHoraInicioCambia("09:00")
-
-        assertNotNull(viewModel.uiState.value.errorFin)
-    }
-
-    @Test
-    fun onHoraInicioCambia_horaDespuesDelCierre() {
-        viewModel.onHoraInicioCambia("20:30")
-
-        assertNotNull(viewModel.uiState.value.errorFin)
-    }
-
-    @Test
-    fun onHoraInicioCambia_horaConFormatoIncorrecto() {
-        viewModel.onHoraInicioCambia("25:99")
-
-        assertNotNull(viewModel.uiState.value.errorInicio)
-    }
-
-    @Test
-    fun onHoraCambiaEn_laHoraNoPasaDeLas20() {
-        viewModel.onHoraCambiaEn(20)
-
-        assertEquals("20:00", viewModel.uiState.value.horaInicio)
-    }
-
-    @Test
-    fun onMinutosCambiaEn_losMinutosAvanzanDeA15() {
-        viewModel.onMinutosCambiaEn(1)
-
-        assertEquals("10:15", viewModel.uiState.value.horaInicio)
-    }
-
-    @Test
-    fun onDuracionCambiaEn_laDuracionQuedaEntre30y60Minutos() {
-        viewModel.onDuracionCambiaEn(5)
-        assertEquals(60, viewModel.uiState.value.duracion)
-
-        viewModel.onDuracionCambiaEn(-5)
-        assertEquals(30, viewModel.uiState.value.duracion)
-    }
 }

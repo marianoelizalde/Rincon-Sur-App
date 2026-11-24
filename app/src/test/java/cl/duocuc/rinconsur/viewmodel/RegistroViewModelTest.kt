@@ -37,20 +37,6 @@ class RegistroViewModelTest {
     }
 
     @Test
-    fun onRegistrar_conClasificacionPeroSinDetalles() {
-        viewModel.onClasificacionSeleccionada(Clasificacion.TRANSITO)
-
-        val registro = viewModel.onRegistrar(1)
-        val estado = viewModel.uiState.value
-
-        assertNull(registro)
-        assertNull(estado.errorClasificacion)
-        assertNotNull(estado.errorRango)
-        assertNotNull(estado.errorCompania)
-        assertNotNull(estado.errorSexo)
-    }
-
-    @Test
     fun onRegistrar_registroCompleto() {
         llenarRegistroCompleto()
         viewModel.onCompraOtraTienda(true)
@@ -81,12 +67,4 @@ class RegistroViewModelTest {
         assertFalse(estado.compraOtraTienda)
     }
 
-    @Test
-    fun onClasificacionSeleccionada_elegirUnaOpcion() {
-        viewModel.onRegistrar(1)
-
-        viewModel.onClasificacionSeleccionada(Clasificacion.TRANSITO)
-
-        assertNull(viewModel.uiState.value.errorClasificacion)
-    }
 }

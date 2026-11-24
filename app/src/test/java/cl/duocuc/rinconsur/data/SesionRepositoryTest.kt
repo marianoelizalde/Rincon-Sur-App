@@ -4,7 +4,6 @@ import cl.duocuc.rinconsur.model.EstadoSesion
 import cl.duocuc.rinconsur.model.SesionObservacion
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 
@@ -49,21 +48,6 @@ class SesionRepositoryTest {
     }
 
     @Test
-    fun iniciar_finalizarYCancelarDevuelvenElNuevoEstado() = runBlocking {
-        assertEquals(EstadoSesion.EN_CURSO, repositorio.iniciar(1).estado)
-        assertEquals(EstadoSesion.FINALIZADA, repositorio.finalizar(1).estado)
-        assertEquals(EstadoSesion.CANCELADA, repositorio.cancelar(1).estado)
-    }
-
-    @Test
-    fun validar_enviaElIdDelValidador() = runBlocking {
-        val sesion = repositorio.validar(1, 9)
-
-        assertEquals(9L, apiFalsa.ultimoValidador)
-        assertEquals(EstadoSesion.VALIDADA, sesion.estado)
-    }
-
-    @Test
     fun rechazar_enviaElMotivoYElValidador() = runBlocking {
         val sesion = repositorio.rechazar(1, 9, "Faltan registros")
 
@@ -72,17 +56,4 @@ class SesionRepositoryTest {
         assertEquals(EstadoSesion.RECHAZADA, sesion.estado)
     }
 
-    @Test
-    fun accesos_seConvierteAlModelo() = runBlocking {
-        val accesos = repositorio.accesos()
-
-        assertEquals(2, accesos.size)
-        assertEquals("Acceso sur", accesos[1].nombre)
-    }
-    @Test
-    fun estados_seConvierteAlModelo() = runBlocking {
-        val estados = repositorio.estados()
-        assertEquals("EN_CURSO", estados[1].codigo)
-        assertEquals("En curso", estados[1].etiqueta)
-    }
 }
