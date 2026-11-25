@@ -66,6 +66,7 @@ Endpoints que usa la app, todos a través del gateway:
 Las acciones que requieren saber quién las hace llevan el encabezado `X-Usuario-Id`, que un interceptor de OkHttp agrega después del inicio de sesión.
 
 El código y la documentación de los microservicios están en el repositorio del backend: https://github.com/marianoelizalde/Rincon-Sur-Backend
+La documentación del Trello se encuentra  atraves de este link : https://trello.com/b/AKgfkMFX/retail-conteo-accesos
 
 ## Cómo usar la app (paso a paso, muy fácil)
 
